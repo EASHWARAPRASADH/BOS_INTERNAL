@@ -35,6 +35,11 @@ public class ChecklistService {
 
     // --- Master Checklist ---
 
+    public Integer getNextSequenceNumber() {
+        Integer maxSeq = masterRepo.findMaxSeqNo();
+        return (maxSeq != null ? maxSeq : 0) + 1;
+    }
+
     public Page<MasterChecklist> getAllChecklists(String status, String category, String department, String searchBy, String searchValue, Pageable pageable) {
         return masterRepo.findAll((root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -52,8 +57,24 @@ public class ChecklistService {
                 predicates.add(cb.equal(deptJoin.get("departmentName"), department));
             }
 
-            if (searchBy != null && searchValue != null && !searchValue.isEmpty()) {
-                predicates.add(cb.like(cb.lower(root.get(searchBy)), "%" + searchValue.toLowerCase() + "%"));
+            if (searchValue != null && !searchValue.isEmpty()) {
+                String searchTerm = "%" + searchValue.toLowerCase() + "%";
+                if (searchBy != null && !searchBy.isEmpty()) {
+                    predicates.add(cb.like(cb.lower(root.get(searchBy)), searchTerm));
+                } else {
+                    List<Predicate> orPredicates = new ArrayList<>();
+                    orPredicates.add(cb.like(cb.lower(root.get("seqNo")), searchTerm));
+                    orPredicates.add(cb.like(cb.lower(root.get("checkingPoint")), searchTerm));
+                    orPredicates.add(cb.like(cb.lower(root.get("category")), searchTerm));
+                    orPredicates.add(cb.like(cb.lower(root.get("frequency")), searchTerm));
+                    orPredicates.add(cb.like(cb.lower(root.get("status")), searchTerm));
+                    orPredicates.add(cb.like(cb.lower(root.get("createdBy")), searchTerm));
+                    
+                    Join<MasterChecklist, ChecklistDepartment> dJoin = root.join("departments", JoinType.LEFT);
+                    orPredicates.add(cb.like(cb.lower(dJoin.get("departmentName")), searchTerm));
+                    
+                    predicates.add(cb.or(orPredicates.toArray(new Predicate[0])));
+                }
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));
@@ -77,6 +98,14 @@ public class ChecklistService {
             existing.setPhotoRequired(checklist.getPhotoRequired());
             existing.setVerificationRequired(checklist.getVerificationRequired());
             existing.setStatus(checklist.getStatus());
+            existing.setVerifyStatus(checklist.getVerifyStatus());
+            existing.setVerifiedBy(checklist.getVerifiedBy());
+            existing.setVerifiedDate(checklist.getVerifiedDate());
+            existing.setRejReason(checklist.getRejReason());
+            existing.setAssignTo(checklist.getAssignTo());
+            existing.setAssignDate(checklist.getAssignDate());
+            existing.setItemCode(checklist.getItemCode());
+            existing.setQty(checklist.getQty());
             existing.setUpdatedDate(new Date());
             
             // Re-sync departments
@@ -93,6 +122,7 @@ public class ChecklistService {
         } else {
             checklist.setCreatedDate(new Date());
             if (checklist.getStatus() == null) checklist.setStatus("Pending for Verify");
+            if (checklist.getVerifyStatus() == null) checklist.setVerifyStatus("Pending for Verify");
             MasterChecklist saved = masterRepo.save(checklist);
             if (departments != null) {
                 for (String deptName : departments) {
@@ -108,7 +138,7 @@ public class ChecklistService {
 
     // --- Assignments ---
 
-    public Page<ChecklistAssignment> getAssignments(String status, String assignedTo, Date fromDate, Date toDate, String category, Pageable pageable) {
+    public Page<ChecklistAssignment> getAssignments(String status, String assignedTo, Date fromDate, Date toDate, String category, String searchBy, String searchValue, Pageable pageable) {
         return assignRepo.findAll((root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -132,6 +162,31 @@ public class ChecklistService {
             if (category != null && !category.equals("All")) {
                 Join<ChecklistAssignment, MasterChecklist> masterJoin = root.join("checklist");
                 predicates.add(cb.equal(masterJoin.get("category"), category));
+            }
+
+            if (searchValue != null && !searchValue.isEmpty()) {
+                String searchTerm = "%" + searchValue.toLowerCase() + "%";
+                if (searchBy != null && !searchBy.isEmpty()) {
+                    predicates.add(cb.like(cb.lower(root.get(searchBy)), searchTerm));
+                } else {
+                    List<Predicate> orPredicates = new ArrayList<>();
+                    orPredicates.add(cb.like(cb.lower(root.get("assignedTo")), searchTerm));
+                    orPredicates.add(cb.like(cb.lower(root.get("assignedBy")), searchTerm));
+                    
+                    Join<ChecklistAssignment, StatusMaster> sJoin = root.join("status", JoinType.LEFT);
+                    orPredicates.add(cb.like(cb.lower(sJoin.get("name")), searchTerm));
+                    
+                    Join<ChecklistAssignment, MasterChecklist> cJoin = root.join("checklist", JoinType.LEFT);
+                    orPredicates.add(cb.like(cb.lower(cJoin.get("seqNo")), searchTerm));
+                    orPredicates.add(cb.like(cb.lower(cJoin.get("checkingPoint")), searchTerm));
+                    orPredicates.add(cb.like(cb.lower(cJoin.get("category")), searchTerm));
+                    orPredicates.add(cb.like(cb.lower(cJoin.get("frequency")), searchTerm));
+                    
+                    Join<MasterChecklist, ChecklistDepartment> dJoin = cJoin.join("departments", JoinType.LEFT);
+                    orPredicates.add(cb.like(cb.lower(dJoin.get("departmentName")), searchTerm));
+
+                    predicates.add(cb.or(orPredicates.toArray(new Predicate[0])));
+                }
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));
@@ -174,6 +229,18 @@ public class ChecklistService {
         assignRepo.save(assignment);
         
         return verifyRepo.save(verification);
+    }
+
+    @Transactional
+    public MasterChecklist verifyMasterChecklist(Long checklistId, String verifiedBy, String status, String remarks) {
+        MasterChecklist checklist = masterRepo.findById(checklistId).orElseThrow();
+        checklist.setVerifyStatus(status);
+        checklist.setVerifiedBy(verifiedBy);
+        checklist.setVerifiedDate(new Date());
+        if ("Rejected".equals(status)) {
+            checklist.setRejReason(remarks);
+        }
+        return masterRepo.save(checklist);
     }
 
     // --- Status Master Helpers ---

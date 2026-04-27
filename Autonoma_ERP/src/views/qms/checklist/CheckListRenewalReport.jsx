@@ -24,8 +24,9 @@ import TablePagination from '@mui/material/TablePagination';
 import axios from 'utils/axios';
 
 import MainCard from 'ui-component/cards/MainCard';
+import { useSelector } from 'react-redux';
 
-import { IconSearch, IconX, IconAdjustmentsHorizontal, IconChevronDown, IconChevronUp, IconFileDownload } from '@tabler/icons-react';
+import { IconAdjustmentsHorizontal, IconChevronDown, IconChevronUp, IconX, IconFileDownload } from '@tabler/icons-react';
 import { exportToExcel } from 'utils/excelExport';
 
 const columns = ['#','Category','Check Point','Dept','Level','Frequency','Stock Link','Comments','Verification Required','Assigned To','Assigned By','Status'];
@@ -58,7 +59,7 @@ export default function CheckListRenewalReport() {
   const [loading, setLoading] = useState(false);
 
   const [selectedRowId, setSelectedRowId] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const searchQuery = useSelector((state) => state.search.query);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [filters, setFilters] = useState({ ...DEFAULT_FILTERS });
   const [openSections, setOpenSections] = useState({ dateRange:true, considerDate:false, status:true });
@@ -74,7 +75,7 @@ export default function CheckListRenewalReport() {
         fromDate: filters.fromDate || undefined,
         toDate: filters.toDate || undefined,
         searchValue: searchQuery || undefined,
-        searchBy: 'checkingPoint'
+        searchBy: undefined
       };
       const response = await axios.get('/api/qms/checklist/assignments', { params });
       setRows(response.data.content);
@@ -125,11 +126,7 @@ export default function CheckListRenewalReport() {
       title="Check List / Renewal Report - 5524"
       secondary={
         <Box sx={{ display:'flex', alignItems:'center', gap:1 }}>
-          <Button variant="outlined" color="primary" startIcon={<IconFileDownload size={18}/>} onClick={handleExport} sx={{ borderRadius: 1.5 }}>Export Excel</Button>
-          <TextField size="small" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-            InputProps={{ startAdornment:<InputAdornment position="start"><IconSearch size={18}/></InputAdornment>, endAdornment: searchQuery ? <InputAdornment position="end"><IconButton size="small" onClick={() => setSearchQuery('')}><IconX size={16}/></IconButton></InputAdornment> : null }}
-            sx={{ width:220 }}
-          />
+          <Button variant="outlined" color="primary" size="small" startIcon={<IconFileDownload size={18}/>} onClick={handleExport} sx={{ borderRadius: 1.5 }}>Export Excel</Button>
           <IconButton size="small" onClick={() => setDrawerOpen(true)}
             sx={{ border:'1px solid', borderColor: activeCount > 0 ? 'primary.main' : 'divider', bgcolor: activeCount > 0 ? 'primary.light' : 'transparent', borderRadius:1.5, p:0.8, position:'relative' }}>
             <IconAdjustmentsHorizontal size={20}/>
@@ -185,6 +182,10 @@ export default function CheckListRenewalReport() {
         rowsPerPage={size}
         onRowsPerPageChange={(e) => { setSize(parseInt(e.target.value, 10)); setPage(0); }}
         rowsPerPageOptions={[5, 10, 25, 50]}
+        sx={{
+          '& .MuiTablePagination-toolbar': { justifyContent: 'center' },
+          '& .MuiTablePagination-spacer': { display: 'none' }
+        }}
       />
 
       {/* FILTER DRAWER */}

@@ -1,7 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-    query: ''
+    query: '',
+    filters: {
+        type: 'All',
+        date: '',
+        status: 'All'
+    }
 };
 
 const search = createSlice({
@@ -10,10 +15,13 @@ const search = createSlice({
     reducers: {
         setQuery(state, action) {
             state.query = action.payload;
+        },
+        setFilters(state, action) {
+            state.filters = { ...state.filters, ...action.payload };
         }
     }
 });
 
 export default search.reducer;
 
-export const { setQuery } = search.actions;
+export const { setQuery, setFilters } = search.actions;

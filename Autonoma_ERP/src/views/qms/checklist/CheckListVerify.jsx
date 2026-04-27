@@ -25,8 +25,9 @@ import TablePagination from '@mui/material/TablePagination';
 import axios from 'utils/axios';
 
 import MainCard from 'ui-component/cards/MainCard';
+import { useSelector } from 'react-redux';
 
-import { IconSearch, IconX, IconAdjustmentsHorizontal, IconChevronDown, IconChevronUp, IconCheck, IconBan, IconFileDownload } from '@tabler/icons-react';
+import { IconAdjustmentsHorizontal, IconChevronDown, IconChevronUp, IconCheck, IconBan, IconFileDownload, IconX } from '@tabler/icons-react';
 import { exportToExcel } from 'utils/excelExport';
 
 const columns = [
@@ -42,9 +43,10 @@ const DEPARTMENTS = [
   'QMS','QUALITY','SALES & MARKETING','STORES','STRATEGIC PROCUREMENT','TOP MANAGEMENT'
 ];
 
-const DEFAULT_FILTERS = { status:'All', category:'All', departments:[], searchBy:'', searchByValue:'' };
+const DEFAULT_FILTERS = { status:'All', category:'All', departments:[], searchBy:'All', searchByValue:'' };
 
 const SEARCH_BY_OPTIONS = [
+  { key:'All', label:'Global Search' },
   { key:'checkingPoint', label:'Checking Point' },
   { key:'description', label:'Descriptions' },
   { key:'seqNo', label:'Seq.No' }
@@ -80,7 +82,7 @@ export default function CheckListVerify() {
   const [loading, setLoading] = useState(false);
 
   const [selectedRowId, setSelectedRowId] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const searchQuery = useSelector((state) => state.search.query);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [filters, setFilters] = useState({ ...DEFAULT_FILTERS });
   const [openSections, setOpenSections] = useState({ status:true, category:true, department:false, searchBy:false });
@@ -96,7 +98,7 @@ export default function CheckListVerify() {
         category: filters.category !== 'All' ? filters.category : undefined,
         department: filters.departments.length > 0 ? filters.departments[0] : undefined,
         searchValue: filters.searchByValue || searchQuery || undefined,
-        searchBy: filters.searchBy || (searchQuery ? 'checkingPoint' : undefined)
+        searchBy: filters.searchBy !== 'All' ? filters.searchBy : undefined
       };
       const response = await axios.get('/api/qms/checklist', { params });
       setRows(response.data.content);
@@ -136,8 +138,8 @@ export default function CheckListVerify() {
       // In a real scenario, we might need a specific verification ID if it was an assignment,
       // but here we are verifying the master record's creation/amendment.
       // We'll use a generic verification endpoint or update the master.
-      await axios.post('/api/qms/checklist/verify', {
-        assignmentId: selectedRowId, // Assuming assignmentId for now
+      await axios.post('/api/qms/checklist/verify-master', {
+        checklistId: selectedRowId,
         status: status,
         verifiedBy: 'Current User',
         remarks: status === 'Rejected' ? 'Rejected by verifier' : 'Verified'
@@ -176,11 +178,9 @@ export default function CheckListVerify() {
       title="Check List Verify - 5118"
       secondary={
         <Box sx={{ display:'flex', alignItems:'center', gap:1 }}>
-          <Button variant="outlined" color="primary" startIcon={<IconFileDownload size={18}/>} onClick={handleExport} sx={{ borderRadius: 1.5 }}>Export Excel</Button>
-          <TextField size="small" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-            InputProps={{ startAdornment:<InputAdornment position="start"><IconSearch size={18}/></InputAdornment>, endAdornment: searchQuery ? <InputAdornment position="end"><IconButton size="small" onClick={() => setSearchQuery('')}><IconX size={16}/></IconButton></InputAdornment> : null }}
-            sx={{ width:220 }}
-          />
+          <Button variant="contained" color="error" size="small" startIcon={<IconBan size={18}/>} onClick={() => handleVerify('Rejected')} disabled={!selectedRowId}>Reject</Button>
+          <Button variant="contained" color="primary" size="small" startIcon={<IconCheck size={18}/>} onClick={() => handleVerify('Verified')} disabled={!selectedRowId}>Verify</Button>
+          <Button variant="outlined" color="primary" size="small" startIcon={<IconFileDownload size={18}/>} onClick={handleExport} sx={{ borderRadius: 1.5 }}>Export Excel</Button>
           <IconButton size="small" onClick={() => setDrawerOpen(true)}
             sx={{ border:'1px solid', borderColor: activeCount > 0 ? 'primary.main' : 'divider', bgcolor: activeCount > 0 ? 'primary.light' : 'transparent', borderRadius:1.5, p:0.8, position:'relative' }}>
             <IconAdjustmentsHorizontal size={20}/>
@@ -222,7 +222,7 @@ export default function CheckListVerify() {
                 <TableCell>{row.stockLink}</TableCell>
                 <TableCell>{row.createdDate ? new Date(row.createdDate).toLocaleDateString() : ''}</TableCell>
                 <TableCell>{row.createdBy}</TableCell>
-                <TableCell><StatusChip status={row.status}/></TableCell>
+                <TableCell><StatusChip status={row.verifyStatus}/></TableCell>
                 <TableCell>{row.verifiedBy}</TableCell>
                 <TableCell>{row.verifiedDate}</TableCell>
               </TableRow>
@@ -239,12 +239,12 @@ export default function CheckListVerify() {
         rowsPerPage={size}
         onRowsPerPageChange={(e) => { setSize(parseInt(e.target.value, 10)); setPage(0); }}
         rowsPerPageOptions={[5, 10, 25, 50]}
+        sx={{
+          '& .MuiTablePagination-toolbar': { justifyContent: 'center' },
+          '& .MuiTablePagination-spacer': { display: 'none' }
+        }}
       />
 
-      <Box sx={{ display:'flex', justifyContent:'flex-end', mt:2, gap:1.5 }}>
-        <Button variant="contained" color="error" startIcon={<IconBan size={18}/>} onClick={() => handleVerify('Rejected')} disabled={!selectedRowId}>Reject</Button>
-        <Button variant="contained" color="primary" startIcon={<IconCheck size={18}/>} onClick={() => handleVerify('Verified')} disabled={!selectedRowId}>Verify</Button>
-      </Box>
 
       {/* FILTER DRAWER */}
       <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)} PaperProps={{ sx:{ width:320 } }}>

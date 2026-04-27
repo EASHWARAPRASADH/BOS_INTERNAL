@@ -26,10 +26,12 @@ import Collapse from '@mui/material/Collapse';
 import TablePagination from '@mui/material/TablePagination';
 import axios from 'utils/axios';
 
+import { useSelector } from 'react-redux';
+
 import MainCard from 'ui-component/cards/MainCard';
 import AddCheckListDialog from './AddCheckListDialog';
 
-import { IconUserPlus, IconEdit, IconPlus, IconFileDots, IconSearch, IconX, IconAdjustmentsHorizontal, IconChevronDown, IconChevronUp } from '@tabler/icons-react';
+import { IconUserPlus, IconEdit, IconPlus, IconFileDots, IconAdjustmentsHorizontal, IconChevronDown, IconChevronUp, IconX } from '@tabler/icons-react';
 
 const columns = [
   '#','Seq No','Checking Point','Category','Frequency','Department',
@@ -78,9 +80,35 @@ export default function MasterCheckList() {
   const [loading, setLoading] = useState(false);
   
   const [selectedRowId, setSelectedRowId] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const searchQuery = useSelector((state) => state.search.query);
+  const globalFilters = useSelector((state) => state.search.filters) || {};
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [filters, setFilters] = useState({ ...DEFAULT_FILTERS });
+
+  // Sync global search filters with local filters
+  useEffect(() => {
+    if (Object.keys(globalFilters).length > 0) {
+      setFilters((prev) => {
+        const newFilters = { ...prev };
+        let hasChanges = false;
+        
+        if (globalFilters.category && globalFilters.category !== prev.category) {
+          newFilters.category = globalFilters.category;
+          hasChanges = true;
+        }
+        if (globalFilters.status && globalFilters.status !== prev.status) {
+          newFilters.status = globalFilters.status;
+          hasChanges = true;
+        }
+        if (globalFilters.recordStatus && globalFilters.recordStatus !== prev.recordStatus) {
+          newFilters.recordStatus = globalFilters.recordStatus;
+          hasChanges = true;
+        }
+        
+        return hasChanges ? newFilters : prev;
+      });
+    }
+  }, [globalFilters]);
 
   // Section toggles
   const [openSections, setOpenSections] = useState({ status:true, taskStatus:true, recordStatus:true, category:true, department:false, employee:false, leftCompany:false });
@@ -95,7 +123,7 @@ export default function MasterCheckList() {
         category: filters.category !== 'All' ? filters.category : undefined,
         department: filters.departments.length > 0 ? filters.departments[0] : undefined, // Simplification for now
         searchValue: searchQuery || undefined,
-        searchBy: searchQuery ? 'checkingPoint' : undefined
+        searchBy: undefined
       };
       const response = await axios.get('/api/qms/checklist', { params });
       setRows(response.data.content);
@@ -151,10 +179,10 @@ export default function MasterCheckList() {
       title="Master Check List - 282"
       secondary={
         <Box sx={{ display:'flex', alignItems:'center', gap:1 }}>
-          <TextField size="small" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-            InputProps={{ startAdornment: <InputAdornment position="start"><IconSearch size={18}/></InputAdornment>, endAdornment: searchQuery ? <InputAdornment position="end"><IconButton size="small" onClick={() => setSearchQuery('')}><IconX size={16}/></IconButton></InputAdornment> : null }}
-            sx={{ width:220 }}
-          />
+          <Button variant="contained" color="secondary" size="small" startIcon={<IconUserPlus size={18}/>}>Assign To</Button>
+          <Button variant="contained" color="secondary" size="small" startIcon={<IconFileDots size={18}/>}>Amendment</Button>
+          <Button variant="contained" color="secondary" size="small" startIcon={<IconEdit size={18}/>} onClick={handleEditClick}>Edit</Button>
+          <Button variant="contained" color="primary" size="small" startIcon={<IconPlus size={18}/>} onClick={() => { setSelectedRowId(null); setDialogOpen(true); }}>Add</Button>
           <IconButton size="small" onClick={() => setDrawerOpen(true)}
             sx={{ border:'1px solid', borderColor: activeCount > 0 ? 'primary.main' : 'divider', bgcolor: activeCount > 0 ? 'primary.light' : 'transparent', borderRadius:1.5, p:0.8, position:'relative' }}>
             <IconAdjustmentsHorizontal size={20}/>
@@ -163,6 +191,7 @@ export default function MasterCheckList() {
         </Box>
       }
     >
+      <Box sx={{ p: 0.5, pb: 0 }}>
       {activeCount > 0 && (
         <Box sx={{ display:'flex', gap:0.5, mb:2, flexWrap:'wrap', alignItems:'center' }}>
           <Typography variant="body2" sx={{ fontWeight:600, mr:0.5 }}>Filters:</Typography>
@@ -177,9 +206,11 @@ export default function MasterCheckList() {
         </Box>
       )}
 
-      <TableContainer component={Paper} sx={{ maxHeight:'calc(100vh - 380px)', border:'1px solid', borderColor:'divider', '&::-webkit-scrollbar':{width:10,height:10}, '&::-webkit-scrollbar-track':{backgroundColor:'background.paper'}, '&::-webkit-scrollbar-thumb':{backgroundColor:'grey.400',borderRadius:2} }}>
-        <Table stickyHeader sx={{ minWidth:2500 }} aria-label="checklist table">
-          <TableHead><TableRow>{columns.map((col,i) => <TableCell key={i} sx={{ bgcolor:'primary.dark', color:'white', fontWeight:'bold', whiteSpace:'nowrap', borderRight:'1px solid rgba(255,255,255,0.2)' }}>{col}</TableCell>)}</TableRow></TableHead>
+      </Box>
+
+      <TableContainer component={Paper} sx={{ maxHeight:'calc(100vh - 380px)', borderTop:'1px solid', borderColor:'divider', borderRadius: 0, '&::-webkit-scrollbar':{width:10,height:10}, '&::-webkit-scrollbar-track':{backgroundColor:'background.paper'}, '&::-webkit-scrollbar-thumb':{backgroundColor:'grey.400',borderRadius:2} }}>
+        <Table stickyHeader sx={{ minWidth: 4000 }} aria-label="checklist table">
+          <TableHead><TableRow>{columns.map((col,i) => <TableCell key={i} sx={{ minWidth: 200, bgcolor:'primary.dark', color:'white', fontWeight:'bold', whiteSpace:'nowrap', borderRight:'1px solid rgba(255,255,255,0.2)' }}>{col}</TableCell>)}</TableRow></TableHead>
           <TableBody>
             {loading ? (
               <TableRow><TableCell colSpan={columns.length} align="center" sx={{ py:6 }}><Typography variant="body1" color="textSecondary">Loading...</Typography></TableCell></TableRow>
@@ -187,31 +218,31 @@ export default function MasterCheckList() {
               <TableRow><TableCell colSpan={columns.length} align="center" sx={{ py:6 }}><Typography variant="body1" color="textSecondary">{searchQuery || activeCount > 0 ? 'No matching records found' : 'No data available in table'}</Typography></TableCell></TableRow>
             ) : rows.map((row,idx) => (
               <TableRow key={row.id} hover onClick={() => setSelectedRowId(row.id)} sx={{ cursor:'pointer', bgcolor: selectedRowId === row.id ? 'primary.light' : 'inherit' }}>
-                <TableCell>{page * size + idx + 1}</TableCell>
-                <TableCell>{row.seqNo}</TableCell>
-                <TableCell>{row.checkingPoint}</TableCell>
-                <TableCell>{row.category}</TableCell>
-                <TableCell>{row.frequency}</TableCell>
-                <TableCell>{(row.departments || []).map(d => d.departmentName).join(', ')}</TableCell>
-                <TableCell>{row.effectiveFrom}</TableCell>
-                <TableCell>{row.reminderDays}</TableCell>
-                <TableCell>{row.expiryDate}</TableCell>
-                <TableCell>{row.reminderDate}</TableCell>
-                <TableCell>{row.stockLink}</TableCell>
-                <TableCell>{row.assignTo}</TableCell>
-                <TableCell>{row.assignDate}</TableCell>
-                <TableCell>{row.itemCode}</TableCell>
-                <TableCell>{row.qty}</TableCell>
-                <TableCell>{row.photoRequired}</TableCell>
-                <TableCell>{row.createdDate ? new Date(row.createdDate).toLocaleDateString() : ''}</TableCell>
-                <TableCell>{row.createdBy}</TableCell>
-                <TableCell>{row.updatedBy}</TableCell>
-                <TableCell>{row.status}</TableCell>
-                <TableCell>{row.taskStatus}</TableCell>
-                <TableCell>{row.verifyStatus}</TableCell>
-                <TableCell>{row.verifiedBy}</TableCell>
-                <TableCell>{row.verifiedDate}</TableCell>
-                <TableCell>{row.rejReason}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{page * size + idx + 1}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.seqNo}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.checkingPoint}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.category}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.frequency}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{(row.departments || []).map(d => d.departmentName).join(', ')}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.effectiveFrom}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.reminderDays}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.expiryDate}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.reminderDate}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.stockLink}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.assignTo}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.assignDate}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.itemCode}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.qty}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.photoRequired}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.createdDate ? new Date(row.createdDate).toLocaleDateString() : ''}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.createdBy}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.updatedBy}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.status}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.taskStatus}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.verifyStatus}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.verifiedBy}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.verifiedDate}</TableCell>
+                <TableCell sx={{ minWidth: 200 }}>{row.rejReason}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -226,16 +257,12 @@ export default function MasterCheckList() {
         rowsPerPage={size}
         onRowsPerPageChange={(e) => { setSize(parseInt(e.target.value, 10)); setPage(0); }}
         rowsPerPageOptions={[5, 10, 25, 50]}
+        sx={{
+          '& .MuiTablePagination-toolbar': { justifyContent: 'center' },
+          '& .MuiTablePagination-spacer': { display: 'none' }
+        }}
       />
 
-      <Box sx={{ display:'flex', justifyContent:'flex-end', mt:2 }}>
-        <Stack direction="row" spacing={1.5}>
-          <Button variant="contained" color="secondary" startIcon={<IconUserPlus size={18}/>}>Assign To</Button>
-          <Button variant="contained" color="secondary" startIcon={<IconFileDots size={18}/>}>Amendment</Button>
-          <Button variant="contained" color="secondary" startIcon={<IconEdit size={18}/>} onClick={handleEditClick}>Edit</Button>
-          <Button variant="contained" color="primary" startIcon={<IconPlus size={18}/>} onClick={() => { setSelectedRowId(null); setDialogOpen(true); }}>Add</Button>
-        </Stack>
-      </Box>
 
       {/* ===== FILTER DRAWER ===== */}
       <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)} PaperProps={{ sx:{ width:320 } }}>
