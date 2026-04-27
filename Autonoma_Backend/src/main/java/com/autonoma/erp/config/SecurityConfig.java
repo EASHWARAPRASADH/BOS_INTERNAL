@@ -22,9 +22,11 @@ import java.util.Arrays;
 public class SecurityConfig {
 
     private final JwtService jwtService;
+    private final JwtAuthenticationFilter jwtAuthFilter;
 
-    public SecurityConfig(JwtService jwtService) {
+    public SecurityConfig(JwtService jwtService, JwtAuthenticationFilter jwtAuthFilter) {
         this.jwtService = jwtService;
+        this.jwtAuthFilter = jwtAuthFilter;
     }
 
     @Bean
@@ -34,10 +36,11 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/h2-console/**").permitAll()
+                .requestMatchers("/api/account/**", "/h2-console/**").permitAll()
                 .anyRequest().authenticated()
             )
-            .headers(headers -> headers.frameOptions(frame -> frame.disable()));
+            .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+            .addFilterBefore(jwtAuthFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
