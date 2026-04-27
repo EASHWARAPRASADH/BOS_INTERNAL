@@ -23,11 +23,8 @@ import { APP_AUTH } from 'config';
 
 // A mapping of auth types to dynamic imports
 const authCodeVerificationImports = {
-  firebase: () => import('./firebase/AuthCodeVerification'),
   jwt: () => import('./jwt/AuthCodeVerification'),
-  aws: () => import('./aws/AuthCodeVerification'),
   auth0: () => import('./auth0/AuthCodeVerification'),
-  supabase: () => import('./supabase/AuthCodeVerification')
 };
 
 // ===========================|| AUTH3 - CODE VERIFICATION ||=========================== //
