@@ -40,6 +40,11 @@ public class ChecklistController {
         return ResponseEntity.ok(checklistService.saveMasterChecklist(checklist, departments));
     }
 
+    @GetMapping("/next-sequence")
+    public ResponseEntity<Map<String, Integer>> getNextSequence() {
+        return ResponseEntity.ok(Map.of("nextSeqNo", checklistService.getNextSequenceNumber()));
+    }
+
     @GetMapping("/assignments")
     public ResponseEntity<Page<ChecklistAssignment>> getAssignments(
             @RequestParam(required = false) String status,
@@ -47,11 +52,13 @@ public class ChecklistController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fromDate,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date toDate,
             @RequestParam(required = false) String category,
+            @RequestParam(required = false) String searchBy,
+            @RequestParam(required = false) String searchValue,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         
         Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(checklistService.getAssignments(status, assignedTo, fromDate, toDate, category, pageable));
+        return ResponseEntity.ok(checklistService.getAssignments(status, assignedTo, fromDate, toDate, category, searchBy, searchValue, pageable));
     }
 
     @PostMapping("/assign")
@@ -69,6 +76,15 @@ public class ChecklistController {
         String status = payload.get("status").toString();
         String remarks = payload.getOrDefault("remarks", "").toString();
         return ResponseEntity.ok(checklistService.verifyTask(assignmentId, verifiedBy, status, remarks));
+    }
+
+    @PostMapping("/verify-master")
+    public ResponseEntity<MasterChecklist> verifyMaster(@RequestBody Map<String, Object> payload) {
+        Long checklistId = Long.valueOf(payload.get("checklistId").toString());
+        String verifiedBy = payload.get("verifiedBy").toString();
+        String status = payload.get("status").toString();
+        String remarks = payload.getOrDefault("remarks", "").toString();
+        return ResponseEntity.ok(checklistService.verifyMasterChecklist(checklistId, verifiedBy, status, remarks));
     }
 
     @GetMapping("/bootstrap")

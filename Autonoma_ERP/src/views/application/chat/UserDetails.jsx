@@ -56,7 +56,7 @@ export default function UserDetails({ user }) {
               </Grid>
               <Grid size={12}>
                 <AvatarStatus status={user.online_status} />
-                <Typography variant="caption">{user?.online_status.replaceAll('_', ' ')}</Typography>
+                <Typography variant="caption">{user?.online_status?.replaceAll('_', ' ')}</Typography>
               </Grid>
               <Grid size={12}>
                 <Typography variant="h5">{user.name}</Typography>
