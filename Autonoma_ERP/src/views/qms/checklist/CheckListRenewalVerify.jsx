@@ -25,8 +25,9 @@ import TablePagination from '@mui/material/TablePagination';
 import axios from 'utils/axios';
 
 import MainCard from 'ui-component/cards/MainCard';
+import { useSelector } from 'react-redux';
 
-import { IconSearch, IconX, IconAdjustmentsHorizontal, IconChevronDown, IconChevronUp, IconCheck, IconBan, IconFileDownload } from '@tabler/icons-react';
+import { IconAdjustmentsHorizontal, IconChevronDown, IconChevronUp, IconCheck, IconBan, IconFileDownload, IconX } from '@tabler/icons-react';
 import { exportToExcel } from 'utils/excelExport';
 
 const columns = [
@@ -37,6 +38,7 @@ const columns = [
 const STATUS_OPTIONS = ['Pending for Verified', 'Pending for Accepted', 'Verified', 'Rejected', 'Not Accepted', 'Accepted', 'Missed'];
 
 const SEARCH_BY_OPTIONS = [
+  { key:'All', label:'Global Search' },
   { key:'checkingPoint', label:'Checking Point' },
   { key:'description', label:'Descriptions' },
   { key:'seqNo', label:'Seq.No' }
@@ -50,7 +52,7 @@ const DEFAULT_FILTERS = {
   statuses: [],
   assignTo: '',
   category: 'All',
-  searchBy: 'checkingPoint',
+  searchBy: 'All',
   searchByValue: ''
 };
 
@@ -80,7 +82,7 @@ export default function CheckListRenewalVerify() {
   const [loading, setLoading] = useState(false);
 
   const [selectedRowId, setSelectedRowId] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const searchQuery = useSelector((state) => state.search.query);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [filters, setFilters] = useState({ ...DEFAULT_FILTERS });
   const [openSections, setOpenSections] = useState({ taskType: true, date: true, status: true, assignTo: false, category: false, searchBy: false });
@@ -98,7 +100,7 @@ export default function CheckListRenewalVerify() {
         category: filters.category !== 'All' ? filters.category : undefined,
         assignedTo: filters.assignTo || undefined,
         searchValue: searchQuery || filters.searchByValue || undefined,
-        searchBy: filters.searchBy
+        searchBy: filters.searchBy !== 'All' ? filters.searchBy : undefined
       };
       const response = await axios.get('/api/qms/checklist/assignments', { params });
       setRows(response.data.content);
@@ -172,11 +174,10 @@ export default function CheckListRenewalVerify() {
     <MainCard title="Check List / Renewal Verify - 5525"
       secondary={
         <Box sx={{ display:'flex', alignItems:'center', gap:1 }}>
-          <Button variant="outlined" color="primary" startIcon={<IconFileDownload size={18}/>} onClick={handleExport} sx={{ borderRadius: 1.5 }}>Export Excel</Button>
-          <TextField size="small" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-            InputProps={{ startAdornment:<InputAdornment position="start"><IconSearch size={18}/></InputAdornment>, endAdornment: searchQuery ? <InputAdornment position="end"><IconButton size="small" onClick={() => setSearchQuery('')}><IconX size={16}/></IconButton></InputAdornment> : null }}
-            sx={{ width:220 }}
-          />
+          <Button variant="contained" color="error" size="small" startIcon={<IconBan size={18}/>} onClick={() => handleVerify('Rejected')} disabled={!selectedRowId}>Reject</Button>
+          <Button variant="contained" color="secondary" size="small" onClick={() => handleVerify('Not Accepted')} disabled={!selectedRowId}>Not Accepted</Button>
+          <Button variant="contained" color="primary" size="small" startIcon={<IconCheck size={18}/>} onClick={() => handleVerify('Accepted')} disabled={!selectedRowId}>Accept</Button>
+          <Button variant="outlined" color="primary" size="small" startIcon={<IconFileDownload size={18}/>} onClick={handleExport} sx={{ borderRadius: 1.5 }}>Export Excel</Button>
           <IconButton size="small" onClick={() => setDrawerOpen(true)}
             sx={{ border:'1px solid', borderColor: activeCount > 0 ? 'primary.main' : 'divider', bgcolor: activeCount > 0 ? 'primary.light' : 'transparent', borderRadius:1.5, p:0.8, position:'relative' }}>
             <IconAdjustmentsHorizontal size={20}/>
@@ -236,13 +237,12 @@ export default function CheckListRenewalVerify() {
         rowsPerPage={size}
         onRowsPerPageChange={(e) => { setSize(parseInt(e.target.value, 10)); setPage(0); }}
         rowsPerPageOptions={[5, 10, 25, 50]}
+        sx={{
+          '& .MuiTablePagination-toolbar': { justifyContent: 'center' },
+          '& .MuiTablePagination-spacer': { display: 'none' }
+        }}
       />
 
-      <Box sx={{ display:'flex', justifyContent:'flex-end', mt:2, gap:1.5 }}>
-        <Button variant="contained" color="error" startIcon={<IconBan size={18}/>} onClick={() => handleVerify('Rejected')} disabled={!selectedRowId}>Reject</Button>
-        <Button variant="contained" color="secondary" onClick={() => handleVerify('Not Accepted')} disabled={!selectedRowId}>Not Accepted</Button>
-        <Button variant="contained" color="primary" startIcon={<IconCheck size={18}/>} onClick={() => handleVerify('Accepted')} disabled={!selectedRowId}>Accept</Button>
-      </Box>
 
       {/* FILTER DRAWER */}
       <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)} PaperProps={{ sx:{ width:320 } }}>
