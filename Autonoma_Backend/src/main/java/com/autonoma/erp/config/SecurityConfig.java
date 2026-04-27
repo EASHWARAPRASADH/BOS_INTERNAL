@@ -1,7 +1,10 @@
 package com.autonoma.erp.config;
 
+import com.autonoma.erp.service.JwtService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -18,9 +21,12 @@ import java.util.Arrays;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    private final JwtService jwtService;
+    private final JwtAuthenticationFilter jwtAuthFilter;
+
+    public SecurityConfig(JwtService jwtService, JwtAuthenticationFilter jwtAuthFilter) {
+        this.jwtService = jwtService;
+        this.jwtAuthFilter = jwtAuthFilter;
     }
 
     @Bean
@@ -30,17 +36,12 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/account/login").permitAll()
-                .requestMatchers("/api/account/me").permitAll()
-                .requestMatchers("/api/account/bootstrap").permitAll()
-                .requestMatchers("/api/users/**").permitAll()
-                .requestMatchers("/api/menu/**").permitAll()
-                .requestMatchers("/api/qms/**").permitAll()
-                .requestMatchers("/h2-console/**").permitAll()
+                .requestMatchers("/api/account/**", "/h2-console/**").permitAll()
                 .anyRequest().authenticated()
             )
-            .headers(headers -> headers.frameOptions(frame -> frame.disable()));
-        
+            .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+            .addFilterBefore(jwtAuthFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
@@ -51,8 +52,19 @@ public class SecurityConfig {
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L); // Cache preflight for 1 hour
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 }

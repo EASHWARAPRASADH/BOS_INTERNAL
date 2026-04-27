@@ -20,4 +20,8 @@ Autonoma_ERP/yarn-error.log*
 .vscode/
 *.swp
 *.swo
+
+# Misc
 .DS_Store
+node_modules/
+target/

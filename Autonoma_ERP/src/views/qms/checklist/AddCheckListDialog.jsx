@@ -19,6 +19,7 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
+import axios from 'utils/axios';
 
 import { IconCloudUpload, IconCheck, IconX, IconEraser, IconFileDescription } from '@tabler/icons-react';
 
@@ -57,27 +58,58 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
   const [reminderDays, setReminderDays] = useState('');
   const [reminderDate, setReminderDate] = useState('');
   const [renewalPoint, setRenewalPoint] = useState('');
+  const [frequency, setFrequency] = useState('');
   const [description, setDescription] = useState('');
   const [department, setDepartment] = useState([]);
   const [stockLink, setStockLink] = useState('');
   const [photoRequired, setPhotoRequired] = useState('');
   const [verificationRequired, setVerificationRequired] = useState('');
+  const [assignTo, setAssignTo] = useState('');
+  const [itemCode, setItemCode] = useState('');
+  const [qty, setQty] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]);
 
   useEffect(() => {
     if (open) {
-      setSeqNo(initialData?.seqNo || '');
-      setCategory(initialData?.category || '');
-      setExpiryDate(initialData?.expiryDate || '');
-      setReminderDays(initialData?.reminderDays || '');
-      setReminderDate(initialData?.reminderDate || '');
-      setRenewalPoint(initialData?.checkingPoint || '');
-      setDescription(initialData?.description || '');
-      setDepartment((initialData?.departments || []).map(d => d.departmentName));
-      setStockLink(initialData?.stockLink || '');
-      setPhotoRequired(initialData?.photoRequired || '');
-      setVerificationRequired(initialData?.verificationRequired || '');
-      setUploadedFiles(initialData?.uploadedFiles || []);
+      if (initialData) {
+        setSeqNo(initialData.seqNo || '');
+        setCategory(initialData.category || '');
+        setExpiryDate(initialData.expiryDate || '');
+        setReminderDays(initialData.reminderDays || '');
+        setReminderDate(initialData.reminderDate || '');
+        setRenewalPoint(initialData.checkingPoint || '');
+        setFrequency(initialData.frequency || '');
+        setDescription(initialData.description || '');
+        setDepartment((initialData.departments || []).map(d => d.departmentName));
+        setStockLink(initialData.stockLink || '');
+        setPhotoRequired(initialData.photoRequired || '');
+        setVerificationRequired(initialData.verificationRequired || '');
+        setAssignTo(initialData.assignTo || '');
+        setItemCode(initialData.itemCode || '');
+        setQty(initialData.qty || '');
+        setUploadedFiles(initialData.uploadedFiles || []);
+      } else {
+        setSeqNo('');
+        setCategory('');
+        setExpiryDate('');
+        setReminderDays('');
+        setReminderDate('');
+        setRenewalPoint('');
+        setFrequency('');
+        setDescription('');
+        setDepartment([]);
+        setStockLink('');
+        setPhotoRequired('');
+        setVerificationRequired('');
+        setAssignTo('');
+        setItemCode('');
+        setQty('');
+        setUploadedFiles([]);
+
+        axios.get('/api/qms/checklist/next-sequence')
+          .then(res => setSeqNo(String(res.data.nextSeqNo).padStart(3, '0')))
+          .catch(err => console.error('Failed to get next sequence', err));
+      }
     }
   }, [open, initialData]);
 
@@ -90,12 +122,18 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
 
   const handleClear = () => {
     setSeqNo(''); setCategory(''); setExpiryDate(''); setReminderDays('');
-    setReminderDate(''); setRenewalPoint(''); setDescription('');
+    setReminderDate(''); setRenewalPoint(''); setFrequency(''); setDescription('');
     setDepartment([]); setStockLink(''); setPhotoRequired('');
     setVerificationRequired(''); setUploadedFiles([]);
   };
 
   const handleSave = () => {
+    // Validation
+    if (!category || !frequency || !renewalPoint || !description || department.length === 0) {
+      alert('Please fill in all required fields (Category, Frequency, Renewal Point, Description, Department)');
+      return;
+    }
+
     const dataToSave = {
       id: initialData?.id,
       seqNo,
@@ -104,11 +142,15 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
       reminderDays,
       reminderDate,
       checkingPoint: renewalPoint,
+      frequency,
       description,
-      department: department, // Sent as comma-separated in axios call in MasterCheckList
+      department: department,
       stockLink,
       photoRequired,
       verificationRequired,
+      assignTo,
+      itemCode,
+      qty,
       uploadedFiles
     };
     if (onSave) onSave(dataToSave);
@@ -130,7 +172,7 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
           {/* ── Left Column ── */}
           <Grid item xs={12} md={7}>
             <LabelInput label="Sequence No" required>
-              <TextField fullWidth size="small" value={seqNo} onChange={(e) => setSeqNo(e.target.value)} inputProps={{ style: { textAlign: 'left' } }} sx={inputSx} />
+              <TextField fullWidth size="small" value={seqNo} InputProps={{ readOnly: true }} sx={{ ...inputSx, bgcolor: 'action.hover' }} />
             </LabelInput>
 
             <LabelInput label="Category" required>
@@ -139,6 +181,21 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
                   <MenuItem value=""><em>-Select-</em></MenuItem>
                   <MenuItem value="RENEWAL">RENEWAL</MenuItem>
                   <MenuItem value="CHECK LIST">CHECK LIST</MenuItem>
+                </Select>
+              </FormControl>
+            </LabelInput>
+
+            <LabelInput label="Frequency" required>
+              <FormControl fullWidth size="small" sx={inputSx}>
+                <Select value={frequency} onChange={(e) => setFrequency(e.target.value)} displayEmpty>
+                  <MenuItem value=""><em>-Select-</em></MenuItem>
+                  <MenuItem value="DAILY">DAILY</MenuItem>
+                  <MenuItem value="WEEKLY">WEEKLY</MenuItem>
+                  <MenuItem value="FORTNIGHTLY">FORTNIGHTLY</MenuItem>
+                  <MenuItem value="MONTHLY">MONTHLY</MenuItem>
+                  <MenuItem value="QUARTERLY">QUARTERLY</MenuItem>
+                  <MenuItem value="HALF YEARLY">HALF YEARLY</MenuItem>
+                  <MenuItem value="YEARLY">YEARLY</MenuItem>
                 </Select>
               </FormControl>
             </LabelInput>
@@ -208,6 +265,21 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
                   <MenuItem value="YES">YES</MenuItem>
                 </Select>
               </FormControl>
+            </LabelInput>
+
+            <Divider sx={{ my: 2 }} />
+            <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 700, color: 'primary.main' }}>Assignment & Item Details (Optional)</Typography>
+
+            <LabelInput label="Default Assign To">
+              <TextField fullWidth size="small" value={assignTo} onChange={(e) => setAssignTo(e.target.value)} placeholder="Username or Role" sx={inputSx} />
+            </LabelInput>
+
+            <LabelInput label="Item Code">
+              <TextField fullWidth size="small" value={itemCode} onChange={(e) => setItemCode(e.target.value)} sx={inputSx} />
+            </LabelInput>
+
+            <LabelInput label="Quantity">
+              <TextField fullWidth size="small" type="number" value={qty} onChange={(e) => setQty(e.target.value)} sx={inputSx} />
             </LabelInput>
           </Grid>
 

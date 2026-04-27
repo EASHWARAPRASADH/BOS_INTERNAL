@@ -11,7 +11,6 @@ const MainContentStyled = styled('main', {
   shouldForwardProp: (prop) => prop !== 'open' && prop !== 'menuOrientation' && prop !== 'borderRadius'
 })(({ theme, open, menuOrientation, borderRadius }) => ({
   backgroundColor: theme.vars.palette.grey[100],
-
   ...theme.applyStyles('dark', {
     backgroundColor: theme.vars.palette.dark[800]
   }),
@@ -19,9 +18,9 @@ const MainContentStyled = styled('main', {
   width: '100%',
   minHeight: 'calc(100vh - 88px)',
   flexGrow: 1,
-  padding: 20,
+  padding: 0,
   marginTop: 88,
-  marginRight: 20,
+  marginRight: 0,
   borderRadius: `${borderRadius}px`,
   borderBottomLeftRadius: 0,
   borderBottomRightRadius: 0,
@@ -31,7 +30,7 @@ const MainContentStyled = styled('main', {
       duration: theme.transitions.duration.shorter + 200
     }),
     [theme.breakpoints.up('md')]: {
-      marginLeft: menuOrientation === MenuOrientation.VERTICAL ? -(drawerWidth - 72) : 20,
+      marginLeft: menuOrientation === MenuOrientation.VERTICAL ? -(drawerWidth - 72) : 0,
       width: `calc(100% - ${drawerWidth}px)`,
       marginTop: menuOrientation === MenuOrientation.HORIZONTAL ? 135 : 88
     }
@@ -41,7 +40,7 @@ const MainContentStyled = styled('main', {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.shorter + 200
     }),
-    marginLeft: menuOrientation === MenuOrientation.HORIZONTAL ? 20 : 0,
+    marginLeft: menuOrientation === MenuOrientation.HORIZONTAL ? 0 : 0,
     marginTop: menuOrientation === MenuOrientation.HORIZONTAL ? 135 : 88,
     width: `calc(100% - ${drawerWidth}px)`,
     [theme.breakpoints.up('md')]: {
@@ -49,16 +48,16 @@ const MainContentStyled = styled('main', {
     }
   }),
   [theme.breakpoints.down('md')]: {
-    marginLeft: 20,
-    padding: 16,
+    marginLeft: 0,
+    padding: 0,
     marginTop: 88,
     ...(!open && {
       width: `calc(100% - ${drawerWidth}px)`
     })
   },
   [theme.breakpoints.down('sm')]: {
-    marginLeft: 10,
-    marginRight: 10
+    marginLeft: 0,
+    marginRight: 0
   }
 }));
 
