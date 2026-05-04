@@ -88,26 +88,11 @@ export default function Login() {
 
           <Box sx={{ mb: 4, textAlign: 'center' }}>
             <Link to="#" aria-label="logo">
-              <Logo />
+              <Logo height={140} />
             </Link>
           </Box>
 
-          <Stack sx={{ alignItems: 'center', mb: 4, gap: 1 }}>
-            <Typography
-              variant={downMD ? 'h3' : 'h2'}
-              sx={{
-                color: 'primary.main',
-                fontWeight: 700,
-                letterSpacing: '0.05em',
-                textAlign: 'center'
-              }}
-            >
-              AUTONOMA
-            </Typography>
-            <Typography variant="body1" color="textSecondary" sx={{ textAlign: 'center' }}>
-              Enterprise Resource Planning
-            </Typography>
-          </Stack>
+
 
           <Box sx={{ width: '100%' }}>
             {AuthLoginComponent && <AuthLoginComponent />}
@@ -115,11 +100,6 @@ export default function Login() {
 
           <Divider sx={{ my: 3, width: '100%' }} />
 
-          <Box sx={{ width: '100%', textAlign: 'center' }}>
-            <Typography variant="caption" color="textSecondary">
-              nutechwindparts.com © 2026
-            </Typography>
-          </Box>
 
           <Box sx={{ mt: 3, width: '100%' }}>
             <AuthFooter />

@@ -21,11 +21,8 @@ import { APP_AUTH } from 'config';
 
 // A mapping of auth types to dynamic imports for AuthForgotPassword components
 const authForgotPasswordImports = {
-  firebase: () => import('./firebase/AuthForgotPassword'),
   jwt: () => import('./jwt/AuthForgotPassword'),
-  aws: () => import('./aws/AuthForgotPassword'),
-  auth0: () => import('./auth0/AuthForgotPassword'),
-  supabase: () => import('./supabase/AuthForgotPassword')
+  auth0: () => import('./auth0/AuthForgotPassword')
 };
 
 export default function ForgotPassword() {

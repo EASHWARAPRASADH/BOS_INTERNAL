@@ -1,5 +1,5 @@
 export const DASHBOARD_PATH = '/dashboard/default';
-export const HORIZONTAL_MAX_ITEM = 7;
+export const HORIZONTAL_MAX_ITEM = 20;
 
 export const CSS_VAR_PREFIX = '';
 
@@ -54,7 +54,7 @@ const config = {
   presetColor: 'default',
   i18n: 'en',
   themeDirection: ThemeDirection.LTR,
-  container: true
+  container: false
 };
 
 export default config;
