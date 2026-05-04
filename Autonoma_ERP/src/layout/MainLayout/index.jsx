@@ -65,11 +65,11 @@ export default function MainLayout() {
       {/* main content */}
       <MainContentStyled {...{ borderRadius, menuOrientation, open: drawerOpen }}>
         <Container
-          maxWidth={container ? 'lg' : false}
-          sx={{ ...(!container && { px: { xs: 0 } }), minHeight: 'calc(100vh - 128px)', display: 'flex', flexDirection: 'column' }}
+          maxWidth={false}
+          sx={{ px: 0, minHeight: 'calc(100vh - 128px)', display: 'flex', flexDirection: 'column', maxWidth: 'none' }}
         >
           {/* breadcrumb */}
-          <Breadcrumbs />
+          {/* <Breadcrumbs /> */}
           <Outlet />
           <Footer />
         </Container>

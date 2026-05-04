@@ -73,10 +73,10 @@ export default function Header() {
         </Activity>
       </Box>
 
-      {/* header search */}
-      <SearchSection />
-      <Box sx={{ flexGrow: 1 }} />
-      <Box sx={{ flexGrow: 1 }} />
+      {/* Global Header Search */}
+      <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', px: 2 }}>
+        <SearchSection />
+      </Box>
 
       {/* mega-menu */}
       <Box sx={{ display: { xs: 'none', md: 'block' } }}>

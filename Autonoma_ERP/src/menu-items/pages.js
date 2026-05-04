@@ -1,5 +1,5 @@
 // assets
-import { IconKey, IconReceipt2, IconBug, IconBellRinging, IconPhoneCall, IconQuestionMark, IconShieldLock } from '@tabler/icons-react';
+import { IconKey, IconReceipt2, IconBug, IconBellRinging, IconPhoneCall, IconQuestionMark, IconShieldLock, IconListCheck } from '@tabler/icons-react';
 
 // constant
 const icons = {
@@ -9,7 +9,8 @@ const icons = {
   IconBellRinging,
   IconPhoneCall,
   IconQuestionMark,
-  IconShieldLock
+  IconShieldLock,
+  IconListCheck
 };
 
 // ==============================|| EXTRA PAGES MENU ITEMS ||============================== //
@@ -171,6 +172,51 @@ const pages = {
               type: 'item',
               url: '/pages/code-verification/code-verification3',
               target: true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'qms-root',
+      title: 'QMS',
+      type: 'collapse',
+      icon: icons.IconListCheck,
+      children: [
+        {
+          id: 'qms-checklist',
+          title: 'Check List',
+          type: 'collapse',
+          children: [
+            {
+              id: 'master-checklist',
+              title: 'Master Check List',
+              type: 'item',
+              url: '/qms/checklist/master'
+            },
+            {
+              id: 'checklist-verify',
+              title: 'Check List Verify',
+              type: 'item',
+              url: '/qms/checklist/verify'
+            },
+            {
+              id: 'close-renewal',
+              title: 'Close Check List / Renewal',
+              type: 'item',
+              url: '/qms/checklist/close-renewal'
+            },
+            {
+              id: 'renewal-verify',
+              title: 'Check List / Renewal Verify',
+              type: 'item',
+              url: '/qms/checklist/renewal-verify'
+            },
+            {
+              id: 'renewal-report',
+              title: 'Check List / Renewal Report',
+              type: 'item',
+              url: '/qms/checklist/renewal-report'
             }
           ]
         }
