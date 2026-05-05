@@ -1,11 +1,12 @@
 // assets
-import { IconUserPlus, IconUsers, IconShieldLock } from '@tabler/icons-react';
+import { IconUserPlus, IconUsers, IconShieldLock, IconSettings } from '@tabler/icons-react';
 
 // constant
 const icons = {
   IconUserPlus,
   IconUsers,
-  IconShieldLock
+  IconShieldLock,
+  IconSettings
 };
 
 // ==============================|| MENU ITEMS - ADMIN ||============================== //
@@ -18,10 +19,18 @@ const admin = {
   children: [
     {
       id: 'user-credentials',
-      title: 'user-credentials',
+      title: 'User Credentials',
       type: 'item',
       url: '/admin/user-credentials',
       icon: icons.IconUsers,
+      breadcrumbs: true
+    },
+    {
+      id: 'preference-master',
+      title: 'App Preference',
+      type: 'item',
+      url: '/admin/preference-master',
+      icon: icons.IconSettings,
       breadcrumbs: true
     }
   ]

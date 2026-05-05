@@ -19,7 +19,7 @@ const dashboard = {
   children: [
     {
       id: 'default',
-      title: 'default',
+      title: 'Default',
       type: 'item',
       url: '/dashboard/default',
       icon: icons.IconDashboard,
@@ -27,7 +27,7 @@ const dashboard = {
     },
     {
       id: 'analytics',
-      title: 'analytics',
+      title: 'Analytics',
       type: 'item',
       url: '/dashboard/analytics',
       icon: icons.IconDeviceAnalytics,
@@ -35,7 +35,7 @@ const dashboard = {
     },
     {
       id: 'invoice1',
-      title: 'invoice',
+      title: 'Invoice',
       icon: icons.IconFileInvoice,
       type: 'item',
       url: '/dashboard/invoice',
@@ -43,7 +43,7 @@ const dashboard = {
     },
     {
       id: 'crm1',
-      title: 'crm',
+      title: 'CRM',
       icon: icons.IconLifebuoy,
       type: 'item',
       url: '/dashboard/crm',
@@ -51,7 +51,7 @@ const dashboard = {
     },
     {
       id: 'blog1',
-      title: 'blog',
+      title: 'Blog',
       icon: icons.IconArticle,
       type: 'item',
       url: '/dashboard/blog',

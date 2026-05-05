@@ -31,7 +31,7 @@ import { IconChevronDown, IconChevronUp, IconChevronLeft, IconChevronRight } fro
 
 // ==============================|| RIBBON CHILD ITEM ||============================== //
 
-function RibbonChildItem({ item, onClose }) {
+function RibbonChildItem({ item, onClose, isGroup }) {
   const theme = useTheme();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -70,38 +70,40 @@ function RibbonChildItem({ item, onClose }) {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'flex-start',
+          justifyContent: isGroup ? 'center' : 'flex-start',
           px: 1,
-          pt: 1,
-          pb: 0.5,
+          pt: isGroup ? 0 : 1,
+          pb: isGroup ? 0 : 0.5,
           minWidth: 54,
           maxWidth: 80,
           height: '100%',
           borderRadius: 1,
-          color: open ? 'primary.main' : 'text.primary',
-          bgcolor: open ? 'primary.lighter' : 'transparent',
+          color: open ? 'primary.main' : (isGroup ? 'primary.dark' : 'text.primary'),
+          bgcolor: open ? 'primary.lighter' : (isGroup ? 'grey.100' : 'transparent'),
           transition: 'all 0.15s',
-          '&:hover': { bgcolor: 'action.hover', color: 'primary.main' }
+          '&:hover': { bgcolor: isGroup ? 'grey.200' : 'action.hover', color: 'primary.main' }
         }}
       >
-        <Box sx={{ mb: 0.5, lineHeight: 0 }}>
-          {Icon && <Icon stroke={1.5} size="20px" />}
+        <Box sx={{ mb: !isGroup ? 0.5 : 0, lineHeight: 0 }}>
+          {Icon && <Icon stroke={isGroup ? 1.5 : 1.5} size={isGroup ? "32px" : "20px"} />}
         </Box>
-        <Typography sx={{
-          fontSize: '0.6rem',
-          lineHeight: 1.1,
-          textAlign: 'center',
-          maxWidth: 70,
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'normal',
-          display: '-webkit-box',
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical',
-          color: 'inherit'
-        }} title={item.title}>
-          {item.title}
-        </Typography>
+        {!isGroup && (
+          <Typography sx={{
+            fontSize: '0.6rem',
+            lineHeight: 1.1,
+            textAlign: 'center',
+            maxWidth: 70,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'normal',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            color: 'inherit'
+          }} title={item.title}>
+            {item.title}
+          </Typography>
+        )}
       </ButtonBase>
 
       {hasChildren && (
@@ -163,7 +165,7 @@ function RibbonGroupSection({ group, onClose }) {
       {/* Top part: Main module icon + Children icons */}
       <Box sx={{ display: 'flex', flex: 1, alignItems: 'stretch', gap: 0.25 }}>
         {/* Always show the main module icon as a functional button */}
-        <RibbonChildItem item={group} onClose={onClose} />
+        <RibbonChildItem item={group} onClose={onClose} isGroup={true} />
         
         {/* Show children if any */}
         {children.length > 0 && (
