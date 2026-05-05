@@ -328,6 +328,7 @@ export default function NavGroup({ item, lastItem, remItems, lastItemId, selecte
                             >
                               <FormattedMessage id={currentItem.title} defaultMessage={currentItem.title} />
                             </Typography>
+
                             {currentItem.id !== lastItemId ? items : moreItems}
                           </Box>
                         </ClickAwayListener>

@@ -182,6 +182,7 @@ const SamplePage = Loadable(lazy(() => import('views/sample-page')));
 
 // admin routing
 const AdminUserOverview = Loadable(lazy(() => import('views/admin/UserOverview')));
+const AdminPreferenceMaster = Loadable(lazy(() => import('views/admin/PreferenceMaster')));
 
 // qms checklist routing
 const QmsMasterCheckList = Loadable(lazy(() => import('views/qms/checklist/MasterCheckList')));
@@ -203,6 +204,10 @@ const MainRoutes = {
     {
       path: '/admin/user-overview',
       element: <AdminUserOverview />
+    },
+    {
+      path: '/admin/preference-master',
+      element: <AdminPreferenceMaster />
     },
     {
       path: '/admin/user-credentials',
