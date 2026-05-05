@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { Activity, useState } from 'react';
+import { motion } from 'framer-motion';
 
 // material-ui
 import { useColorScheme, useTheme } from '@mui/material/styles';
@@ -80,7 +81,9 @@ export default function Customization() {
       {/* toggle button */}
       <Tooltip title="Live Customize">
         <Fab
-          component="div"
+          component={motion.div}
+          drag
+          dragMomentum={false}
           onClick={handleToggle}
           size="medium"
           variant="circular"
@@ -95,7 +98,9 @@ export default function Customization() {
             position: 'fixed',
             right: 10,
             zIndex: 1200,
-            boxShadow: theme.vars.customShadows.secondary
+            boxShadow: theme.vars.customShadows.secondary,
+            cursor: 'grab',
+            '&:active': { cursor: 'grabbing' }
           }}
         >
           <AnimateButton type="rotate">

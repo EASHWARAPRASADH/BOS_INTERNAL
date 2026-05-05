@@ -1,8 +1,11 @@
-import { IconDashboard, IconUsers, IconBriefcase, IconBuildingFactory, IconAward, IconTruckDelivery, IconReceiptTax, IconTool, IconServerCog, IconListCheck, IconReport, IconHelp, IconChecks } from '@tabler/icons-react';
+import {
+  IconDashboard, IconUsers, IconBriefcase, IconBuildingFactory, IconAward, IconTruckDelivery, IconReceiptTax, IconTool, IconServerCog, IconListCheck, IconReport, IconHelp
+  , IconChecks, IconRocket
+} from '@tabler/icons-react';
 
 const icons = {
   IconDashboard, IconUsers, IconBriefcase, IconBuildingFactory, IconAward, IconTruckDelivery, IconReceiptTax, IconTool, IconServerCog, IconListCheck, IconReport, IconHelp
-  , IconChecks
+  , IconChecks, IconRocket
 };
 
 export const masters = {
@@ -11,7 +14,16 @@ export const masters = {
   caption: 'Masters M0000',
   type: 'group',
   icon: icons.IconServerCog,
-  children: []
+  children: [
+    {
+      id: 'inventory',
+      title: 'Inventory',
+      type: 'item',
+      url: '/admin/user-credentials',
+      icon: icons.IconBox,
+      breadcrumbs: true
+    }
+  ]
 };
 
 export const hra = {
@@ -112,31 +124,36 @@ export const qms = {
           id: 'master-checklist',
           title: 'Master Check List',
           type: 'item',
-          url: '/qms/checklist/master'
+          url: '/qms/checklist/master',
+          icon: icons.IconRocket
         },
         {
           id: 'checklist-verify',
           title: 'Check List Verify',
           type: 'item',
-          url: '/qms/checklist/verify'
+          url: '/qms/checklist/verify',
+          icon: icons.IconRocket
         },
         {
           id: 'close-renewal',
           title: 'Close Check List / Renewal',
           type: 'item',
-          url: '/qms/checklist/close-renewal'
+          url: '/qms/checklist/close-renewal',
+          icon: icons.IconRocket
         },
         {
           id: 'renewal-verify',
           title: 'Check List / Renewal Verify',
           type: 'item',
-          url: '/qms/checklist/renewal-verify'
+          url: '/qms/checklist/renewal-verify',
+          icon: icons.IconRocket
         },
         {
           id: 'renewal-report',
           title: 'Check List / Renewal Report',
           type: 'item',
-          url: '/qms/checklist/renewal-report'
+          url: '/qms/checklist/renewal-report',
+          icon: icons.IconRocket,
         }
       ]
     }
