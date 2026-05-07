@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Typography, Box, Button, Stack, Tooltip, IconButton, Chip } from '@mui/material';
 import {
-  IconCheck,
   IconBan,
   IconFileDownload,
-  IconChecks
+  IconCheck,
+  IconRefresh
 } from '@tabler/icons-react';
 import axios from 'utils/axios';
 import { useDispatch, useSelector } from 'react-redux';
@@ -145,7 +145,12 @@ export default function CheckListRenewalVerify() {
         </Stack>
       }
       secondary={
-        <Stack direction="row" spacing={1.5}>
+        <Stack direction="row" spacing={1.5} alignItems="center">
+          <Tooltip title="Refresh">
+            <IconButton onClick={fetchAssignments} color="primary" size="small" sx={{ border: '2px solid', borderColor: 'divider', borderRadius: '8px', p: 1, transition: 'all 0.2s', '&:hover': { bgcolor: 'primary.light', transform: 'scale(1.05)' } }}>
+              <IconRefresh size={20} />
+            </IconButton>
+          </Tooltip>
           <Button
             variant="contained"
             color="error"
