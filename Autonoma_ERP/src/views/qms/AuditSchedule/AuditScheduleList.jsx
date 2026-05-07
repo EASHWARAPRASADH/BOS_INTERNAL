@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Typography, Stack, Button, Tooltip, IconButton, Chip } from '@mui/material';
-import { IconPlus, IconFileDownload, IconCalendarEvent, IconEdit, IconTrash, IconCircleCheck } from '@tabler/icons-react';
+import { IconPlus, IconFileDownload, IconCalendarEvent, IconEdit, IconTrash, IconCircleCheck, IconRefresh } from '@tabler/icons-react';
 import axios from 'utils/axios';
 import MainCard from 'ui-component/cards/MainCard';
 import { exportToExcel } from 'utils/excelExport';
@@ -151,7 +151,12 @@ export default function AuditScheduleList() {
         </Stack>
       }
       secondary={
-        <Stack direction="row" spacing={1.5}>
+        <Stack direction="row" spacing={1.5} alignItems="center">
+          <Tooltip title="Refresh">
+            <IconButton onClick={fetchAuditSchedules} color="primary" size="small" sx={{ border: '2px solid', borderColor: 'divider', borderRadius: '8px', p: 1, transition: 'all 0.2s', '&:hover': { bgcolor: 'primary.light', transform: 'scale(1.05)' } }}>
+              <IconRefresh size={20} />
+            </IconButton>
+          </Tooltip>
           <Button variant="outlined" color="primary" size="medium" startIcon={<IconFileDownload size={18} />} onClick={handleExport} sx={btnExport}>
             Export Excel
           </Button>

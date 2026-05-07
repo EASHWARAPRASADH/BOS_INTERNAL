@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Typography, Button, Stack, Tooltip, Checkbox } from '@mui/material';
-import { IconFileDownload, IconListCheck } from '@tabler/icons-react';
+import { Typography, Button, Stack, Tooltip, Checkbox, IconButton } from '@mui/material';
+import { IconFileDownload, IconListCheck, IconRefresh } from '@tabler/icons-react';
 import axios from 'utils/axios';
 import MainCard from 'ui-component/cards/MainCard';
 import AddAuditTypeDialog from './AddAuditTypeDialog';
@@ -154,7 +154,12 @@ export default function AuditTypeMaster() {
         </Stack>
       }
       secondary={
-        <Stack direction="row" spacing={1.5}>
+        <Stack direction="row" spacing={1.5} alignItems="center">
+          <Tooltip title="Refresh">
+            <IconButton onClick={fetchAuditTypes} color="primary" size="small" sx={{ border: '2px solid', borderColor: 'divider', borderRadius: '8px', p: 1, transition: 'all 0.2s', '&:hover': { bgcolor: 'primary.light', transform: 'scale(1.05)' } }}>
+              <IconRefresh size={20} />
+            </IconButton>
+          </Tooltip>
           <Button variant="outlined" color="primary" size="medium" startIcon={<IconFileDownload size={18} />} onClick={handleExport} sx={btnExport}>
             Export Excel
           </Button>
