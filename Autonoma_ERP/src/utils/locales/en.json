@@ -271,5 +271,7 @@
   "Invoice": "Invoice",
   "CRM": "CRM",
   "Blog": "Blog",
-  "Audit Schedule": "Audit Schedule"
+  "Audit Schedule": "Audit Schedule",
+  "Designation Details": "Designation Details",
+  "master-hr-designation-details": "Designation Details"
 }
