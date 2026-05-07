@@ -6,7 +6,8 @@ import {
   IconUserPlus,
   IconFileDots,
   IconFileDownload,
-  IconTrash
+  IconTrash,
+  IconRefresh
 } from '@tabler/icons-react';
 import axios from 'utils/axios';
 import { useDispatch, useSelector } from 'react-redux';
@@ -163,7 +164,12 @@ export default function MasterCheckList() {
         </Stack>
       }
       secondary={
-        <Stack direction="row" spacing={1.5}>
+        <Stack direction="row" spacing={1.5} alignItems="center">
+          <Tooltip title="Refresh">
+            <IconButton onClick={fetchChecklists} color="primary" size="small" sx={{ border: '2px solid', borderColor: 'divider', borderRadius: '8px', p: 1, transition: 'all 0.2s', '&:hover': { bgcolor: 'primary.light', transform: 'scale(1.05)' } }}>
+              <IconRefresh size={20} />
+            </IconButton>
+          </Tooltip>
           <Button variant="contained" color="secondary" size="medium" startIcon={<IconUserPlus size={18} />} disabled={!selectedRow} sx={{ borderRadius: '8px' }}>
             Assign
           </Button>
