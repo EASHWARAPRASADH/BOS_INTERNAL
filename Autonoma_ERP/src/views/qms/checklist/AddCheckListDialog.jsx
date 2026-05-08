@@ -59,7 +59,9 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
     stockLink: 'NO',
     photoRequired: 'NO',
     itemCode: '',
-    qty: ''
+    qty: '',
+    dualCheck: 'NO',
+    carryForward: 'NO'
   });
 
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -89,7 +91,9 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
           stockLink: initialData.stockLink || 'NO',
           photoRequired: initialData.photoRequired || 'NO',
           itemCode: initialData.itemCode || '',
-          qty: initialData.qty || ''
+          qty: initialData.qty || '',
+          dualCheck: initialData.dualCheck || 'NO',
+          carryForward: initialData.carryForward || 'NO'
         });
       } else {
         resetForm();
@@ -122,7 +126,9 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
       stockLink: 'NO',
       photoRequired: 'NO',
       itemCode: '',
-      qty: ''
+      qty: '',
+      dualCheck: 'NO',
+      carryForward: 'NO'
     });
     setUploadedFiles([]);
     setScannedFiles([]);
@@ -242,7 +248,17 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
                 </BOSTextField>
                 <BOSTextField label="Item Code" name="itemCode" value={formData.itemCode} onChange={handleChange} disabled={!isEditing} />
               </Box>
-              <BOSTextField type="number" label="Qty" name="qty" value={formData.qty} onChange={handleChange} disabled={!isEditing} />
+              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 2 }}>
+                <BOSTextField select label="Dual Check" name="dualCheck" value={formData.dualCheck} onChange={handleChange} disabled={!isEditing}>
+                  <MenuItem value="YES">YES</MenuItem>
+                  <MenuItem value="NO">NO</MenuItem>
+                </BOSTextField>
+                <BOSTextField select label="Carry Forward" name="carryForward" value={formData.carryForward} onChange={handleChange} disabled={!isEditing}>
+                  <MenuItem value="YES">YES</MenuItem>
+                  <MenuItem value="NO">NO</MenuItem>
+                </BOSTextField>
+                <BOSTextField type="number" label="Qty" name="qty" value={formData.qty} onChange={handleChange} disabled={!isEditing} />
+              </Box>
             </Stack>
           </BOSFormSection>
 
