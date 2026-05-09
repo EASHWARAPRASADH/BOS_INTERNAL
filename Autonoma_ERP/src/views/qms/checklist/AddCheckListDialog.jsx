@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
   MenuItem,
@@ -22,13 +22,17 @@ import {
   IconMicrophone,
   IconMicrophoneOff,
   IconEye,
-  IconTrash
+  IconTrash,
+  IconRefresh,
+  IconChecks,
+  IconBan
 } from '@tabler/icons-react';
 import axios from 'utils/axios';
 import {
   BOSFormDialog,
   BOSFormSection,
   BOSTextField,
+  BOSDataTable,
   btnClear,
   btnSave,
   btnCancel,
@@ -44,7 +48,7 @@ import useLookups from 'hooks/useLookups';
 const CATEGORIES = ['RENEWAL', 'CHECK LIST'];
 const FREQUENCIES = ['DAILY', 'WEEKLY', 'FORTNIGHTLY', 'MONTHLY', 'QUARTERLY', 'HALF YEARLY', 'YEARLY'];
 
-export default function AddCheckListDialog({ open, handleClose, onSave, initialData, readOnly }) {
+export default function AddCheckListDialog({ open, handleClose, onSave, initialData, readOnly, onVerify, onReject }) {
   const theme = useTheme();
   const [isEditing, setIsEditing] = useState(!readOnly);
 
@@ -80,8 +84,28 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
   const [interimText, setInterimText] = useState('');
   const lookups = useLookups(['DEPARTMENTS', 'EMPLOYEES']);
   const departmentList = (lookups.departments || []).map(d => (d.departmentName || '').toUpperCase());
-  const employeeList = (lookups.employees || []).map(e => e.employeeName || `${e.firstName} ${e.lastName}`);
+  
+  const filteredEmployees = useMemo(() => {
+    if (!lookups.employees) return [];
+    if (!formData.department || formData.department.length === 0) return lookups.employees;
+
+    // 1. Get IDs of selected departments
+    const selectedDeptIds = (lookups.departments || [])
+      .filter(d => formData.department.includes((d.departmentName || '').toUpperCase()))
+      .map(d => d.id);
+
+    // 2. Filter employees by those IDs
+    return lookups.employees.filter(e => selectedDeptIds.includes(e.departmentId));
+  }, [lookups.employees, lookups.departments, formData.department]);
+
+  const employeeList = filteredEmployees.map(e => e.employeeName || `${e.firstName} ${e.lastName}`);
   const speechRef = useRef(null);
+
+  useEffect(() => {
+    if (formData.assignTo && !employeeList.includes(formData.assignTo)) {
+      setFormData(prev => ({ ...prev, assignTo: '' }));
+    }
+  }, [employeeList, formData.assignTo]);
 
   useEffect(() => {
     setIsEditing(!readOnly);
@@ -116,7 +140,7 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
           amendmentReason: '',
           levelIds: initialData.levelIds || ''
         });
-        
+
         // Use standardized BOS utility for robust file loading
         setUploadedFiles(formatBOSFiles(initialData.uploadedFiles || initialData.uploaded_files));
         setScannedFiles(formatBOSFiles(initialData.scannedFiles || initialData.scanned_files));
@@ -169,19 +193,16 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
     }
   };
 
-  const [docDetails, setDocDetails] = useState('');
-  const [currentFile, setCurrentFile] = useState(null);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => {
       const newData = { ...prev, [name]: value };
-      
+
       // Case 1: Change Expiry or Days -> Update Date
       if (name === 'expiryDate' || name === 'reminderDays') {
         const expiry = name === 'expiryDate' ? value : prev.expiryDate;
         const days = name === 'reminderDays' ? value : prev.reminderDays;
-        
+
         if (expiry && days) {
           const date = new Date(expiry);
           const dayCount = parseInt(days);
@@ -191,7 +212,7 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
           }
         }
       }
-      
+
       // Case 2: Change Reminder Date -> Update Days
       if (name === 'reminderDate' && value && prev.expiryDate) {
         const expiry = new Date(prev.expiryDate);
@@ -202,28 +223,34 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
           newData.reminderDays = diffDays >= 0 ? diffDays : 0;
         }
       }
-      
+
       return newData;
     });
   };
 
   const handleSave = async () => {
-    if (!formData.category || !formData.frequency || !formData.checkingPoint || !formData.description || !formData.reminderDays || 
-        !formData.photoRequired || !formData.stockLink || !formData.dualCheck || !formData.carryForward) {
+    if (!formData.category || !formData.frequency || !formData.checkingPoint || !formData.description || !formData.reminderDays ||
+      !formData.photoRequired || !formData.stockLink || !formData.dualCheck || !formData.carryForward) {
       alert('Please fill all mandatory fields including Photo Required, Stock Link, Dual Check and Carry Forward');
       return;
     }
 
     try {
       const uploadFile = async (fileObj) => {
-        if (fileObj.isServer) return fileObj.name; // Already on server
+        let serverName = '';
+        if (fileObj.isServer) {
+          serverName = fileObj.name;
+        } else {
+          const formDataUpload = new FormData();
+          formDataUpload.append('file', fileObj.file);
+          const res = await axios.post(`${API_PATHS.FILES}/upload`, formDataUpload, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          });
+          serverName = res.data; // Server filename
+        }
         
-        const formDataUpload = new FormData();
-        formDataUpload.append('file', fileObj);
-        const res = await axios.post(`${API_PATHS.FILES}/upload`, formDataUpload, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        return res.data; // Server filename
+        // Append docDetails metadata using pipe separator
+        return fileObj.docDetails ? `${serverName}|${fileObj.docDetails}` : serverName;
       };
 
       const finalUploaded = await Promise.all(uploadedFiles.map(uploadFile));
@@ -239,7 +266,7 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
         uploadedFiles: finalUploaded,
         scannedFiles: finalScanned
       });
-      
+
       handleClose();
     } catch (error) {
       console.error('Save failed:', error);
@@ -278,7 +305,41 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
       onClose={handleClose}
       onSave={handleSave}
       onClear={isEditing ? resetForm : null}
-      title="Check List Master Details"
+      isViewOnly={!isEditing}
+      onEditClick={() => setIsEditing(true)}
+      secondaryActions={
+        (onVerify || onReject) && !isEditing && (
+          <Box sx={{ display: 'flex', gap: 1.5 }}>
+            {onReject && (
+              <Button 
+                variant="contained" 
+                color="error" 
+                onClick={onReject}
+                startIcon={<IconBan size={20} />}
+                sx={{ borderRadius: '8px', fontWeight: 600 }}
+              >
+                Reject
+              </Button>
+            )}
+            {onVerify && (
+              <Button 
+                variant="contained" 
+                color="success" 
+                onClick={onVerify}
+                startIcon={<IconChecks size={20} />}
+                sx={{ borderRadius: '8px', fontWeight: 600 }}
+              >
+                Verify
+              </Button>
+            )}
+          </Box>
+        )
+      }
+      title={
+        initialData?.id 
+          ? (initialData?.verifyStatus === 'Verified' ? `Amend Checklist - ${initialData.seqNo}` : `Edit Checklist - ${initialData.seqNo}`)
+          : 'Add New Check List'
+      }
       maxWidth="lg"
     >
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' }, gap: 3 }}>
@@ -287,7 +348,7 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
           <BOSFormSection title="Core Settings" icon={<IconSettings size={20} color={theme.palette.primary.main} />}>
             <Stack spacing={2.5}>
               <BOSTextField label="Sequence No" value={formData.seqNo} InputProps={{ readOnly: true }} />
-              
+
               <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
                 <BOSTextField select label="Category" name="category" value={formData.category} onChange={handleChange} disabled={!isEditing} required>
                   {CATEGORIES.map(c => <MenuItem key={c} value={c}>{c}</MenuItem>)}
@@ -298,36 +359,36 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
               </Box>
 
               {/* Solves "long select" issue using Autocomplete with Chips */}
-                <Autocomplete
-                  multiple
-                  options={departmentList}
-                  value={formData.department}
-                  disabled={!isEditing}
-                  onChange={(e, val) => setFormData(p => ({ ...p, department: val }))}
-                  renderTags={(value, getTagProps) =>
-                    value.map((option, index) => {
-                      const { key, ...tagProps } = getTagProps({ index });
-                      return <Chip key={key} variant="outlined" label={option} size="small" {...tagProps} />;
-                    })
-                  }
-                  renderInput={(params) => (
-                    <BOSTextField {...params} label="Departments" placeholder={departmentList.length > 0 ? "Select Departments" : "Loading departments..."} />
-                  )}
-                />
-                
-                <BOSTextField
-                  select
-                  label="Assign To (Executor)"
-                  name="assignTo"
-                  value={formData.assignTo}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                >
-                  <MenuItem value="">-Select-</MenuItem>
-                  {employeeList.map(emp => (
-                    <MenuItem key={emp} value={emp}>{emp}</MenuItem>
-                  ))}
-                </BOSTextField>
+              <Autocomplete
+                multiple
+                options={departmentList}
+                value={formData.department}
+                disabled={!isEditing}
+                onChange={(e, val) => setFormData(p => ({ ...p, department: val }))}
+                renderTags={(value, getTagProps) =>
+                  value.map((option, index) => {
+                    const { key, ...tagProps } = getTagProps({ index });
+                    return <Chip key={key} variant="outlined" label={option} size="small" {...tagProps} />;
+                  })
+                }
+                renderInput={(params) => (
+                  <BOSTextField {...params} label="Departments" placeholder={departmentList.length > 0 ? "Select Departments" : "Loading departments..."} />
+                )}
+              />
+
+              <BOSTextField
+                select
+                label="Assign To (Executor)"
+                name="assignTo"
+                value={formData.assignTo}
+                onChange={handleChange}
+                disabled={!isEditing}
+              >
+                <MenuItem value="">-Select-</MenuItem>
+                {employeeList.map(emp => (
+                  <MenuItem key={emp} value={emp}>{emp}</MenuItem>
+                ))}
+              </BOSTextField>
             </Stack>
           </BOSFormSection>
 
@@ -386,17 +447,25 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
                 <BOSTextField type="number" label="Qty" name="qty" value={formData.qty} onChange={handleChange} disabled={!isEditing} />
               </Box>
               
-              {isEditing && initialData?.id && (
-                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+              {isEditing && initialData?.id && initialData?.verifyStatus === 'Verified' && (
+                <Box sx={{ mt: 1, p: 2, border: '1px solid', borderColor: 'warning.light', borderRadius: 1, bgcolor: 'warning.lighter' }}>
+                  <Typography variant="subtitle2" color="warning.dark" sx={{ mb: 1, fontWeight: 'bold' }}>
+                    Amendment Required: This checklist is already verified. Any changes will create a new version.
+                  </Typography>
                   <BOSTextField 
+                    fullWidth
                     label="Amendment Reason" 
                     name="amendmentReason" 
                     value={formData.amendmentReason} 
                     onChange={handleChange} 
                     required 
-                    color="warning" 
-                    sx={{ '& .MuiOutlinedInput-root': { bgcolor: 'warning.lighter' } }}
+                    placeholder="Describe why you are amending this checklist..."
+                    color="warning"
                   />
+                </Box>
+              )}
+              {isEditing && initialData?.id && (
+                <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mt: 1 }}>
                   <BOSTextField select label="Status" name="status" value={formData.status} onChange={handleChange} required>
                     <MenuItem value="ACTIVE">ACTIVE</MenuItem>
                     <MenuItem value="INACTIVE">IN ACTIVE</MenuItem>
@@ -431,7 +500,7 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
                 disabled={!isEditing}
                 InputProps={{
                   endAdornment: isEditing && (
-                    <IconButton 
+                    <IconButton
                       onClick={() => {
                         if (isListening) {
                           speechRef.current?.stop();
@@ -457,8 +526,8 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
                           speechRef.current = rec;
                           setIsListening(true);
                         }
-                      }} 
-                      size="small" 
+                      }}
+                      size="small"
                       color={isListening ? 'error' : 'default'}
                     >
                       {isListening ? <IconMicrophone size={20} /> : <IconMicrophoneOff size={20} />}
@@ -475,11 +544,11 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
           <BOSFormSection title="Attachments" icon={<IconCloudUpload size={20} color={theme.palette.primary.main} />}>
             <Box sx={{ mt: 1 }}>
               <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: 2, alignItems: 'center', mb: 3 }}>
-                <BOSTextField 
-                  label="Doc Details" 
-                  value={docDetails} 
-                  onChange={(e) => setDocDetails(e.target.value)} 
-                  disabled={!isEditing} 
+                <BOSTextField
+                  label="Doc Details"
+                  value={docDetails}
+                  onChange={(e) => setDocDetails(e.target.value)}
+                  disabled={!isEditing}
                 />
                 <Button component="label" variant="outlined" startIcon={<IconCloudUpload size={18} />} disabled={!isEditing} sx={{ height: 40 }}>
                   {currentFile ? currentFile.name : 'Choose File'}
@@ -491,20 +560,24 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
               </Box>
 
               <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>Uploaded Files</Typography>
-              <BOSDataTable 
-                columns={[
-                  { id: 'docDetails', label: 'Doc Details' },
-                  { id: 'name', label: 'File Name' }
-                ]}
-                rows={uploadedFiles}
-                showActions={isEditing}
-                onDeleteRow={(row) => handleFileDelete(row.id)}
-                size={5}
-                page={0}
-                onPageChange={() => {}}
-                onSizeChange={() => {}}
-                hidePagination
+              <BOSFileGallery 
+                files={uploadedFiles}
+                onRemove={(idx) => setUploadedFiles(prev => prev.filter((_, i) => i !== idx))}
+                isEditing={isEditing}
+                maxHeight={200}
               />
+
+              {scannedFiles.length > 0 && (
+                <>
+                  <Typography variant="subtitle1" sx={{ mt: 2, mb: 1, fontWeight: 600 }}>Scanned Files</Typography>
+                  <BOSFileGallery 
+                    files={scannedFiles}
+                    onRemove={(idx) => setScannedFiles(prev => prev.filter((_, i) => i !== idx))}
+                    isEditing={isEditing}
+                    maxHeight={200}
+                  />
+                </>
+              )}
             </Box>
           </BOSFormSection>
         </Stack>
