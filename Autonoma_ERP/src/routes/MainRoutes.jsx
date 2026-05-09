@@ -211,6 +211,17 @@ const QmsAuditNcrClose = Loadable(lazy(() => import('views/qms/AuditNcr/AuditNcr
 const QmsAuditNcrApproval = Loadable(lazy(() => import('views/qms/AuditNcr/AuditNcrApproval')));
 const QmsAuditReport = Loadable(lazy(() => import('views/qms/AuditNcr/AuditReport')));
 
+// sales & marketing routing
+const SmCustomerMasterList = Loadable(lazy(() => import('views/sm/CustomerMasterList')));
+const SmContactMasterList = Loadable(lazy(() => import('views/sm/ContactMasterList')));
+const SmEnquiryDashboard = Loadable(lazy(() => import('views/sm/EnquiryDashboard')));
+const SmWorkItems = Loadable(lazy(() => import('views/sm/WorkItems')));
+const SmPriceMasterList = Loadable(lazy(() => import('views/sm/PriceMasterList')));
+const SmSupplierList = Loadable(lazy(() => import('views/sm/SupplierList')));
+const SmSubContractorList = Loadable(lazy(() => import('views/sm/SubContractorList')));
+const SmQuotationList = Loadable(lazy(() => import('views/sm/QuotationList')));
+const SmEnquiryList = Loadable(lazy(() => import('views/sm/EnquiryList')));
+
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
@@ -868,6 +879,42 @@ const MainRoutes = {
     {
       path: '/qms/audit/report',
       element: <QmsAuditReport />
+    },
+    {
+      path: '/sm/customers',
+      element: <SmCustomerMasterList />
+    },
+    {
+      path: '/sm/contacts',
+      element: <SmContactMasterList />
+    },
+    {
+      path: '/sm/enquiry/dashboard',
+      element: <SmEnquiryDashboard />
+    },
+    {
+      path: '/sm/work-items',
+      element: <SmWorkItems />
+    },
+    {
+      path: '/sm/price-master',
+      element: <SmPriceMasterList />
+    },
+    {
+      path: '/sm/suppliers',
+      element: <SmSupplierList />
+    },
+    {
+      path: '/sm/sub-contractors',
+      element: <SmSubContractorList />
+    },
+    {
+      path: '/sm/quotations',
+      element: <SmQuotationList />
+    },
+    {
+      path: '/sm/enquiries',
+      element: <SmEnquiryList />
     },
     {
       path: '*',

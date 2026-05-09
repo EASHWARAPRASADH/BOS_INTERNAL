@@ -38,7 +38,7 @@ const INITIAL_STATE = {
   remarks: ''
 };
 
-const AddQuotationDialog = ({ open, handleClose, initialData, readOnly = false }) => {
+const AddQuotationDialog = ({ open, handleClose, initialData, initialGroupName, readOnly = false }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const { errors, validate, clearErrors } = useBOSValidation();
@@ -57,8 +57,8 @@ const AddQuotationDialog = ({ open, handleClose, initialData, readOnly = false }
         console.error('Failed to fetch customers:', err);
       }
     };
-    fetchCustomers();
-  }, []);
+    if (open) fetchCustomers();
+  }, [open]);
 
   useEffect(() => {
     clearErrors();
@@ -90,8 +90,21 @@ const AddQuotationDialog = ({ open, handleClose, initialData, readOnly = false }
     } else {
       setFormData(INITIAL_STATE);
       setIsEditing(!readOnly);
+
+      // Autofill from initialGroupName
+      if (initialGroupName && customers.length > 0) {
+        const selectedCust = customers.find(c => c.customerName === initialGroupName);
+        if (selectedCust) {
+          setFormData(prev => ({
+            ...prev,
+            customerId: selectedCust.id,
+            customerName: selectedCust.customerName,
+            contactPerson: selectedCust.contactPerson || ''
+          }));
+        }
+      }
     }
-  }, [initialData, open, readOnly, clearErrors]);
+  }, [initialData, initialGroupName, open, readOnly, clearErrors, customers]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
