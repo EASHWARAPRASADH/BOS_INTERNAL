@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Typography, Button, Stack, Tooltip, IconButton, useTheme } from '@mui/material';
-import { IconFileDownload, IconRefresh, IconUserPlus, IconAddressBook } from '@tabler/icons-react';
+import { IconFileDownload, IconRefresh, IconUserPlus, IconMapPin } from '@tabler/icons-react';
 import axios from 'utils/axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setFilterConfig } from 'store/slices/search';
@@ -8,6 +8,7 @@ import { openSnackbar } from 'store/slices/snackbar';
 import MainCard from 'ui-component/cards/MainCard';
 import AddCustomerDialog from './AddCustomerDialog';
 import AddContactDialog from './AddContactDialog';
+import AddCustomerDetailsDialog from './AddCustomerDetailsDialog';
 import { exportToExcel } from 'utils/excelExport';
 import ConfirmDeleteDialog from 'ui-component/ConfirmDeleteDialog';
 import useKeyboardShortcuts, { shortcutTooltip } from 'hooks/useKeyboardShortcuts';
@@ -60,6 +61,7 @@ export default function CustomerMasterList() {
   const [deleteTargetId, setDeleteTargetId] = useState(null);
   const [deleteTargetName, setDeleteTargetName] = useState('');
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [selectedListRow, setSelectedListRow] = useState(null);
   const theme = useTheme();
 
@@ -221,29 +223,34 @@ export default function CustomerMasterList() {
         onEditRow={handleOpenEdit}
         onDeleteRow={handleDeleteClick}
         footerActions={
-          <Button 
-            variant="contained" 
-            color="secondary" 
-            disabled={!selectedListRow}
-            startIcon={<IconUserPlus size={18} />} 
-            onClick={() => setContactDialogOpen(true)}
-            sx={{ 
-              borderRadius: '8px', 
-              px: 2,
-              py: 0.5,
-              textTransform: 'none',
-              fontWeight: 600,
-              boxShadow: 'none',
-              '&:hover': { boxShadow: theme.shadows[2] }
-            }}
-          >
-            Add Contact Master
-          </Button>
+          <Stack direction="row" spacing={1.5}>
+            <Button 
+              variant="contained" 
+              color="secondary" 
+              disabled={!selectedListRow}
+              startIcon={<IconUserPlus size={18} />} 
+              onClick={() => setContactDialogOpen(true)}
+              sx={{ borderRadius: '8px', px: 2, fontWeight: 600, textTransform: 'none' }}
+            >
+              Add Contact Master
+            </Button>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              disabled={!selectedListRow}
+              startIcon={<IconMapPin size={18} />} 
+              onClick={() => setDetailsDialogOpen(true)}
+              sx={{ borderRadius: '8px', px: 2, fontWeight: 600, textTransform: 'none' }}
+            >
+              Add Customer Details
+            </Button>
+          </Stack>
         }
       />
 
       <AddCustomerDialog open={dialogOpen} handleClose={handleCloseDialog} initialData={selectedRow} readOnly={isReadOnly} />
       <AddContactDialog open={contactDialogOpen} handleClose={() => setContactDialogOpen(false)} initialGroupName={selectedListRow?.customerName} />
+      <AddCustomerDetailsDialog open={detailsDialogOpen} handleClose={() => setDetailsDialogOpen(false)} initialData={selectedListRow} />
       
       <ConfirmDeleteDialog
         open={deleteDialogOpen}

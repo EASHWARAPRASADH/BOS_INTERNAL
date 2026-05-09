@@ -95,7 +95,7 @@ export default function AddCustomerDialog({ open, handleClose, initialData, read
         dailyDispatchMail: 'No'
       });
     }
-    
+
     if (initialData && initialData.fileUpload) {
       const files = initialData.fileUpload.split(',').filter(f => f).map(f => ({
         id: Math.random(),
@@ -169,6 +169,7 @@ export default function AddCustomerDialog({ open, handleClose, initialData, read
   const handleRemoveAttachment = (id) => {
     setAttachments(attachments.filter((a) => a.id !== id));
   };
+
 
   return (
     <BOSFormDialog
