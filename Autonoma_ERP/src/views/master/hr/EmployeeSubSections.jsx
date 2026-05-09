@@ -130,15 +130,15 @@ export default function EmployeeSubSections({ employeeId }) {
     <Stack spacing={3}>
       {/* PERSONAL DETAILS */}
       <Section1to1 title="Personal Details" icon={<IconHeart size={20} color={pc} />} endpoint="personal" employeeId={employeeId} fields={[
-        { name: 'gender', label: 'Gender', select: true, options: ['Male', 'Female', 'Other'] },
+        { name: 'gender', label: 'Gender', select: true, options: ['MALE', 'FEMALE', 'TRANS GENDER'] },
         { name: 'birthDate', label: 'Birth Date', type: 'date' },
-        { name: 'maritalStatus', label: 'Marital Status', select: true, options: ['Single', 'Married', 'Divorced', 'Widowed'] },
+        { name: 'maritalStatus', label: 'Marital Status', select: true, options: ['UNMARRIED', 'MARRIED', 'WIDOW', 'DIVORCED'] },
         { name: 'marriageDate', label: 'Marriage Date', type: 'date' },
         { name: 'numberOfChildren', label: 'No. of Children', type: 'number' },
         { name: 'emailId', label: 'Email ID', max: 255 },
         { name: 'nationality', label: 'Nationality', max: 100 },
-        { name: 'bloodGroup', label: 'Blood Group', select: true, options: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'] },
-        { name: 'religion', label: 'Religion', max: 50 },
+        { name: 'bloodGroup', label: 'Blood Group', select: true, options: ['UNINFORMED', 'O+ve', 'O-ve', 'A+ve', 'A-ve', 'B+ve', 'B-ve', 'AB+ve', 'AB-ve'] },
+        { name: 'religion', label: 'Religion', select: true, options: ['HINDU', 'MUSLIM', 'CHRISTIAN', 'SIKHISM', 'BUDDHISM'] },
         { name: 'height', label: 'Height', max: 20 },
         { name: 'weight', label: 'Weight', max: 20 },
         { name: 'shirtSize', label: 'Shirt Size', max: 20 },
@@ -174,7 +174,7 @@ export default function EmployeeSubSections({ employeeId }) {
       {/* JOB PROFILE */}
       <Section1to1 title="Job Profile" icon={<IconWallet size={20} color={pc} />} endpoint="job-profile" employeeId={employeeId} fields={[
         { name: 'wagesType', label: 'Wages Type', select: true, options: ['Monthly', 'Daily', 'Hourly'] },
-        { name: 'paymentMode', label: 'Payment Mode', select: true, options: ['Bank', 'Cash', 'Cheque'] },
+        { name: 'paymentMode', label: 'Payment Mode', select: true, options: ['Cheque', 'Cash', 'Bank'] },
         { name: 'salaryAccountNumber', label: 'Salary A/C No', max: 50 }, { name: 'personalAccountNumber', label: 'Personal A/C No', max: 50 },
         { name: 'bankName', label: 'Bank Name', max: 100 }, { name: 'ifscCode', label: 'IFSC Code', max: 20 },
         { name: 'branchName', label: 'Branch Name', max: 100 }, { name: 'bankMicroCode', label: 'Bank Micro Code', max: 50 },
@@ -185,7 +185,7 @@ export default function EmployeeSubSections({ employeeId }) {
         { name: 'bonus', label: 'Bonus', select: true, options: ['Yes', 'No'] },
         { name: 'overTimeAllowed', label: 'OT Allowed', select: true, options: ['Yes', 'No'] },
         { name: 'overTimeFactorial', label: 'OT Factorial', max: 20 },
-        { name: 'physicallyChallenged', label: 'Physically Challenged', select: true, options: ['Yes', 'No'] },
+        { name: 'physicallyChallenged', label: 'Physically Challenged', select: true, options: ['No', 'Yes-Locomotive disability', 'Yes-Visual', 'Yes-Hearing', 'Yes-Others'] },
         { name: 'lossOfMinutesDeduct', label: 'LOM Deduct', select: true, options: ['Yes', 'No'] },
         { name: 'lossOfMinutesAllow', label: 'LOM Allow', select: true, options: ['Yes', 'No'] },
         { name: 'internationalWorker', label: 'Intl Worker', select: true, options: ['Yes', 'No'] },
@@ -240,8 +240,8 @@ export default function EmployeeSubSections({ employeeId }) {
       <Section1toN title="Dependent Details" icon={<IconUsers size={20} color={pc} />} endpoint="dependent" employeeId={employeeId}
         fields={[
           { name: 'relationName', label: 'Name', max: 100 }, { name: 'relation', label: 'Relation', max: 50 },
-          { name: 'gender', label: 'Gender', select: true, options: ['Male', 'Female', 'Other'] },
-          { name: 'maritalStatus', label: 'Marital Status', select: true, options: ['Single', 'Married'] },
+          { name: 'gender', label: 'Gender', select: true, options: ['MALE', 'FEMALE', 'TRANS GENDER'] },
+          { name: 'maritalStatus', label: 'Marital Status', select: true, options: ['UNMARRIED', 'MARRIED', 'WIDOW', 'DIVORCED'] },
           { name: 'aadharId', label: 'Aadhar ID', max: 20 },
           { name: 'contactNumber1', label: 'Contact 1', max: 20 }, { name: 'contactNumber2', label: 'Contact 2', max: 20 },
           { name: 'contactAddress', label: 'Address', max: 500 }
@@ -267,7 +267,7 @@ export default function EmployeeSubSections({ employeeId }) {
         { name: 'electionCardNumber', label: 'Election Card', max: 50 }, { name: 'rationCardNumber', label: 'Ration Card', max: 50 },
         { name: 'personalAccountNumber', label: 'Personal A/C', max: 50 }, { name: 'bankName', label: 'Bank Name', max: 100 },
         { name: 'ifscCode', label: 'IFSC Code', max: 20 },
-        { name: 'physicallyChallenged', label: 'Physically Challenged', select: true, options: ['Yes', 'No'] },
+        { name: 'physicallyChallenged', label: 'Physically Challenged', select: true, options: ['No', 'Yes-Locomotive disability', 'Yes-Visual', 'Yes-Hearing', 'Yes-Others'] },
         { name: 'physicallyChallengedCategory', label: 'PH Category', max: 50 },
         { name: 'internationalWorker', label: 'Intl Worker', select: true, options: ['Yes', 'No'] },
         { name: 'passportNumber', label: 'Passport Number', max: 50 }, { name: 'passportExpiryDate', label: 'Passport Expiry', type: 'date' }
