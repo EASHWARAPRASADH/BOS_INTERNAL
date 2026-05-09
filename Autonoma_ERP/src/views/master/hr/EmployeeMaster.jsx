@@ -17,11 +17,11 @@ import EmployeeSubSections from './EmployeeSubSections';
 
 const INITIAL = {
   categoryId: '', subCategoryId: '', empLevelId: '', employeeTypeId: '', gradeCode: '',
-  title: '', firstName: '', lastName: '', empCode: '', oldEmpCode: '', guest: 'No',
-  departmentId: '', designationId: '', unitId: '', productionLine: '', empClass: '', teamGroup: '', additionalRole: '',
+  title: '', firstName: '', lastName: '', empCode: '', oldEmpCode: '', fatherHusbandName: '', guest: 'No',
+  departmentId: '', designationId: '', unitId: '', productionLine: '', empClass: '', teamGroup: '', additionalRole: [],
   dateOfJoining: '', confirmationDate: '', nextRevisionDate: '', exitDate: '', exitReason: '',
-  dailySheetRequired: 'No', attendanceRequired: 'Yes', inductionStatus: '', shift: 'No', shiftName: '', shiftDuration: '', graceMinutes: '',
-  petrolAllowance: '', referMode: '', userName: '', homeManager: '', businessManager: '', supplierName: '',
+  dailySheetRequired: 'No', attendanceRequired: 'Yes', inductionStatus: 'PENDING', shift: 'Yes', shiftName: 'GENERAL', shiftDuration: '480', graceMinutes: '0',
+  petrolAllowance: '0.00', petrolMode: 'NA', referMode: '', userName: '', homeManager: '', businessManager: '', supplierName: '',
   profileUpload: '', signature: '', ndaCertificateUpload: '', fitnessCertificateUpload: '', status: 'Active'
 };
 
@@ -40,6 +40,21 @@ const R = ({ children, lg = 4 }) => <Grid item xs={12} sm={6} md={4} lg={lg}>{ch
 
 export default function EmployeeMaster() {
   const theme = useTheme();
+  const TITLES = ['Mr.', 'Mrs.', 'Ms.', 'Dr.'];
+  const SUB_CATEGORIES = ['STAFF', 'TRAINEE', 'OFFICER', 'ASSISTANT', 'DIRECTOR', 'CEO', 'MD', 'ENGINEER', 'OPERATOR', 'MANAGER'];
+  const UNIT_NAMES = ['UNIT 1', 'UNIT 2'];
+  const PRODUCTION_LINES = ['N/A'];
+  const CLASSES = ['CLASS A', 'CLASS B', 'CLASS C'];
+  const SHIFT_NAMES = ['GENERAL', 'SHIFT A', 'SHIFT B', 'SHIFT C'];
+  const REF_MODES = ['INTERNAL', 'EXTERNAL', 'CONSULTANT'];
+  const SUPPLIERS = ['SUPPLIER A', 'SUPPLIER B'];
+  const TEAM_GROUPS = ['TEAM 1', 'TEAM 2'];
+  const STATUSES = ['ACTIVE', 'INACTIVE', 'EXITED'];
+  
+  const CATEGORIES = [{id: 1, categoryName: 'OFFICE'}, {id: 2, categoryName: 'SHOP FLOOR'}];
+  const LEVELS = [{id: 1, levelName: 'L1'}, {id: 2, levelName: 'L2'}, {id: 3, levelName: 'L3'}, {id: 4, levelName: 'L4'}, {id: 5, levelName: 'L5'}, {id: 6, levelName: 'L6'}, {id: 7, levelName: 'L7'}];
+  const TYPES = [{id: 1, typeName: 'CONFIRMED'}, {id: 2, typeName: 'PROBATION'}, {id: 3, typeName: 'TRAINEE'}, {id: 4, typeName: 'CONTRACT'}];
+
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
   const ds = getDialogStyles(theme, isDark);
@@ -127,12 +142,12 @@ export default function EmployeeMaster() {
         {/* ═══ SECTION 1: CLASSIFICATION & IDENTITY ═══ */}
         <BOSFormSection icon={<IconUser size={20} color={theme.palette.primary.main} />} title="Classification & Identity">
           <Grid container spacing={2.5}>
-            <R><BOSTextField select name="categoryId" label="Category" value={form.categoryId} onChange={h} required error={!!errors.categoryId} helperText={errors.categoryId}><MenuItem value={1}>Staff</MenuItem><MenuItem value={2}>Worker</MenuItem><MenuItem value={3}>Management</MenuItem></BOSTextField></R>
-            <R><BOSTextField select name="subCategoryId" label="Sub Category" value={form.subCategoryId} onChange={h}><MenuItem value={1}>Sub Cat 1</MenuItem><MenuItem value={2}>Sub Cat 2</MenuItem></BOSTextField></R>
-            <R><BOSTextField select name="empLevelId" label="Level" value={form.empLevelId} onChange={h} required error={!!errors.empLevelId} helperText={errors.empLevelId}><MenuItem value={1}>Level 1</MenuItem><MenuItem value={2}>Level 2</MenuItem><MenuItem value={3}>Level 3</MenuItem></BOSTextField></R>
-            <R><BOSTextField select name="employeeTypeId" label="Type" value={form.employeeTypeId} onChange={h} required error={!!errors.employeeTypeId} helperText={errors.employeeTypeId}><MenuItem value={1}>Permanent</MenuItem><MenuItem value={2}>Contract</MenuItem><MenuItem value={3}>Trainee</MenuItem></BOSTextField></R>
-            <R><BOSTextField name="gradeCode" label="Grade Code" value={form.gradeCode} onChange={h} maxLength={50} /></R>
-            <R><BOSTextField select name="title" label="Title" value={form.title} onChange={h} required error={!!errors.title} helperText={errors.title}><MenuItem value="Mr">Mr</MenuItem><MenuItem value="Ms">Ms</MenuItem><MenuItem value="Mrs">Mrs</MenuItem><MenuItem value="Mx">Mx</MenuItem></BOSTextField></R>
+            <R><BOSTextField select name="categoryId" label="Category" value={form.categoryId} onChange={h} required error={!!errors.categoryId} helperText={errors.categoryId}>{CATEGORIES.map(c => <MenuItem key={c.id} value={c.id}>{c.categoryName}</MenuItem>)}</BOSTextField></R>
+            <R><BOSTextField select name="subCategoryId" label="Sub Category" value={form.subCategoryId} onChange={h}>{SUB_CATEGORIES.map(s => <MenuItem key={s} value={s}>{s}</MenuItem>)}</BOSTextField></R>
+            <R><BOSTextField select name="empLevelId" label="Level" value={form.empLevelId} onChange={h} required error={!!errors.empLevelId} helperText={errors.empLevelId}>{LEVELS.map(l => <MenuItem key={l.id} value={l.id}>{l.levelName}</MenuItem>)}</BOSTextField></R>
+            <R><BOSTextField select name="employeeTypeId" label="Type" value={form.employeeTypeId} onChange={h} required error={!!errors.employeeTypeId} helperText={errors.employeeTypeId}>{TYPES.map(t => <MenuItem key={t.id} value={t.id}>{t.typeName}</MenuItem>)}</BOSTextField></R>
+            <R><BOSTextField select name="gradeCode" label="Grade Code" value={form.gradeCode} onChange={h}><MenuItem value="O">O</MenuItem><MenuItem value="P">P</MenuItem><MenuItem value="T">T</MenuItem><MenuItem value="C">C</MenuItem><MenuItem value="E">E</MenuItem></BOSTextField></R>
+            <R><BOSTextField select name="title" label="Title" value={form.title} onChange={h} required error={!!errors.title} helperText={errors.title}><MenuItem value="Mr">Mr</MenuItem><MenuItem value="Miss">Miss</MenuItem><MenuItem value="Mrs">Mrs</MenuItem><MenuItem value="Mx">Mx</MenuItem></BOSTextField></R>
             <R><BOSTextField name="firstName" label="First Name" value={form.firstName} onChange={h} required maxLength={100} error={!!errors.firstName} helperText={errors.firstName} /></R>
             <R><BOSTextField name="lastName" label="Last Name" value={form.lastName} onChange={h} required maxLength={100} error={!!errors.lastName} helperText={errors.lastName} /></R>
             <R><BOSTextField name="empCode" label="Employee Code" value={form.empCode} onChange={h} required maxLength={50} error={!!errors.empCode} helperText={errors.empCode} /></R>
@@ -147,13 +162,13 @@ export default function EmployeeMaster() {
           <Grid container spacing={2.5}>
             <R><BOSTextField select name="departmentId" label="Department" value={form.departmentId} onChange={h}>{departments.map((d) => <MenuItem key={d.id} value={d.id}>{d.departmentName}</MenuItem>)}</BOSTextField></R>
             <R><BOSTextField select name="designationId" label="Designation" value={form.designationId} onChange={h}>{designations.map((d) => <MenuItem key={d.id} value={d.id}>{d.designationName}</MenuItem>)}</BOSTextField></R>
-            <R><BOSTextField select name="unitId" label="Unit Name" value={form.unitId} onChange={h}><MenuItem value={1}>Unit 1</MenuItem><MenuItem value={2}>Unit 2</MenuItem></BOSTextField></R>
+            <R><BOSTextField select name="unitId" label="Unit Name" value={form.unitId} onChange={h}><MenuItem value={1}>UNIT1</MenuItem></BOSTextField></R>
             <R><BOSTextField name="productionLine" label="Production Line" value={form.productionLine} onChange={h} maxLength={100} /></R>
-            <R><BOSTextField name="empClass" label="Class" value={form.empClass} onChange={h} maxLength={50} /></R>
+            <R><BOSTextField select name="empClass" label="Class" value={form.empClass} onChange={h}><MenuItem value="EXECUTIVE">EXECUTIVE</MenuItem><MenuItem value="STAFF">STAFF</MenuItem><MenuItem value="TRAINEE">TRAINEE</MenuItem><MenuItem value="WORKER">WORKER</MenuItem></BOSTextField></R>
             <R><BOSTextField name="teamGroup" label="Team Group" value={form.teamGroup} onChange={h} maxLength={100} /></R>
             <R><BOSTextField name="additionalRole" label="Additional Role" value={form.additionalRole} onChange={h} maxLength={100} /></R>
-            <R><BOSTextField select name="referMode" label="Ref Mode" value={form.referMode} onChange={h}><MenuItem value="Direct">Direct</MenuItem><MenuItem value="Consultancy">Consultancy</MenuItem><MenuItem value="Reference">Reference</MenuItem></BOSTextField></R>
-            <R><BOSTextField name="userName" label="User Name" value={form.userName} onChange={h} maxLength={100} /></R>
+            <R><BOSTextField select name="referMode" label="Ref Mode" value={form.referMode} onChange={h}>{REF_MODES.map(r => <MenuItem key={r} value={r}>{r}</MenuItem>)}</BOSTextField></R>
+            <R><BOSTextField name="userName" label="User Name" value={form.userName} onChange={h} maxLength={100} inputProps={{ readOnly: true }} /></R>
             <R><BOSTextField name="homeManager" label="Home Manager" value={form.homeManager} onChange={h} maxLength={100} /></R>
             <R><BOSTextField name="businessManager" label="Business Manager" value={form.businessManager} onChange={h} maxLength={100} /></R>
             <R><BOSTextField name="supplierName" label="Supplier Name" value={form.supplierName} onChange={h} maxLength={100} /></R>
@@ -167,8 +182,8 @@ export default function EmployeeMaster() {
             <R><BOSTextField name="confirmationDate" label="Confirmation Date" type="date" value={form.confirmationDate} onChange={h} InputLabelProps={{ shrink: true }} /></R>
             <R><BOSTextField name="nextRevisionDate" label="Next Revision Date" type="date" value={form.nextRevisionDate} onChange={h} InputLabelProps={{ shrink: true }} /></R>
             <R><BOSTextField name="exitDate" label="Exit Date" type="date" value={form.exitDate} onChange={h} InputLabelProps={{ shrink: true }} /></R>
-            <R><BOSTextField name="exitReason" label="Exit Reason" value={form.exitReason} onChange={h} maxLength={255} /></R>
-            <R><BOSTextField name="inductionStatus" label="Induction Status" value={form.inductionStatus} onChange={h} maxLength={50} /></R>
+            <R><BOSTextField select name="exitReason" label="Exit Reason" value={form.exitReason} onChange={h}><MenuItem value="Resigned">Resigned</MenuItem><MenuItem value="Termination">Termination</MenuItem><MenuItem value="Death">Death</MenuItem><MenuItem value="Others">Others</MenuItem></BOSTextField></R>
+            <R><BOSTextField name="inductionStatus" label="Induction Status" value={form.inductionStatus} onChange={h} maxLength={50} inputProps={{ readOnly: true }} /></R>
           </Grid>
         </BOSFormSection>
 
@@ -178,9 +193,10 @@ export default function EmployeeMaster() {
             <R><BOSTextField select name="dailySheetRequired" label="Daily Sheet Required" value={form.dailySheetRequired} onChange={h}><MenuItem value="Yes">Yes</MenuItem><MenuItem value="No">No</MenuItem></BOSTextField></R>
             <R><BOSTextField select name="attendanceRequired" label="Attendance Required" value={form.attendanceRequired} onChange={h}><MenuItem value="Yes">Yes</MenuItem><MenuItem value="No">No</MenuItem></BOSTextField></R>
             <R><BOSTextField select name="shift" label="Shift?" value={form.shift} onChange={h}><MenuItem value="Yes">Yes</MenuItem><MenuItem value="No">No</MenuItem></BOSTextField></R>
-            <R><BOSTextField name="shiftName" label="Shift Name" value={form.shiftName} onChange={h} maxLength={100} /></R>
+            <R><BOSTextField select name="shiftName" label="Shift Name" value={form.shiftName} onChange={h}><MenuItem value="GENERAL">GENERAL</MenuItem><MenuItem value="SHIFT 1">SHIFT 1</MenuItem><MenuItem value="SHIFT 2">SHIFT 2</MenuItem><MenuItem value="SHIFT 3">SHIFT 3</MenuItem></BOSTextField></R>
             <R><BOSTextField name="shiftDuration" label="Shift Duration" value={form.shiftDuration} onChange={h} maxLength={50} /></R>
             <R><BOSTextField name="graceMinutes" label="Grace Minutes" value={form.graceMinutes} onChange={h} type="number" /></R>
+            <R><BOSTextField select name="petrolMode" label="Petrol Mode" value={form.petrolMode} onChange={h}><MenuItem value="BIKE">BIKE</MenuItem><MenuItem value="CAR">CAR</MenuItem><MenuItem value="NA">NA</MenuItem></BOSTextField></R>
             <R><BOSTextField name="petrolAllowance" label="Petrol Allowance" value={form.petrolAllowance} onChange={h} type="number" /></R>
             <R><BOSTextField select name="status" label="Status" value={form.status} onChange={h}><MenuItem value="Active">Active</MenuItem><MenuItem value="In Active">In Active</MenuItem></BOSTextField></R>
           </Grid>
