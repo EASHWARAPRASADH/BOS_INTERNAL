@@ -24,8 +24,22 @@ import { BOSDataTable, BOSTextField, btnSave, btnCancel, getStatusChipSx } from 
 export default function ChecklistAssignDialog({ open, onClose, checklistId, initialData }) {
   const theme = useTheme();
   const dispatch = useDispatch();
-  const lookups = useLookups(['EMPLOYEES']);
-  const employeeList = (lookups.employees || []).map(e => e.employeeName || `${e.firstName} ${e.lastName}`);
+  const lookups = useLookups(['EMPLOYEES', 'DEPARTMENTS']);
+  
+  // Get allowed department names for this checklist
+  const allowedDeptNames = (initialData?.departments || []).map(d => d.departmentName);
+  
+  // Filter employees whose department matches one of the checklist's departments
+  const filteredEmployees = (lookups.employees || []).filter(emp => {
+    if (!allowedDeptNames.length) return true; // If no departments specified, show all (fallback)
+    const empDept = (lookups.departments || []).find(d => String(d.id) === String(emp.departmentId));
+    return empDept && allowedDeptNames.includes(empDept.departmentName);
+  });
+
+  const employeeOptions = filteredEmployees.map(e => ({
+    label: `${e.employeeName || (e.firstName + ' ' + e.lastName)} (${(lookups.departments || []).find(d => String(d.id) === String(e.departmentId))?.departmentName || 'No Dept'})`,
+    value: e.employeeName || (e.firstName + ' ' + e.lastName)
+  }));
 
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -65,20 +79,48 @@ export default function ChecklistAssignDialog({ open, onClose, checklistId, init
       dispatch(openSnackbar({ open: true, message: 'Please select Assign To and Assign Type', severity: 'warning', variant: 'alert' }));
       return;
     }
+
+    // Frontend duplicate check to avoid console errors
+    const isDuplicate = assignments.some(a => a.assignedTo === formData.assignTo);
+    if (isDuplicate && !formData.id) {
+      dispatch(openSnackbar({ 
+        open: true, 
+        message: 'Duplicate assignment for this person!', 
+        severity: 'error', 
+        variant: 'alert' 
+      }));
+      return;
+    }
     
     try {
-      await axios.post(`${API_PATHS.QMS.CHECKLIST}/assign`, {
+      const res = await axios.post(`${API_PATHS.QMS.CHECKLIST}/assign`, {
         id: formData.id,
         checklistId: checklistId,
         assignedTo: formData.assignTo,
         assignType: formData.assignType,
         assignedBy: 'Current User' // TODO: Get from auth context
       });
+
+      if (res.data?.remarks === 'DUPLICATE_ASSIGNMENT') {
+        dispatch(openSnackbar({ 
+          open: true, 
+          message: 'Duplicate assignment for this person!', 
+          severity: 'error', 
+          variant: 'alert' 
+        }));
+        return;
+      }
+
       dispatch(openSnackbar({ open: true, message: formData.id ? 'Assignment updated!' : 'Task assigned!', severity: 'success', variant: 'alert' }));
       setFormData({ assignTo: '', assignType: 'PRIMARY', id: null });
       fetchAssignments();
     } catch (err) {
-      dispatch(openSnackbar({ open: true, message: 'Assignment failed', severity: 'error', variant: 'alert' }));
+      dispatch(openSnackbar({ 
+        open: true, 
+        message: 'Assignment failed', 
+        severity: 'error', 
+        variant: 'alert' 
+      }));
     }
   };
 
@@ -130,9 +172,9 @@ export default function ChecklistAssignDialog({ open, onClose, checklistId, init
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
-      <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, bgcolor: theme.palette.primary.light, color: theme.palette.primary.dark }}>
+      <DialogTitle component="div" sx={{ display: 'flex', alignItems: 'center', gap: 1, bgcolor: theme.palette.primary.light, color: theme.palette.primary.dark }}>
         <IconUsersGroup size={24} />
-        <Typography variant="h3" color="inherit">Assign Checklist - {initialData?.seqNo}</Typography>
+        <Typography component="span" variant="h3" color="inherit">Assign Checklist - {initialData?.seqNo}</Typography>
       </DialogTitle>
       <DialogContent sx={{ p: 3, pt: '24px !important' }}>
         <Stack spacing={3}>
@@ -151,8 +193,8 @@ export default function ChecklistAssignDialog({ open, onClose, checklistId, init
                 onChange={(e) => setFormData(p => ({ ...p, assignTo: e.target.value }))}
                 required
               >
-                {employeeList.map(emp => (
-                  <MenuItem key={emp} value={emp}>{emp}</MenuItem>
+                {employeeOptions.map(opt => (
+                  <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>
                 ))}
               </BOSTextField>
 
@@ -174,7 +216,7 @@ export default function ChecklistAssignDialog({ open, onClose, checklistId, init
                 onClick={handleAssign}
                 sx={{ height: 40, mt: 2 }}
               >
-                Update
+                {formData.id ? 'Update' : 'Assign'}
               </Button>
             </Box>
           </Box>

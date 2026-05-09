@@ -43,6 +43,8 @@ const Transition = React.forwardRef(function Transition(props, ref) {
  * @param {function} onEditClick   - Called when Edit button clicked in view mode
  * @param {boolean}  hasId         - Whether record has an existing ID (controls Delete button visibility)
  * @param {string}   maxWidth      - MUI Dialog maxWidth (default "md")
+ * @param {boolean}  hideFooter    - If true, hides the action footer
+ * @param {node}     secondaryActions - Additional buttons to show in the footer
  * @param {node}     children      - Form content
  */
 export default function BOSFormDialog({
@@ -57,6 +59,7 @@ export default function BOSFormDialog({
   hasId = false,
   maxWidth = 'md',
   hideFooter = false,
+  secondaryActions,
   children
 }) {
   const theme = useTheme();
@@ -109,7 +112,8 @@ export default function BOSFormDialog({
       {!hideFooter && (
         <Box sx={ds.footer}>
           {isViewOnly ? (
-            <Box sx={{ display: 'flex', gap: 2, ml: 'auto' }}>
+            <Box sx={{ display: 'flex', gap: 2, ml: 'auto', alignItems: 'center' }}>
+              {secondaryActions}
               <Tooltip title={shortcutTooltip('Edit Details', 'Ctrl + E')}>
                 <Button
                   onClick={onEditClick}
@@ -176,5 +180,6 @@ BOSFormDialog.propTypes = {
   hasId: PropTypes.bool,
   maxWidth: PropTypes.string,
   hideFooter: PropTypes.bool,
+  secondaryActions: PropTypes.node,
   children: PropTypes.node
 };
