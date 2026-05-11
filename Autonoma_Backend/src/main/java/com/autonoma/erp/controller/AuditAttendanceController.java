@@ -16,6 +16,9 @@ public class AuditAttendanceController {
     @Autowired
     private AuditAttendanceRepository auditAttendanceRepository;
 
+    @Autowired
+    private com.autonoma.erp.service.AuditAttendanceService auditAttendanceService;
+
     @GetMapping
     public List<AuditAttendance> getAll() {
         return auditAttendanceRepository.findAll();
@@ -23,8 +26,7 @@ public class AuditAttendanceController {
 
     @PostMapping
     public AuditAttendance create(@RequestBody AuditAttendance attendance) {
-        if (attendance.getCreatedBy() == null) attendance.setCreatedBy("Admin");
-        return auditAttendanceRepository.save(attendance);
+        return auditAttendanceService.saveAttendance(attendance);
     }
 
     @PutMapping("/{id}")
@@ -59,23 +61,37 @@ public class AuditAttendanceController {
     private com.autonoma.erp.repository.AuditScheduleRepository scheduleRepo;
 
     @GetMapping("/participants/{scheduleNo}")
-    public ResponseEntity<java.util.Set<String>> getParticipants(@PathVariable String scheduleNo) {
+    public ResponseEntity<java.util.List<java.util.Map<String, String>>> getParticipants(@PathVariable String scheduleNo) {
         return scheduleRepo.findByScheduleNo(scheduleNo)
                 .map(s -> {
-                    java.util.Set<String> names = new java.util.TreeSet<>();
-                    if (s.getAuditor() != null) {
-                        java.util.Arrays.stream(s.getAuditor().split(","))
-                                .map(String::trim)
-                                .filter(n -> !n.isEmpty())
-                                .forEach(names::add);
-                    }
-                    if (s.getAuditee() != null) {
-                        java.util.Arrays.stream(s.getAuditee().split(","))
-                                .map(String::trim)
-                                .filter(n -> !n.isEmpty())
-                                .forEach(names::add);
-                    }
-                    return ResponseEntity.ok(names);
+                    java.util.List<java.util.Map<String, String>> participants = new java.util.ArrayList<>();
+                    
+                    autoAdd(participants, s.getAuditor());
+                    autoAdd(participants, s.getAuditee());
+                    
+                    return ResponseEntity.ok(participants);
                 }).orElse(ResponseEntity.notFound().build());
+    }
+
+    private void autoAdd(java.util.List<java.util.Map<String, String>> list, String field) {
+        if (field == null) return;
+        java.util.Arrays.stream(field.split(","))
+                .map(String::trim)
+                .filter(n -> !n.isEmpty())
+                .forEach(n -> {
+                    java.util.Map<String, String> m = new java.util.HashMap<>();
+                    if (n.contains(" - ")) {
+                        String[] parts = n.split(" - ");
+                        m.put("name", parts[0].trim());
+                        m.put("code", parts[1].trim());
+                    } else {
+                        m.put("name", n);
+                        m.put("code", "-");
+                    }
+                    // Avoid exact duplicates
+                    if (list.stream().noneMatch(p -> p.get("name").equals(m.get("name")) && p.get("code").equals(m.get("code")))) {
+                        list.add(m);
+                    }
+                });
     }
 }
