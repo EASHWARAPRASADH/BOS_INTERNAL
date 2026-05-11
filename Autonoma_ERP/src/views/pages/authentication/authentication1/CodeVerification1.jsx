@@ -18,7 +18,7 @@ import BackgroundPattern1 from 'ui-component/cards/BackgroundPattern1';
 import AuthSlider from 'ui-component/cards/AuthSlider';
 
 // assets
-import AuthBlueCard from 'assets/images/auth/auth-signup-blue-card.svg';
+import AuthBlueCard from 'assets/images/auth/auth-blue-card.svg';
 import AuthWhiteCard from 'assets/images/auth/auth-signup-white-card.svg';
 
 // carousel items
