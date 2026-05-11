@@ -45,14 +45,21 @@ import { API_PATHS } from 'utils/api-constants';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
+const TIME_OPTIONS = Array.from({ length: 96 }, (_, i) => {
+  const hours = Math.floor(i / 4);
+  const minutes = (i % 4) * 15;
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const displayHours = hours % 12 || 12;
+  return `${displayHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+});
+
 const VALIDATION_RULES = [
   { field: 'auditType', label: 'Audit Type', required: true },
   { field: 'auditArea', label: 'Audit Area', required: true },
   { field: 'auditDate', label: 'Audit Date', required: true },
   { field: 'department', label: 'Department', required: true },
   { field: 'auditee', label: 'Auditee', required: true },
-  { field: 'auditor', label: 'Auditor', required: true },
-  { field: 'criteriaMinCount', label: 'Criteria Min Count', required: true }
+  { field: 'auditor', label: 'Auditor', required: true }
 ];
 
 export default function AddAuditSchedule() {
@@ -73,8 +80,8 @@ export default function AddAuditSchedule() {
     auditArea: '',
     auditDate: new Date().toISOString().split('T')[0],
     auditMonth: MONTHS[new Date().getMonth()],
-    startTime: '09:00',
-    endTime: '17:00',
+    startTime: '09:00 AM',
+    endTime: '05:00 PM',
     department: '',
     auditee: '',
     auditeeType: '',
@@ -90,8 +97,10 @@ export default function AddAuditSchedule() {
     auditTypes = [], 
     departments = [], 
     auditCriterias: masterCriteria = [], 
-    employees = [] 
-  } = useLookups(['AUDIT_TYPE', 'DEPARTMENTS', 'AUDIT_CRITERIA', 'EMPLOYEES']);
+    employees = [],
+    levels = [],
+    designations = []
+  } = useLookups(['AUDIT_TYPE', 'DEPARTMENTS', 'AUDIT_CRITERIA', 'EMPLOYEES', 'LEVELS', 'DESIGNATIONS']);
 
   // Criteria Dialog state
   const [criteriaDialogOpen, setCriteriaDialogOpen] = useState(false);
@@ -151,8 +160,16 @@ export default function AddAuditSchedule() {
   const handleSave = async () => {
     if (!validate(formData, VALIDATION_RULES)) return;
 
-    const startNum = parseInt(formData.startTime.replace(':', ''));
-    const endNum = parseInt(formData.endTime.replace(':', ''));
+    const convertTo24h = (time12h) => {
+      const [time, modifier] = time12h.split(' ');
+      let [hours, minutes] = time.split(':');
+      if (hours === '12') hours = '00';
+      if (modifier === 'PM') hours = parseInt(hours, 10) + 12;
+      return parseInt(`${hours}${minutes}`, 10);
+    };
+
+    const startNum = convertTo24h(formData.startTime);
+    const endNum = convertTo24h(formData.endTime);
     if (endNum <= startNum) {
       dispatch(openSnackbar({ open: true, message: 'End Time must be greater than Start Time.', severity: 'error', variant: 'alert' }));
       return;
@@ -163,13 +180,14 @@ export default function AddAuditSchedule() {
       return;
     }
 
-    if (formData.criteriaMinCount > criteriaList.length) {
+    if (formData.criteriaMinCount > (Array.isArray(criteriaList) ? criteriaList.length : 0)) {
       dispatch(openSnackbar({ 
         open: true, 
-        message: `Audit Type requirements not met: Minimum ${formData.criteriaMinCount} criteria are required, but only ${criteriaList.length} are selected. Please add more criteria to continue.`, 
-        severity: 'error', 
+        message: `Minimum ${formData.criteriaMinCount} criteria are required. Opening selection...`, 
+        severity: 'warning', 
         variant: 'alert' 
       }));
+      setCriteriaDialogOpen(true);
       return;
     }
 
@@ -244,13 +262,19 @@ export default function AddAuditSchedule() {
 
   const availableCriteria = useMemo(() => {
     const selectedTypes = (formData.auditType || '').split(',').filter((t) => t);
+    const selectedDept = formData.department;
     return masterCriteria.filter((c) => {
       const criteriaTypes = c.auditType ? c.auditType.split(', ') : [];
+      const criteriaDepts = c.department ? c.department.split(', ') : [];
+      
       const matchesType = selectedTypes.length === 0 || selectedTypes.some((st) => criteriaTypes.includes(st));
+      // SOP: Load criteria based on Audit Type AND Department
+      const matchesDept = !selectedDept || criteriaDepts.includes(selectedDept);
+      
       const isAlreadyAdded = (Array.isArray(criteriaList) ? criteriaList : []).some((cl) => cl.criteriaDetails === c.criteriaText);
-      return matchesType && !isAlreadyAdded;
+      return matchesType && matchesDept && !isAlreadyAdded;
     });
-  }, [masterCriteria, formData.auditType, criteriaList]);
+  }, [masterCriteria, formData.auditType, formData.department, criteriaList]);
 
   const totalRequiredCount = useMemo(() => {
     const selectedTypes = (formData.auditType || '').split(',').filter((t) => t);
@@ -329,6 +353,13 @@ export default function AddAuditSchedule() {
                 )}
               />
               <BOSTextField
+                label="Item Code"
+                name="itemCode"
+                value={formData.itemCode}
+                onChange={handleChange}
+                placeholder="Optional"
+              />
+              <BOSTextField
                 required
                 type="number"
                 label="Criteria Min Count"
@@ -336,14 +367,30 @@ export default function AddAuditSchedule() {
                 value={formData.criteriaMinCount}
                 onChange={handleChange}
                 error={!!errors.criteriaMinCount}
-                helperText={errors.criteriaMinCount || `Required based on Audit Type(s): ${totalRequiredCount}`}
-                InputProps={{
-                  readOnly: true,
-                  sx: { bgcolor: 'action.hover' }
-                }}
+                helperText={errors.criteriaMinCount}
+                sx={{ display: 'none' }}
               />
             </Box>
           </BOSFormSection>
+
+          {/* SOP: Dynamic Sections (Supplier/Customer/External) */}
+          {(formData.auditType || '').toUpperCase().includes('SUPPLIER') && (
+            <BOSFormSection title="Supplier Information">
+              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2.5 }}>
+                <BOSTextField label="Supplier Name" name="supplierName" onChange={handleChange} />
+                <BOSTextField label="Supplier Code" name="supplierCode" onChange={handleChange} />
+              </Box>
+            </BOSFormSection>
+          )}
+
+          {(formData.auditType || '').toUpperCase().includes('CUSTOMER') && (
+            <BOSFormSection title="Customer Information">
+              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2.5 }}>
+                <BOSTextField label="Customer Name" name="customerName" onChange={handleChange} />
+                <BOSTextField label="Customer Area" name="customerArea" onChange={handleChange} />
+              </Box>
+            </BOSFormSection>
+          )}
 
           {/* Card 2: Audit Specifics */}
           <BOSFormSection icon={<IconCalendarEvent size={20} color={theme.palette.secondary.main} />} title="Audit Specifics">
@@ -402,50 +449,28 @@ export default function AddAuditSchedule() {
                   <MenuItem key={m} value={m}>{m}</MenuItem>
                 ))}
               </BOSTextField>
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <BOSTextField
-                  select
-                  label="Start Hour"
-                  value={formData.startTime.split(':')[0]}
-                  onChange={(e) => setFormData({ ...formData, startTime: `${e.target.value}:${formData.startTime.split(':')[1]}` })}
-                >
-                  {Array.from({ length: 24 }).map((_, i) => (
-                    <MenuItem key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</MenuItem>
-                  ))}
-                </BOSTextField>
-                <BOSTextField
-                  select
-                  label="Start Min"
-                  value={formData.startTime.split(':')[1]}
-                  onChange={(e) => setFormData({ ...formData, startTime: `${formData.startTime.split(':')[0]}:${e.target.value}` })}
-                >
-                  {Array.from({ length: 60 }).map((_, i) => (
-                    <MenuItem key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</MenuItem>
-                  ))}
-                </BOSTextField>
-              </Box>
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <BOSTextField
-                  select
-                  label="End Hour"
-                  value={formData.endTime.split(':')[0]}
-                  onChange={(e) => setFormData({ ...formData, endTime: `${e.target.value}:${formData.endTime.split(':')[1]}` })}
-                >
-                  {Array.from({ length: 24 }).map((_, i) => (
-                    <MenuItem key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</MenuItem>
-                  ))}
-                </BOSTextField>
-                <BOSTextField
-                  select
-                  label="End Min"
-                  value={formData.endTime.split(':')[1]}
-                  onChange={(e) => setFormData({ ...formData, endTime: `${formData.endTime.split(':')[0]}:${e.target.value}` })}
-                >
-                  {Array.from({ length: 60 }).map((_, i) => (
-                    <MenuItem key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</MenuItem>
-                  ))}
-                </BOSTextField>
-              </Box>
+              <BOSTextField
+                select
+                label="Start Time"
+                name="startTime"
+                value={formData.startTime}
+                onChange={handleChange}
+              >
+                {TIME_OPTIONS.map((t) => (
+                  <MenuItem key={t} value={t}>{t}</MenuItem>
+                ))}
+              </BOSTextField>
+              <BOSTextField
+                select
+                label="End Time"
+                name="endTime"
+                value={formData.endTime}
+                onChange={handleChange}
+              >
+                {TIME_OPTIONS.map((t) => (
+                  <MenuItem key={t} value={t}>{t}</MenuItem>
+                ))}
+              </BOSTextField>
             </Box>
           </BOSFormSection>
 
@@ -462,6 +487,8 @@ export default function AddAuditSchedule() {
                 const code = value ? value.split(' - ')[1] || '-' : '-';
 
                 const filteredEmployees = employees.filter(emp => {
+                  if (emp.status !== 'Active') return false;
+
                   if (person.field === 'auditor') return emp.isAuditor === 'YES';
                   if (person.field === 'auditee') {
                     if (!formData.department) return false;
@@ -472,7 +499,24 @@ export default function AddAuditSchedule() {
                   return true;
                 });
 
-                const employeeOptions = filteredEmployees.map(emp => `${emp.employeeName || (emp.firstName + ' ' + emp.lastName)} - ${emp.empCode || emp.employeeCode}`);
+                const getEmpLabel = (emp) => {
+                  const fullName = emp.employeeName || `${emp.firstName || ''} ${emp.lastName || ''}`.trim();
+                  return `${fullName} - ${emp.empCode || emp.employeeCode || emp.id}`;
+                };
+
+                const selectedEmp = filteredEmployees.find(emp => getEmpLabel(emp) === value);
+                
+                const empDeptName = selectedEmp ? (departments.find(d => String(d.id) === String(selectedEmp.departmentId))?.departmentName || '-') : '-';
+                
+                // Resolution for Level (using levels or designations lookup)
+                let empLevel = '-';
+                if (selectedEmp) {
+                  const levelMatch = levels.find(l => String(l.rowId || l.id) === String(selectedEmp.empLevelId));
+                  const desigMatch = designations.find(d => String(d.id) === String(selectedEmp.designationId));
+                  empLevel = levelMatch?.level || desigMatch?.designationName || '-';
+                }
+
+                const employeeOptions = filteredEmployees.map(emp => getEmpLabel(emp));
 
                 return (
                   <Card key={person.role} sx={{
@@ -497,7 +541,14 @@ export default function AddAuditSchedule() {
                         <IconUsers size={48} />
                       </Box>
                       <Typography variant="overline" color="primary.main" sx={{ fontWeight: 800, mb: 0.5, fontSize: '0.8rem' }}>{person.role}</Typography>
-                      <Typography variant="h6" fontWeight={700} color="text.primary" noWrap sx={{ width: '100%', textAlign: 'center', mb: 1 }}>{name !== '-' ? name : 'Not Selected'}</Typography>
+                      <Typography variant="h6" fontWeight={700} color="text.primary" noWrap sx={{ width: '100%', textAlign: 'center', mb: 0.5 }}>{name !== '-' ? name : 'Not Selected'}</Typography>
+                      
+                      {/* SOP: Display Dept and Level in Profile Card */}
+                      <Stack spacing={0.5} alignItems="center" sx={{ mb: 2, width: '100%' }}>
+                        <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary' }}>Dept: {empDeptName}</Typography>
+                        <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary' }}>Level: {empLevel}</Typography>
+                      </Stack>
+
                       <Box sx={{ bgcolor: isDark ? 'rgba(255,255,255,0.05)' : 'grey.100', px: 2.5, py: 0.5, borderRadius: '16px', mb: 3 }}>
                         <Typography variant="body2" color="text.secondary" fontWeight={600} noWrap>{code !== '-' ? code : 'No Code'}</Typography>
                       </Box>
@@ -517,22 +568,6 @@ export default function AddAuditSchedule() {
                             <MenuItem key={opt} value={opt}>{opt}</MenuItem>
                           ))}
                         </BOSTextField>
-                        
-                        <BOSTextField
-                          select
-                          required
-                          label={`${person.label} Type`}
-                          name={person.typeField}
-                          value={formData[person.typeField]}
-                          onChange={handleChange}
-                          error={!!errors[person.typeField]}
-                          helperText={errors[person.typeField]}
-                        >
-                          <MenuItem value="">-Select Type-</MenuItem>
-                          {auditTypes.map((type) => (
-                            <MenuItem key={type.auditType} value={type.auditType}>{type.auditType}</MenuItem>
-                          ))}
-                        </BOSTextField>
                       </Stack>
                     </CardContent>
                   </Card>
@@ -544,16 +579,7 @@ export default function AddAuditSchedule() {
           {/* Card 4: Audit Criteria Checklist */}
           <BOSFormSection icon={<IconListCheck size={20} color={theme.palette.success.main} />} title="Audit Criteria Checklist">
             <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Box>
-                {criteriaList.length < formData.criteriaMinCount && (
-                  <Chip 
-                    label={`Attention: Minimum ${formData.criteriaMinCount} criteria required. Currently selected: ${criteriaList.length}`} 
-                    color="error" 
-                    variant="outlined"
-                    sx={{ fontWeight: 600, border: '2px solid' }}
-                  />
-                )}
-              </Box>
+              <Box />
               <Tooltip title={shortcutTooltip('Add Criteria', 'Ctrl + N')}>
                 <Button variant="contained" size="small" onClick={() => setCriteriaDialogOpen(true)} startIcon={<IconPlus size={16} />} sx={{ borderRadius: '8px' }}>
                   Add Criteria
