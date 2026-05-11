@@ -43,28 +43,30 @@ public class ChecklistService {
     /**
      * Retrieves master checklists based on comprehensive filtering criteria.
      * 
-     * @param status The lifecycle status of the checklist (e.g., Active, Inactive).
-     * @param category The functional category (RENEWAL, CHECK LIST).
-     * @param department Optional department filter.
-     * @param searchBy The field to perform textual search on.
-     * @param searchValue The textual search term.
-     * @param dualCheck Filter for dual verification requirements.
+     * @param status       The lifecycle status of the checklist (e.g., Active,
+     *                     Inactive).
+     * @param category     The functional category (RENEWAL, CHECK LIST).
+     * @param department   Optional department filter.
+     * @param searchBy     The field to perform textual search on.
+     * @param searchValue  The textual search term.
+     * @param dualCheck    Filter for dual verification requirements.
      * @param verifyStatus Filter by the current verification workflow state.
-     * @param pageable Pagination and sorting configuration.
+     * @param pageable     Pagination and sorting configuration.
      * @return A paginated result set of MasterChecklist entities.
      */
-    public Page<MasterChecklist> getAllChecklists(String status, String category, String department, String searchBy, String searchValue, String dualCheck, String verifyStatus, Pageable pageable) {
+    public Page<MasterChecklist> getAllChecklists(String status, String category, String department, String searchBy,
+            String searchValue, String dualCheck, String verifyStatus, Pageable pageable) {
         return masterRepo.findAll((root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            
+
             if (dualCheck != null && !dualCheck.isEmpty()) {
                 predicates.add(cb.equal(root.get("dualCheck"), dualCheck));
             }
-            
+
             if (verifyStatus != null && !verifyStatus.isEmpty() && !verifyStatus.equals("All")) {
                 predicates.add(cb.equal(root.get("verifyStatus"), verifyStatus));
             }
-            
+
             if (status != null && !status.equals("All")) {
                 predicates.add(cb.equal(root.get("status"), status));
             }
@@ -90,10 +92,10 @@ public class ChecklistService {
                     orPredicates.add(cb.like(cb.lower(root.get("frequency")), searchTerm));
                     orPredicates.add(cb.like(cb.lower(root.get("status")), searchTerm));
                     orPredicates.add(cb.like(cb.lower(root.get("createdBy")), searchTerm));
-                    
+
                     Join<MasterChecklist, ChecklistDepartment> dJoin = root.join("departments", JoinType.LEFT);
                     orPredicates.add(cb.like(cb.lower(dJoin.get("departmentName")), searchTerm));
-                    
+
                     predicates.add(cb.or(orPredicates.toArray(new Predicate[0])));
                 }
             }
@@ -132,7 +134,7 @@ public class ChecklistService {
             existing.setUploadedFiles(checklist.getUploadedFiles());
             existing.setScannedFiles(checklist.getScannedFiles());
             existing.setUpdatedDate(new Date());
-            
+
             // Re-sync departments
             deptRepo.deleteByChecklist(existing);
             if (departments != null) {
@@ -146,10 +148,12 @@ public class ChecklistService {
             return masterRepo.save(existing);
         } else {
             checklist.setCreatedDate(new Date());
-            if (checklist.getStatus() == null) checklist.setStatus("Active");
-            if (checklist.getVerifyStatus() == null) checklist.setVerifyStatus("Pending for Verify");
+            if (checklist.getStatus() == null)
+                checklist.setStatus("Active");
+            if (checklist.getVerifyStatus() == null)
+                checklist.setVerifyStatus("Pending for Verify");
             MasterChecklist saved = masterRepo.save(checklist);
-            
+
             if (departments != null) {
                 for (String deptName : departments) {
                     ChecklistDepartment dept = new ChecklistDepartment();
@@ -161,7 +165,8 @@ public class ChecklistService {
 
             // Automatic Assignment Trigger (Wiring 1)
             if (saved.getAssignTo() != null && !saved.getAssignTo().isEmpty()) {
-                assignTask(saved.getId(), saved.getAssignTo(), saved.getCreatedBy() != null ? saved.getCreatedBy() : "System", "PRIMARY");
+                assignTask(saved.getId(), checklist.getId(), saved.getAssignTo(),
+                        saved.getCreatedBy() != null ? saved.getCreatedBy() : "System", "PRIMARY");
             }
 
             return saved;
@@ -177,7 +182,8 @@ public class ChecklistService {
 
     // --- Assignments ---
 
-    public Page<ChecklistAssignment> getAssignments(String status, String assignedTo, Date fromDate, Date toDate, String category, String searchBy, String searchValue, Pageable pageable) {
+    public Page<ChecklistAssignment> getAssignments(String status, String assignedTo, Date fromDate, Date toDate,
+            String category, String searchBy, String searchValue, Pageable pageable) {
         return assignRepo.findAll((root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -211,16 +217,16 @@ public class ChecklistService {
                     List<Predicate> orPredicates = new ArrayList<>();
                     orPredicates.add(cb.like(cb.lower(root.get("assignedTo")), searchTerm));
                     orPredicates.add(cb.like(cb.lower(root.get("assignedBy")), searchTerm));
-                    
+
                     Join<ChecklistAssignment, StatusMaster> sJoin = root.join("status", JoinType.LEFT);
                     orPredicates.add(cb.like(cb.lower(sJoin.get("name")), searchTerm));
-                    
+
                     Join<ChecklistAssignment, MasterChecklist> cJoin = root.join("checklist", JoinType.LEFT);
                     orPredicates.add(cb.like(cb.lower(cJoin.get("seqNo")), searchTerm));
                     orPredicates.add(cb.like(cb.lower(cJoin.get("checkingPoint")), searchTerm));
                     orPredicates.add(cb.like(cb.lower(cJoin.get("category")), searchTerm));
                     orPredicates.add(cb.like(cb.lower(cJoin.get("frequency")), searchTerm));
-                    
+
                     Join<MasterChecklist, ChecklistDepartment> dJoin = cJoin.join("departments", JoinType.LEFT);
                     orPredicates.add(cb.like(cb.lower(dJoin.get("departmentName")), searchTerm));
 
@@ -233,9 +239,10 @@ public class ChecklistService {
     }
 
     @Transactional
-    public ChecklistAssignment assignTask(Long id, Long checklistId, String assignedTo, String assignedBy, String assignType) {
+    public ChecklistAssignment assignTask(Long id, Long checklistId, String assignedTo, String assignedBy,
+            String assignType) {
         MasterChecklist checklist = masterRepo.findById(checklistId).orElseThrow();
-        
+
         ChecklistAssignment assignment;
         if (id != null) {
             assignment = assignRepo.findById(id).orElse(new ChecklistAssignment());
@@ -250,7 +257,7 @@ public class ChecklistService {
         assignment.setAssignedBy(assignedBy);
         assignment.setAssignType(assignType);
         assignment.setAssignedDate(new Date());
-        
+
         return assignRepo.save(assignment);
     }
 
@@ -262,10 +269,11 @@ public class ChecklistService {
     // --- Verification ---
 
     @Transactional
-    public ChecklistVerification verifyTask(Long assignmentId, String verifiedBy, String statusName, String remarks, List<String> actualFiles) {
+    public ChecklistVerification verifyTask(Long assignmentId, String verifiedBy, String statusName, String remarks,
+            List<String> actualFiles) {
         ChecklistAssignment assignment = assignRepo.findById(assignmentId).orElseThrow();
         StatusMaster status = statusRepo.findByName(statusName).orElseThrow();
-        
+
         // Update assignment details
         assignment.setStatus(status);
         if (actualFiles != null && !actualFiles.isEmpty()) {
@@ -280,7 +288,7 @@ public class ChecklistService {
         verification.setStatus(status);
         verification.setRemarks(remarks);
         verification.setVerifiedDate(new Date());
-        
+
         return verifyRepo.save(verification);
     }
 
@@ -301,9 +309,9 @@ public class ChecklistService {
     @Transactional
     public void seedStatuses() {
         String[] statuses = {
-            "Pending", "Started", "Unresolved", "Missed", "Completed", 
-            "Not Completed", "25%", "50%", "75%", "Pending for Verified", 
-            "Verified", "Pending for Accepted", "Accepted", "Attended", "Rejected", "Open"
+                "Pending", "Started", "Unresolved", "Missed", "Completed",
+                "Not Completed", "25%", "50%", "75%", "Pending for Verified",
+                "Verified", "Pending for Accepted", "Accepted", "Attended", "Rejected", "Open"
         };
         for (String s : statuses) {
             if (statusRepo.findByName(s).isEmpty()) {

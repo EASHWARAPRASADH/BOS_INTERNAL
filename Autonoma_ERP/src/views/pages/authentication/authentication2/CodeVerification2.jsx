@@ -20,7 +20,7 @@ import AuthFooter from 'ui-component/cards/AuthFooter';
 import AuthSlider from 'ui-component/cards/AuthSlider';
 
 // assets
-import imgMain from 'assets/images/auth/img-a2-codevarify.svg';
+import imgMain from 'assets/images/auth/img-a2-checkmail.svg';
 
 // carousel items
 const items = [

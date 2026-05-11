@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import ContactCard from './ContactCard';
 
 // assets
-import headerBackground from 'assets/images/landing/bg-header.jpg';
+import headerBackground from 'assets/images/landing/bg-hero-block-light.png';
 
 // ============================|| CONTACT US ||============================ //
 
