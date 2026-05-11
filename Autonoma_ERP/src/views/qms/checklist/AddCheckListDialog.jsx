@@ -45,7 +45,7 @@ import useLookups from 'hooks/useLookups';
 
 // Departments are now fetched dynamically from API
 
-const CATEGORIES = ['RENEWAL', 'CHECK LIST'];
+const CATEGORIES = ['SAFETY', 'QUALITY', 'MAINTENANCE', 'PRODUCTION', 'HR/ADMIN', 'AUDIT', 'RENEWAL', 'CHECK LIST'];
 const FREQUENCIES = ['DAILY', 'WEEKLY', 'FORTNIGHTLY', 'MONTHLY', 'QUARTERLY', 'HALF YEARLY', 'YEARLY'];
 
 export const AddCheckListDialog = ({ open, handleClose, onSave, initialData, readOnly, onVerify, onReject }) => {
@@ -83,20 +83,26 @@ export const AddCheckListDialog = ({ open, handleClose, onSave, initialData, rea
   const [isListening, setIsListening] = useState(false);
   const [interimText, setInterimText] = useState('');
   const lookups = useLookups(['ACTIVE_DEPARTMENTS', 'EMPLOYEES']);
-  const departmentList = (lookups.activeDepartments || []).map(d => (d.departmentName || '').toUpperCase());
+  const departmentList = (lookups.activeDepartments || [])
+    .map(d => {
+      if (!d) return null;
+      const name = d.departmentName || d.deptName || d.dept_name || d.name || (typeof d === 'string' ? d : null);
+      return name ? String(name).toUpperCase() : null;
+    })
+    .filter(Boolean);
 
   const filteredEmployees = useMemo(() => {
     if (!lookups.employees) return [];
     if (!formData.department || formData.department.length === 0) return lookups.employees;
 
     // 1. Get IDs of selected departments
-    const selectedDeptIds = (lookups.departments || [])
-      .filter(d => formData.department.includes((d.departmentName || '').toUpperCase()))
+    const selectedDeptIds = (lookups.activeDepartments || [])
+      .filter(d => formData.department.includes((d.departmentName || d.deptName || d.dept_name || '').toUpperCase()))
       .map(d => d.id);
 
     // 2. Filter employees by those IDs
     return lookups.employees.filter(e => selectedDeptIds.includes(e.departmentId));
-  }, [lookups.employees, lookups.departments, formData.department]);
+  }, [lookups.activeDepartments, formData.department, lookups.employees]);
 
   const employeeList = filteredEmployees.map(e => e.employeeName || `${e.firstName} ${e.lastName}`);
   const speechRef = useRef(null);
@@ -230,8 +236,22 @@ export const AddCheckListDialog = ({ open, handleClose, onSave, initialData, rea
 
   const handleSave = async () => {
     if (!formData.category || !formData.frequency || !formData.checkingPoint || !formData.description || !formData.reminderDays ||
-      !formData.photoRequired || !formData.stockLink || !formData.dualCheck || !formData.carryForward) {
-      alert('Please fill all mandatory fields including Photo Required, Stock Link, Dual Check and Carry Forward');
+      !formData.photoRequired || !formData.stockLink || !formData.dualCheck || !formData.carryForward || !formData.effectiveFrom) {
+      alert('Please fill all mandatory fields including Effective From, Photo Required, Stock Link, Dual Check and Carry Forward');
+      return;
+    }
+
+    // SOP Logic: Effective From should be today or future
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (new Date(formData.effectiveFrom) < today) {
+      alert('Effective From date cannot be in the past.');
+      return;
+    }
+
+    // SOP Logic: Stock Link requires Item Code and Qty
+    if (formData.stockLink === 'YES' && (!formData.itemCode || !formData.qty)) {
+      alert('Item Code and Quantity are mandatory when Stock Link is enabled.');
       return;
     }
 
@@ -270,7 +290,8 @@ export const AddCheckListDialog = ({ open, handleClose, onSave, initialData, rea
       handleClose();
     } catch (error) {
       console.error('Save failed:', error);
-      alert('Failed to save record or upload files.');
+      const msg = error.response?.data?.details || error.response?.data?.message || 'Failed to save record or upload files.';
+      alert(msg);
     }
   };
 
@@ -403,6 +424,14 @@ export const AddCheckListDialog = ({ open, handleClose, onSave, initialData, rea
                 value={isListening ? formData.description + ' ' + interimText : formData.description}
                 onChange={handleChange}
                 disabled={!isEditing}
+                helperText={
+                  <Box component="span" sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography component="span" variant="caption" color={formData.description.length < 500 ? 'warning.main' : 'success.main'}>
+                      {formData.description.length < 500 ? 'Min 500 characters recommended' : 'SOP length sufficient'}
+                    </Typography>
+                    <Typography component="span" variant="caption">{formData.description.length} characters</Typography>
+                  </Box>
+                }
                 InputProps={{
                   endAdornment: isEditing && (
                     <IconButton
@@ -443,12 +472,34 @@ export const AddCheckListDialog = ({ open, handleClose, onSave, initialData, rea
             </Box>
           </BOSFormSection>
 
-          <BOSFormSection title="Timeline & Reminders" icon={<IconCalendarEvent size={20} color={theme.palette.secondary.main} />}>
+          <BOSFormSection title="Timeline & Schedule" icon={<IconCalendarEvent size={20} color={theme.palette.secondary.main} />}>
             <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2.5 }}>
-              <BOSTextField type="date" label="Effective From" name="effectiveFrom" value={formData.effectiveFrom} onChange={handleChange} InputLabelProps={{ shrink: true }} disabled={!isEditing} />
-              <BOSTextField type="date" label="Expiry Date" name="expiryDate" value={formData.expiryDate} onChange={handleChange} InputLabelProps={{ shrink: true }} disabled={!isEditing} />
-              <BOSTextField type="number" label="Reminder Days" name="reminderDays" value={formData.reminderDays} onChange={handleChange} disabled={!isEditing} />
-              <BOSTextField type="date" label="Reminder Date" name="reminderDate" value={formData.reminderDate} onChange={handleChange} InputLabelProps={{ shrink: true }} disabled={!isEditing} />
+              <BOSTextField 
+                type="date" 
+                label="Effective From" 
+                name="effectiveFrom" 
+                value={formData.effectiveFrom} 
+                onChange={handleChange} 
+                InputLabelProps={{ shrink: true }} 
+                inputProps={{ min: new Date().toISOString().split('T')[0] }}
+                disabled={!isEditing} 
+                required 
+              />
+              {formData.frequency === 'WEEKLY' && (
+                <BOSTextField 
+                  label="Repeating Every" 
+                  value={formData.effectiveFrom ? new Date(formData.effectiveFrom).toLocaleDateString('en-US', { weekday: 'long' }) : 'Select Date'} 
+                  InputProps={{ readOnly: true }} 
+                  disabled 
+                  helperText="Automatically detected from Effective From date"
+                />
+              )}
+              {formData.category === 'RENEWAL' && (
+                <>
+                  <BOSTextField type="date" label="Expiry Date" name="expiryDate" value={formData.expiryDate} onChange={handleChange} InputLabelProps={{ shrink: true }} disabled={!isEditing} />
+                  <BOSTextField type="number" label="Reminder Days" name="reminderDays" value={formData.reminderDays} onChange={handleChange} disabled={!isEditing} />
+                </>
+              )}
             </Box>
           </BOSFormSection>
 
@@ -591,5 +642,7 @@ AddCheckListDialog.propTypes = {
   handleClose: PropTypes.func,
   onSave: PropTypes.func,
   initialData: PropTypes.object,
-  readOnly: PropTypes.bool
+  readOnly: PropTypes.bool,
+  onVerify: PropTypes.func,
+  onReject: PropTypes.func
 };

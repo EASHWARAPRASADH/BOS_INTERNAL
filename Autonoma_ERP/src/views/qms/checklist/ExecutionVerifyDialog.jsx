@@ -108,7 +108,13 @@ const ExecutionVerifyDialog = ({ open, handleClose, data, onVerify, onReject, on
     <BOSFormDialog
       open={open}
       onClose={handleClose}
-      onSave={isExecution ? () => onSave({ ...formData }) : null}
+      onSave={isExecution ? () => {
+        if (formData.status === 'Completed' && master.photoRequired === 'YES' && formData.actualFiles.length === 0) {
+          alert('Photo is mandatory for this checklist item before completion.');
+          return;
+        }
+        onSave({ ...formData });
+      } : null}
       title={isExecution ? `Update Progress - ${master.seqNo}` : (isAssignment ? `Verify Execution - ${master.seqNo}` : `Verify Master Record - ${master.seqNo}`)}
       maxWidth="lg"
       isViewOnly={!isExecution || formData.status === 'Pending for Verified' || formData.status === 'Accepted' || formData.status === 'Verified'}
@@ -150,6 +156,12 @@ const ExecutionVerifyDialog = ({ open, handleClose, data, onVerify, onReject, on
               <BOSTextField label="Frequency" value={master.frequency || '-'} disabled />
               <BOSTextField label="Seq No" value={master.seqNo} disabled />
             </Box>
+            {master.stockLink === 'YES' && (
+              <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2.5, mt: 2.5 }}>
+                <BOSTextField label="Item Code" value={master.itemCode || '-'} disabled />
+                <BOSTextField label="Qty" value={master.qty || '-'} disabled />
+              </Box>
+            )}
           </BOSFormSection>
 
           <BOSFormSection title="Task Details" icon={<IconFileText size={20} color={theme.palette.success.main} />}>
