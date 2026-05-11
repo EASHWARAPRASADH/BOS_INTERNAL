@@ -29,6 +29,7 @@ import {
   BOSFormDialog,
   BOSFormSection,
   BOSTextField,
+  BOSDataTable,
   btnClear,
   btnSave,
   btnCancel,
@@ -168,9 +169,6 @@ export default function AddCheckListDialog({ open, handleClose, onSave, initialD
       fetchNextSeq();
     }
   };
-
-  const [docDetails, setDocDetails] = useState('');
-  const [currentFile, setCurrentFile] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
