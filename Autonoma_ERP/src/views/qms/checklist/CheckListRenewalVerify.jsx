@@ -24,23 +24,17 @@ import { API_PATHS } from 'utils/api-constants';
 import { BOSFileGallery } from 'ui-component/bos';
 
 const columns = [
-  { id: 'index', label: 'S.No', minWidth: 50 },
-  { id: 'seqNo', label: 'Seq No', minWidth: 80, bold: true },
-  { id: 'checkingPoint', label: 'Checking Point', minWidth: 200 },
+  { id: 'index', label: '#', minWidth: 50 },
   { id: 'category', label: 'Category', minWidth: 120 },
+  { id: 'checkingPoint', label: 'Check Point', minWidth: 200 },
+  { id: 'department', label: 'Dept', minWidth: 150 },
+  { id: 'level', label: 'Level', minWidth: 100 },
   { id: 'frequency', label: 'Frequency', minWidth: 120 },
-  { id: 'department', label: 'Department', minWidth: 150 },
-  { id: 'photoRequired', label: 'Photo Required', minWidth: 120 },
-  { id: 'verificationRequired', label: 'Verification Required', minWidth: 150 },
   { id: 'stockLink', label: 'Stock Link', minWidth: 100 },
-  { id: 'itemCode', label: 'Item Code', minWidth: 100 },
-  { id: 'qty', label: 'Qty', minWidth: 80 },
-  { id: 'assignedTo', label: 'Assign To', minWidth: 120 },
-  { id: 'checklistDate', label: 'Checklist Date', minWidth: 120 },
-  { id: 'expiryDate', label: 'Expire Date', minWidth: 120 },
-  { id: 'carryForward', label: 'Carry Forward Count', minWidth: 150 },
-  { id: 'assignType', label: 'Assign Type', minWidth: 120 },
-  { id: 'nextDueDate', label: 'NextDue Date/Next Expire Date', minWidth: 200 },
+  { id: 'remarks', label: 'Comments', minWidth: 200 },
+  { id: 'verificationRequired', label: 'Verification Required', minWidth: 150 },
+  { id: 'assignedTo', label: 'Assigned To', minWidth: 120 },
+  { id: 'assignedBy', label: 'Assigned By', minWidth: 120 },
   { id: 'status', label: 'Status', minWidth: 150 }
 ];
 
@@ -51,7 +45,7 @@ const masterColumns = [
   { id: 'category', label: 'Category', minWidth: 120 },
   { id: 'frequency', label: 'Frequency', minWidth: 120 },
   { id: 'department', label: 'Department', minWidth: 150 },
-  { id: 'effectiveFrom', label: 'Effective from', minWidth: 120 },
+  { id: 'effectiveFrom', label: 'Effective From', minWidth: 120 },
   { id: 'reminderDays', label: 'Days', minWidth: 80 },
   { id: 'expiryDate', label: 'Expire Date', minWidth: 120 },
   { id: 'stockLink', label: 'Stock Link', minWidth: 100 },
@@ -120,7 +114,8 @@ export default function CheckListRenewalVerify() {
           toDate: filters.considerDate === 'Yes' ? filters.toDate : undefined,
           searchBy: filters.searchBy !== 'All' ? filters.searchBy : undefined,
           searchValue: globalQuery || undefined,
-          masterVerifyStatus: 'Verified'
+          masterVerifyStatus: 'Verified',
+          currentUser: 'Current User' // Replace with actual logged in user in production
         };
         const response = await axios.get('/api/qms/checklist/assignments', { params });
         setRows(response.data.content || []);
@@ -138,7 +133,9 @@ export default function CheckListRenewalVerify() {
           frequency: filters.frequency !== 'All' ? filters.frequency : undefined,
           department: filters.department || undefined,
           searchBy: filters.searchBy !== 'All' ? filters.searchBy : undefined,
-          searchValue: globalQuery || undefined
+          searchValue: globalQuery || undefined,
+          taskType: 'All', // Dual check is always 'All'
+          currentUser: 'Current User'
         };
         const response = await axios.get('/api/qms/checklist/assignments', { params });
         setRows(response.data.content || []);
@@ -236,20 +233,56 @@ export default function CheckListRenewalVerify() {
     if (col.id === 'createdDate') return row.createdDate ? new Date(row.createdDate).toLocaleDateString() : '-';
 
     if (col.id === 'status' || col.id === 'verifyStatus') {
-      let s = row.verifyStatus || row.status || 'Pending';
-      if (typeof s === 'object' && s !== null) s = s.name || 'Pending';
+      let s = row.verifyStatus || row.status || 'OPEN';
+      if (typeof s === 'object' && s !== null) s = s.name || 'OPEN';
       
+      // Missed Logic (SOP Item 15)
+      const scheduledDate = row.checklistDate ? new Date(row.checklistDate) : null;
+      const isMissed = scheduledDate && scheduledDate < new Date() && s !== 'CLOSED' && s !== 'Verified' && s !== 'Accepted';
+      if (isMissed) s = 'MISSED';
+
+      // SOP Rule 13: Expiry Status Logic
+      const isExpired = data.expiryDate && new Date(data.expiryDate) < new Date();
+      if (isExpired && s !== 'Verified' && s !== 'Accepted' && s !== 'CLOSED' && s !== 'Completed') {
+        s = 'EXPIRED';
+      }
+
       let chipStatus = 'PENDING';
-      if (s === 'Verified' || s === 'Accepted' || s === 'COMPLETED' || s === 'STARTED') chipStatus = 'ACTIVE';
-      if (s === 'Rejected' || s === 'Missed' || s === 'UNRESOLVED') chipStatus = 'INACTIVE';
-      return <Chip label={s} size="small" sx={getStatusChipSx(chipStatus)} />;
+      if (['Verified', 'Accepted', 'CLOSED', 'COMPLETED', 'STARTED'].includes(s)) chipStatus = 'ACTIVE';
+      if (['Rejected', 'Missed', 'MISSED', 'UNRESOLVED', 'EXPIRED', 'NOT COMPLETED'].includes(s)) chipStatus = 'INACTIVE';
+      if (s === 'OPEN') chipStatus = 'PENDING';
+      
+      return <Chip label={s.toUpperCase()} size="small" sx={getStatusChipSx(chipStatus)} />;
     }
 
     if (col.id === 'department') return (data.departments || []).map((d) => d.departmentName).join(', ');
 
     if (col.id === 'effectiveFrom') return data.effectiveFrom ? new Date(data.effectiveFrom).toLocaleDateString() : '-';
     if (col.id === 'reminderDays') return data.reminderDays || '-';
-    if (col.id === 'expiryDate') return data.expiryDate ? new Date(data.expiryDate).toLocaleDateString() : '-';
+    if (col.id === 'expiryDate') {
+      if (!data.expiryDate) return '-';
+      const expiry = new Date(data.expiryDate);
+      const diff = Math.ceil((expiry - new Date()) / (1000 * 60 * 60 * 24));
+      
+      // SOP Rule 19: Reminder Thresholds
+      let threshold = 3;
+      if (data.frequency === 'QUARTERLY') threshold = 7;
+      if (data.frequency === 'YEARLY') threshold = 30;
+
+      const isUrgent = diff <= threshold && diff >= 0;
+      const isExpired = diff < 0;
+
+      return (
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Typography variant="body2">{expiry.toLocaleDateString()}</Typography>
+          {isExpired ? (
+            <Chip label="OVERDUE" size="small" color="error" variant="filled" sx={{ height: 20, fontSize: '0.65rem' }} />
+          ) : isUrgent ? (
+            <Chip label={`${diff}d left`} size="small" color="warning" variant="filled" sx={{ height: 20, fontSize: '0.65rem' }} />
+          ) : null}
+        </Stack>
+      );
+    }
     if (col.id === 'stockLink') return data.stockLink || 'No';
     if (col.id === 'photoRequired') return data.photoRequired || '-';
     if (col.id === 'verificationRequired') return data.verificationRequired || '-';
@@ -260,6 +293,9 @@ export default function CheckListRenewalVerify() {
     if (col.id === 'nextDueDate') return data.nextDueDate ? new Date(data.nextDueDate).toLocaleDateString() : '-';
 
     if (col.id === 'createdBy') return data.createdBy || '-';
+    if (col.id === 'assignedBy') return row.assignedBy || '-';
+    if (col.id === 'remarks') return row.remarks || data.description || '-';
+    if (col.id === 'level') return data.levelIds || '-';
     if (col.id === 'verifiedBy') return data.verifiedBy || '-';
     if (col.id === 'verifiedDate') return data.verifiedDate ? new Date(data.verifiedDate).toLocaleDateString() : '-';
 
@@ -323,6 +359,23 @@ export default function CheckListRenewalVerify() {
         showActions={false}
         renderCell={renderCell}
         id="renewal-verify-table"
+        sx={{
+          '& .MuiTableRow-root': {
+            cursor: 'pointer',
+            transition: 'background-color 0.2s',
+            '&:hover': { bgcolor: 'primary.lighter' }
+          },
+          '& .expired-row': {
+            bgcolor: 'error.lighter',
+            '&:hover': { bgcolor: 'error.light' }
+          }
+        }}
+        rowClassName={(row) => {
+          const data = row.checklist || row;
+          const isExpired = data.expiryDate && new Date(data.expiryDate) < new Date();
+          const s = row.verifyStatus || row.status;
+          return (isExpired && s !== 'Verified' && s !== 'Accepted') ? 'expired-row' : '';
+        }}
       />
 
       <ExecutionVerifyDialog
