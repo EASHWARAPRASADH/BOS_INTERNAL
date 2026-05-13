@@ -52,9 +52,10 @@ export default function GradeDetails() {
           { value: 'Active', label: 'ACTIVE' },
           { value: 'In Active', label: 'INACTIVE' }
         ],
-        defaultValue: 'Active'
+        defaultValue: 'Active',
+        isConstant: true
       },
-      { id: 'gradeName', label: 'Grade Name', type: 'text', placeholder: 'Search by Name...' }
+      { id: 'gradeName', label: 'Grade Name', type: 'text', placeholder: 'Search by Name...', isConstant: true }
     ];
     dispatch(setFilterConfig(config));
     return () => dispatch(setFilterConfig(null));
