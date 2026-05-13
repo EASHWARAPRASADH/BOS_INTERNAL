@@ -18,12 +18,15 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AutoFixHighRoundedIcon from '@mui/icons-material/AutoFixHighRounded';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import AttachFileRoundedIcon from '@mui/icons-material/AttachFileRounded';
-import axios from 'axios';
+import axios from 'utils/axios';
+import { sanitizeHTML } from 'utils/sanitize';
+import { API_PATHS } from 'utils/api-constants';
+import MainCard from 'ui-component/cards/MainCard';
 
 // ==============================|| SM - ENQUIRY DASHBOARD (LIVE INBOX) ||============================== //
 
-const INBOX_API = 'http://localhost:9090/api/inbox';
-const MARK_READ_API = (id) => `http://localhost:9090/api/inbox/${id}/mark-read`;
+const INBOX_API = API_PATHS.OCR.INBOX;
+const MARK_READ_API = API_PATHS.OCR.MARK_READ;
 
 export default function EnquiryDashboard() {
   const theme = useTheme();
@@ -121,20 +124,22 @@ export default function EnquiryDashboard() {
     <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 120px)', width: '100%', overflow: 'hidden' }}>
       {/* Fixed Header Section */}
       <Box sx={{ flexShrink: 0, mb: 2 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-          <Typography variant="h3" sx={{ fontWeight: 800 }}>Enquiry Inbox</Typography>
-          <Button
-            variant="outlined"
-            size="small"
-            startIcon={<RefreshRoundedIcon />}
-            onClick={load}
-            disabled={loading}
-            sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
-          >
-            Refresh
-          </Button>
-        </Stack>
-        
+        <MainCard
+          title={<Typography variant="h3" sx={{ fontWeight: 800 }}>Enquiry Inbox</Typography>}
+          secondary={
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<RefreshRoundedIcon />}
+              onClick={load}
+              disabled={loading}
+              sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+            >
+              Refresh
+            </Button>
+          }
+          sx={{ mb: 2 }}
+        >
         <Grid container spacing={2} sx={{ mb: 2 }}>
           <Grid item xs={12} sm={6} md={3}>
             <Card sx={{ bgcolor: 'background.paper', borderRadius: 2, border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
@@ -212,6 +217,7 @@ export default function EnquiryDashboard() {
             sx={{ width: 250 }}
           />
         </Box>
+        </MainCard>
       </Box>
 
       {/* Main Content Area: Split View */}
@@ -390,7 +396,7 @@ export default function EnquiryDashboard() {
 
                 {/* Render the full HTML email body */}
                 <Box 
-                  dangerouslySetInnerHTML={{ __html: selectedEmail.body || selectedEmail.preview || '<i>No body content available</i>' }} 
+                  dangerouslySetInnerHTML={{ __html: sanitizeHTML(selectedEmail.body || selectedEmail.preview || '<i>No body content available</i>') }} 
                   sx={{ 
                     fontFamily: 'inherit', 
                     lineHeight: 1.6, 
