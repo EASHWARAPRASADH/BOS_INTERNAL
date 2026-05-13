@@ -15,18 +15,6 @@ axiosServices.interceptors.request.use(
     if (accessToken) {
       config.headers['Authorization'] = `Bearer ${accessToken}`;
     }
-    const companyId = localStorage.getItem('companyId');
-    if (companyId) {
-      config.headers['X-Tenant-ID'] = companyId;
-    }
-    const divisionId = localStorage.getItem('divisionId');
-    if (divisionId) {
-      config.headers['X-Division-ID'] = divisionId;
-    }
-
-    // Add X-Page-Name for auditing
-    const pageName = document.title || window.location.pathname;
-    config.headers['X-Page-Name'] = pageName;
 
     // Deep Fix: Ensure absolute URLs are not accidentally truncated or mis-prefixed
     if (!config.url.startsWith('http') && !config.url.startsWith('/') && config.baseURL) {

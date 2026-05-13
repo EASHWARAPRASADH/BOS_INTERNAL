@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Grid, useTheme, MenuItem } from '@mui/material';
 import { IconMail, IconUser, IconFileDescription, IconSettings, IconPaperclip } from '@tabler/icons-react';
 import axios from 'utils/axios';
+import { API_PATHS } from 'utils/api-constants';
 import { useDispatch } from 'react-redux';
 import { openSnackbar } from 'store/slices/snackbar';
 import useBOSValidation from 'hooks/useBOSValidation';
@@ -89,9 +90,9 @@ export default function AddWorkItemDialog({ open, handleClose, initialData, read
     const payload = { ...formData, emailBodyPreview: formData.emailBody };
     try {
       if (isEdit) {
-        await axios.put(`http://localhost:9090/api/processing-requests/${initialData.id}`, payload);
+        await axios.put(API_PATHS.OCR.PROCESSING_BY_ID(initialData.id), payload);
       } else {
-        await axios.post('http://localhost:9090/api/processing-requests', payload);
+        await axios.post(API_PATHS.OCR.PROCESSING, payload);
       }
       dispatch(openSnackbar({ open: true, message: `Work Item ${isEdit ? 'updated' : 'created'} successfully!`, variant: 'alert', alert: { variant: 'filled' }, severity: 'success', close: false }));
       handleClose(true);

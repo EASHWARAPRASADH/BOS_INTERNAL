@@ -20,6 +20,7 @@ import { IconX, IconDeviceFloppy, IconUserCircle } from '@tabler/icons-react';
 import { useDispatch } from 'react-redux';
 import { openSnackbar } from 'store/slices/snackbar';
 import axios from 'utils/axios';
+import { API_PATHS } from 'utils/api-constants';
 import { getDialogStyles, getInputStyles, btnSave, btnCancel } from 'ui-component/bos/BOSStyles';
 
 // ==============================|| SM - ADD/EDIT SUB CONTRACTOR DIALOG ||============================== //
@@ -67,10 +68,10 @@ export default function AddSubContractorDialog({ open, handleClose, initialData,
   const handleSubmit = async () => {
     try {
       if (initialData?.id) {
-        await axios.put(`/api/sm/sub-contractors/${initialData.id}`, formData);
+        await axios.put(`${API_PATHS.SM.SUB_CONTRACTORS}/${initialData.id}`, formData);
         dispatch(openSnackbar({ open: true, message: 'Sub Contractor updated successfully!', variant: 'alert', alert: { variant: 'filled' }, severity: 'success', close: false }));
       } else {
-        await axios.post('/api/sm/sub-contractors', formData);
+        await axios.post(API_PATHS.SM.SUB_CONTRACTORS, formData);
         dispatch(openSnackbar({ open: true, message: 'Sub Contractor created successfully!', variant: 'alert', alert: { variant: 'filled' }, severity: 'success', close: false }));
       }
       handleClose(true);

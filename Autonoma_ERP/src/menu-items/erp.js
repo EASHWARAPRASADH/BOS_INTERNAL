@@ -12,7 +12,8 @@ import {
   IconReport,
   IconHelp,
   IconChecks,
-  IconRocket
+  IconRocket,
+  IconUsersGroup
 } from '@tabler/icons-react';
 
 const icons = {
@@ -29,7 +30,8 @@ const icons = {
   IconReport,
   IconHelp,
   IconChecks,
-  IconRocket
+  IconRocket,
+  IconUsersGroup
 };
 
 export const masters = {
@@ -51,35 +53,30 @@ export const masters = {
       id: 'master-hr',
       title: 'HR',
       type: 'collapse',
-      icon: icons.IconUsers,
       children: [
         {
           id: 'master-hr-dept-details',
           title: 'Department Details',
           type: 'item',
-          url: '/master/hr/department',
-          icon: icons.IconBuildingFactory
+          url: '/master/hr/department'
         },
         {
           id: 'master-hr-designation-details',
           title: 'Designation Details',
           type: 'item',
-          url: '/master/hr/designation',
-          icon: icons.IconUsers
+          url: '/master/hr/designation'
         },
         {
           id: 'master-hr-grade-details',
           title: 'Grade Details',
           type: 'item',
-          url: '/master/hr/grade',
-          icon: icons.IconAward
+          url: '/master/hr/grade'
         },
         {
           id: 'master-hr-designation-level',
           title: 'Designation Level',
           type: 'item',
-          url: '/master/hr/desg-level',
-          icon: icons.IconChecks
+          url: '/master/hr/desg-level'
         }
       ]
     },
@@ -87,41 +84,55 @@ export const masters = {
       id: 'master-qms',
       title: 'QMS',
       type: 'collapse',
-      icon: icons.IconListCheck,
       children: [
         {
-          id: 'master-qms-checklist',
-          title: 'Check List',
-          type: 'item',
-          url: '/master/qms/checklist/master',
-          icon: icons.IconChecks
+          id: 'master-qms-checklist-parent',
+          title: 'Checklist',
+          type: 'collapse',
+          children: [
+            {
+              id: 'master-qms-checklist',
+              title: 'Checklist Master',
+              type: 'item',
+              url: '/master/qms/checklist/master'
+            }
+          ]
         },
         {
           id: 'master-qms-audit',
           title: 'Audit',
           type: 'collapse',
-          icon: icons.IconReport,
           children: [
             {
               id: 'master-qms-audit-type',
               title: 'Audit Type',
               type: 'item',
-              url: '/master/qms/audit/type',
-              icon: icons.IconTool
+              url: '/master/qms/audit/type'
             },
             {
               id: 'master-qms-audit-area',
               title: 'Audit Area / Zone',
               type: 'item',
-              url: '/master/qms/audit/area',
-              icon: icons.IconBuildingFactory
+              url: '/master/qms/audit/area'
             },
             {
               id: 'master-qms-audit-criteria',
               title: 'Audit Criteria',
               type: 'item',
-              url: '/master/qms/audit/criteria',
-              icon: icons.IconListCheck
+              url: '/master/qms/audit/criteria'
+            }
+          ]
+        },
+        {
+          id: 'master-qms-meeting',
+          title: 'Meeting',
+          type: 'collapse',
+          children: [
+            {
+              id: 'master-qms-meeting-master',
+              title: 'Meeting Master',
+              type: 'item',
+              url: '/master/qms/meeting/master'
             }
           ]
         }
@@ -141,14 +152,12 @@ export const hra = {
       id: 'hra-hr-employee',
       title: 'Employee',
       type: 'collapse',
-      icon: icons.IconUsers,
       children: [
         {
           id: 'hra-hr-employee-details',
           title: 'Employee Master',
           type: 'item',
-          url: '/hra/employee/master',
-          icon: icons.IconBriefcase
+          url: '/hra/employee/master'
         }
       ]
     }
@@ -262,14 +271,6 @@ export const production = {
   children: []
 };
 
-export const quality = {
-  id: 'quality',
-  title: 'Quality',
-  caption: 'Quality Q0000',
-  type: 'group',
-  icon: icons.IconAward,
-  children: []
-};
 
 export const sl = {
   id: 'sl',
@@ -316,37 +317,32 @@ export const qms = {
   children: [
     {
       id: 'qms-checklist',
-      title: 'Check List',
+      title: 'Checklist',
       type: 'collapse',
-      icon: icons.IconChecks,
       children: [
         {
           id: 'checklist-verify',
-          title: 'Check List Verify',
+          title: 'Checklist Verify',
           type: 'item',
-          url: '/qms/checklist/verify',
-          icon: icons.IconRocket
+          url: '/qms/checklist/verify'
         },
         {
           id: 'close-renewal',
-          title: 'Close Check List / Renewal',
+          title: 'Close Checklist / Renewal',
           type: 'item',
-          url: '/qms/checklist/close-renewal',
-          icon: icons.IconRocket
+          url: '/qms/checklist/close-renewal'
         },
         {
           id: 'renewal-verify',
-          title: 'Check List / Renewal Verify',
+          title: 'Checklist / Renewal Verify',
           type: 'item',
-          url: '/qms/checklist/renewal-verify',
-          icon: icons.IconRocket
+          url: '/qms/checklist/renewal-verify'
         },
         {
           id: 'renewal-report',
-          title: 'Check List / Renewal Report',
+          title: 'Checklist / Renewal Report',
           type: 'item',
-          url: '/qms/checklist/renewal-report',
-          icon: icons.IconRocket
+          url: '/qms/checklist/renewal-report'
         }
       ]
     },
@@ -354,49 +350,85 @@ export const qms = {
       id: 'qms-audit',
       title: 'Audit',
       type: 'collapse',
-      icon: icons.IconReport,
       children: [
         {
           id: 'qms-audit-schedule',
           title: 'Audit Schedule',
           type: 'item',
-          url: '/qms/audit/schedule',
-          icon: icons.IconListCheck
+          url: '/qms/audit/schedule'
         },
         {
           id: 'qms-audit-attendance',
           title: 'Audit User Attendance',
           type: 'item',
-          url: '/qms/audit/attendance',
-          icon: icons.IconUsers
+          url: '/qms/audit/attendance'
         },
         {
           id: 'qms-audit-observation',
           title: 'Audit Observation',
           type: 'item',
-          url: '/qms/audit/observation',
-          icon: icons.IconDashboard
+          url: '/qms/audit/observation'
         },
         {
           id: 'qms-audit-ncr-close',
           title: 'Close NCR / OFI',
           type: 'item',
-          url: '/qms/audit/ncr/close',
-          icon: icons.IconChecks
+          url: '/qms/audit/ncr/close'
         },
         {
           id: 'qms-audit-ncr-approval',
           title: 'Audit NCR / OFI approval',
           type: 'item',
-          url: '/qms/audit/ncr/approval',
-          icon: icons.IconAward
+          url: '/qms/audit/ncr/approval'
         },
         {
           id: 'qms-audit-report',
           title: 'Audit Report',
           type: 'item',
-          url: '/qms/audit/report',
-          icon: icons.IconReport
+          url: '/qms/audit/report'
+        }
+      ]
+    },
+    {
+      id: 'qms-meeting',
+      title: 'Meeting',
+      type: 'collapse',
+      children: [
+        {
+          id: 'qms-meeting-master',
+          title: 'Meeting Master',
+          type: 'item',
+          url: '/qms/meeting-master'
+        },
+        {
+          id: 'qms-meeting-schedule',
+          title: 'Meeting Schedule',
+          type: 'item',
+          url: '/qms/meeting-schedule'
+        },
+        {
+          id: 'qms-minutes-of-meeting',
+          title: 'Minutes of Meeting',
+          type: 'item',
+          url: '/qms/minutesofmeeting'
+        },
+        {
+          id: 'qms-meeting-attendance',
+          title: 'Meeting User Attendance',
+          type: 'item',
+          url: '/qms/meeting-attendance'
+        },
+        {
+          id: 'qms-close-mom',
+          title: 'Close MOM',
+          type: 'item',
+          url: '/qms/close-mom'
+        },
+        {
+          id: 'qms-mom-approval',
+          title: 'MOM Approval',
+          type: 'item',
+          url: '/qms/mom-approval'
         }
       ]
     }
