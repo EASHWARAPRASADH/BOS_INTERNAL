@@ -10,10 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.Optional;
 
-import org.springframework.core.annotation.Order;
-
 @Component
-@Order(2)
 public class DataInitializer implements CommandLineRunner {
 
     @Autowired
@@ -28,7 +25,7 @@ public class DataInitializer implements CommandLineRunner {
         UserCredential admin;
         if (existingAdmin.isEmpty()) {
             admin = new UserCredential();
-            admin.setUserId("admin");
+            admin.setUserId("Admin");
             admin.setEmpId(1L);
             admin.setCreatedBy("SYSTEM");
             admin.setCreatedDate(new Date());
@@ -37,7 +34,7 @@ public class DataInitializer implements CommandLineRunner {
             admin = existingAdmin.get();
             System.out.println("Updating existing admin user...");
         }
-
+        
         // Use the new reversible encoder
         admin.setPassword(passwordEncoder.encode("admin123"));
         admin.setStatus(1);
