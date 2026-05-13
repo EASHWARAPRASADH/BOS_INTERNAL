@@ -19,53 +19,36 @@ public class AuditCriteriaController {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AuditCriteriaController.class);
 
     @Autowired
+    private com.autonoma.erp.service.AuditCriteriaService auditCriteriaService;
+
+    @Autowired
     private AuditCriteriaRepository auditCriteriaRepository;
 
     @GetMapping
     @Operation(summary = "Get All Audit Criteria", description = "Fetches a complete list of audit criteria")
     public List<AuditCriteria> getAllAuditCriteria() {
         log.info("Fetching all audit criteria");
-        return auditCriteriaRepository.findAll();
+        return auditCriteriaService.getAll();
     }
 
     @PostMapping
     @Operation(summary = "Create/Update Audit Criteria", description = "Creates a new audit criteria or updates an existing one")
     public AuditCriteria createAuditCriteria(@RequestBody AuditCriteria auditCriteria) {
         log.info("Saving audit criteria: {}", auditCriteria);
-        return auditCriteriaRepository.save(auditCriteria);
+        return auditCriteriaService.save(auditCriteria);
     }
 
     @GetMapping("/by-type/{auditType}")
     public List<AuditCriteria> getByAuditType(@PathVariable String auditType) {
         log.info("Fetching audit criteria for type: {}", auditType);
+        // This one stays repository for simplicity or move to service
         return auditCriteriaRepository.findByAuditTypeContaining(auditType);
     }
 
     @GetMapping("/next-seq")
     @Operation(summary = "Get Next Sequence Number", description = "Generates the next available sequence number for audit criteria")
     public String getNextSeqNo() {
-        return auditCriteriaRepository.findFirstByOrderBySeqNoDesc()
-                .map(latest -> incrementSequence(latest.getSeqNo(), "AC-"))
-                .orElse("AC-001");
-    }
-
-    private String incrementSequence(String latest, String prefix) {
-        if (latest == null || latest.isEmpty()) return prefix + "001";
-        try {
-            // Find the last numeric part in the string
-            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\d+$");
-            java.util.regex.Matcher matcher = pattern.matcher(latest);
-            if (matcher.find()) {
-                String numericPart = matcher.group();
-                int num = Integer.parseInt(numericPart);
-                int length = numericPart.length();
-                String nextNum = String.format("%0" + length + "d", num + 1);
-                return latest.substring(0, matcher.start()) + nextNum;
-            }
-            return prefix + "001";
-        } catch (Exception e) {
-            return prefix + "001";
-        }
+        return auditCriteriaService.generateNextSeqNo();
     }
 
     @DeleteMapping("/{id}")

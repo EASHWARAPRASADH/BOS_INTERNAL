@@ -188,6 +188,10 @@ const AdminPreferenceMaster = Loadable(lazy(() => import('views/admin/Preference
 const AdminCompanyProfile = Loadable(lazy(() => import('views/admin/CompanyProfile')));
 const AdminUserAccess = Loadable(lazy(() => import('views/admin/UserAccess')));
 const AdminBusinessAuthorization = Loadable(lazy(() => import('views/admin/BusinessAuthorization')));
+const AdminSessionMonitoring = Loadable(lazy(() => import('views/admin/SessionMonitoring')));
+const AdminDivisionMaster = Loadable(lazy(() => import('views/admin/DivisionMaster')));
+const AdminAuditTrail = Loadable(lazy(() => import('views/admin/AuditTrailPage')));
+const AdminSessionAnalytics = Loadable(lazy(() => import('views/admin/UserSessionAnalytics')));
 
 // qms checklist routing
 const QmsMasterCheckList = Loadable(lazy(() => import('views/qms/checklist/MasterCheckList')));
@@ -259,6 +263,22 @@ const MainRoutes = {
     {
       path: '/admin/business-authorization',
       element: <AdminBusinessAuthorization />
+    },
+    {
+      path: '/admin/session-monitoring',
+      element: <AdminSessionMonitoring />
+    },
+    {
+      path: '/admin/division-master',
+      element: <AdminDivisionMaster />
+    },
+    {
+      path: '/admin/audit-trail',
+      element: <AdminAuditTrail />
+    },
+    {
+      path: '/admin/session-analytics',
+      element: <AdminSessionAnalytics />
     },
     {
       path: '/widget/statistics',
@@ -825,11 +845,11 @@ const MainRoutes = {
       element: <MasterHrDepartment />
     },
     {
-      path: '/hra/hr/employee/master',
+      path: '/hra/employee/master',
       element: <MasterHrEmployeeList />
     },
     {
-      path: '/hra/hr/employee/master/create',
+      path: '/hra/employee/master/create',
       element: <MasterHrEmployee />
     },
     {
