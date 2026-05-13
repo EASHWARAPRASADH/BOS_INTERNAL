@@ -67,9 +67,13 @@ public class QmsMomMaster {
 
     @OneToMany(mappedBy = "mom", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("mom")
+    @lombok.ToString.Exclude
+    @lombok.EqualsAndHashCode.Exclude
     private List<QmsMomAttendance> attendanceList;
 
     @OneToMany(mappedBy = "mom", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("mom")
+    @lombok.ToString.Exclude
+    @lombok.EqualsAndHashCode.Exclude
     private List<QmsMomDetail> details;
 }
