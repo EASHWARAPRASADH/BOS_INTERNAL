@@ -25,6 +25,11 @@ public class QmsMomMasterController {
         return ResponseEntity.ok(service.getMomById(id));
     }
 
+    @GetMapping("/actions")
+    public ResponseEntity<List<com.autonoma.erp.dto.MomActionSummaryDTO>> getAllActions() {
+        return ResponseEntity.ok(service.getAllActions());
+    }
+
     @PostMapping
     public ResponseEntity<QmsMomMaster> create(@RequestBody QmsMomMaster mom) {
         return ResponseEntity.ok(service.saveMom(mom));
