@@ -52,9 +52,10 @@ export default function GradeDetails() {
           { value: 'Active', label: 'ACTIVE' },
           { value: 'In Active', label: 'INACTIVE' }
         ],
-        defaultValue: 'Active'
+        defaultValue: 'Active',
+        isConstant: true
       },
-      { id: 'gradeName', label: 'Grade Name', type: 'text', placeholder: 'Search by Name...' }
+      { id: 'gradeName', label: 'Grade Name', type: 'text', placeholder: 'Search by Name...', isConstant: true }
     ];
     dispatch(setFilterConfig(config));
     return () => dispatch(setFilterConfig(null));
@@ -119,7 +120,8 @@ export default function GradeDetails() {
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {
       const statusFilter = globalFilters.status || 'All';
-      const matchesStatus = statusFilter === 'All' || row.status === statusFilter;
+      const matchesStatus = statusFilter === 'All' || 
+        (row.status && row.status.toLowerCase().replace(/\s+/g, '') === statusFilter.toLowerCase().replace(/\s+/g, ''));
       const nameFilter = globalFilters.gradeName || '';
       const matchesName = !nameFilter || (row.gradeName && row.gradeName.toLowerCase().includes(nameFilter.toLowerCase()));
       const matchesSearch = !globalQuery ||
@@ -150,7 +152,7 @@ export default function GradeDetails() {
             </IconButton>
           </Tooltip>
           <Button variant="outlined" color="primary" size="medium" startIcon={<IconFileDownload size={18} />} onClick={handleExport} sx={btnExport}>
-            Export Excel
+            Export
           </Button>
           <Tooltip title={shortcutTooltip('Create New Grade', 'Ctrl + N')}>
             <Button variant="contained" color="primary" size="medium" onClick={handleOpenAdd} sx={btnNew}>
