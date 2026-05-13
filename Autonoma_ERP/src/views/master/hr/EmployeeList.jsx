@@ -95,9 +95,10 @@ export default function EmployeeList() {
           { value: 'Active', label: 'ACTIVE' },
           { value: 'In Active', label: 'INACTIVE' }
         ],
-        defaultValue: 'Active'
+        defaultValue: 'Active',
+        isConstant: true
       },
-      { id: 'departmentId', label: 'Department', type: 'text', placeholder: 'Filter by Department...' },
+      { id: 'departmentId', label: 'Department', type: 'text', placeholder: 'Filter by Department...', isConstant: true },
       { id: 'designationId', label: 'Designation', type: 'text', placeholder: 'Filter by Designation...' }
     ];
     dispatch(setFilterConfig(config));
