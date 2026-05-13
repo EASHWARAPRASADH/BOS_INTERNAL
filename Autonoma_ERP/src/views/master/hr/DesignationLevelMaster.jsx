@@ -38,7 +38,7 @@ export default function DesignationLevelMaster() {
 
     useEffect(() => {
         dispatch(setFilterConfig([
-            { id: 'level', label: 'Level', type: 'text', placeholder: 'Search level...' }
+            { id: 'level', label: 'Level', type: 'text', placeholder: 'Search level...', isConstant: true }
         ]));
         return () => dispatch(setFilterConfig(null));
     }, [dispatch]);
