@@ -21,6 +21,10 @@ public class CustomerMasterController {
     public List<CustomerMaster> getAllCustomers() {
         return service.getAllCustomers();
     }
+    @GetMapping("/next-code")
+    public String getNextCode() {
+        return service.getNextCode();
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<CustomerMaster> getCustomerById(@PathVariable Long id) {
