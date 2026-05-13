@@ -1,7 +1,9 @@
 package com.autonoma.erp.service;
 
 import com.autonoma.erp.model.UserSession;
+import com.autonoma.erp.model.UserSessionActivity;
 import com.autonoma.erp.repository.UserSessionRepository;
+import com.autonoma.erp.repository.UserSessionActivityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +16,9 @@ public class UserSessionService {
 
     @Autowired
     private UserSessionRepository userSessionRepository;
+
+    @Autowired
+    private UserSessionActivityRepository userSessionActivityRepository;
 
     public UserSession recordLogin(String userId, HttpServletRequest request, String userAgent) {
         String ipAddress = request.getHeader("X-Forwarded-For");
@@ -42,6 +47,49 @@ public class UserSessionService {
             session.setStatus("COMPLETED");
             userSessionRepository.save(session);
         }
+        recordPageExit(userId);
+    }
+
+    public void recordPageEntry(String userId, String pageName, String pageUrl) {
+        // First exit any existing page
+        recordPageExit(userId);
+
+        UserSessionActivity activity = UserSessionActivity.builder()
+                .userId(userId)
+                .pageName(pageName)
+                .pageUrl(pageUrl)
+                .entryTime(new Date())
+                .isIdle(false)
+                .idleTimeMs(0L)
+                .build();
+        userSessionActivityRepository.save(activity);
+    }
+
+    public void recordPageExit(String userId) {
+        Optional<UserSessionActivity> activityOpt = userSessionActivityRepository.findTopByUserIdAndExitTimeIsNullOrderByEntryTimeDesc(userId);
+        if (activityOpt.isPresent()) {
+            UserSessionActivity activity = activityOpt.get();
+            Date now = new Date();
+            activity.setExitTime(now);
+            activity.setDurationMs(now.getTime() - activity.getEntryTime().getTime());
+            userSessionActivityRepository.save(activity);
+        }
+    }
+
+    public List<UserSessionActivity> getAllNavigation() {
+        return userSessionActivityRepository.findAll();
+    }
+
+    public List<UserSessionActivity> getUserNavigation(String userId) {
+        return userSessionActivityRepository.findAllByUserIdOrderByEntryTimeDesc(userId);
+    }
+
+    public boolean isSessionValid(String userId) {
+        return userSessionRepository.findTopByUserIdAndStatusOrderByLoginTimeDesc(userId, "ACTIVE").isPresent();
+    }
+
+    public void terminateSession(String userId) {
+        recordLogout(userId);
     }
 
     public List<UserSession> getAllSessions() {
