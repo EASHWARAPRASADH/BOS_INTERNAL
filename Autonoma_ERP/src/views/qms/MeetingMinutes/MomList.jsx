@@ -333,8 +333,6 @@ export default function MomList() {
         id="mom-list-table"
       />
 
-      />
-
       <ReassignDialog
         open={reassignOpen}
         onClose={() => { setReassignOpen(false); setSelectedForReassign(null); }}
