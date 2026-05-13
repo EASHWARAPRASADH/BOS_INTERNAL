@@ -56,10 +56,11 @@ import MaterialSelectionDialog from './MaterialSelectionDialog';
 
 // Format: MM/CCRM/2026-2027/016
 const DEFAULT_MOM_NO = 'MM/CCRM/2026-2027/016';
+const TODAY = new Date().toISOString().split('T')[0];
 
 const INITIAL_FORM = {
   momNo: DEFAULT_MOM_NO,
-  momDate: new Date().toISOString().split('T')[0],
+  momDate: TODAY,
   schedule: null,
   agenda: '',
   chairedBy: null,
@@ -254,6 +255,16 @@ export default function AddMeetingMinutes() {
     const invalidDates = form.details.filter(d => d.processType === 'ACTION' && d.reviewDate && d.targetDate && d.reviewDate < d.targetDate);
     if (invalidDates.length > 0) {
       dispatch(openSnackbar({ open: true, message: 'Review Date cannot be before Target Date', variant: 'alert', severity: 'error' }));
+      return;
+    }
+
+    // SOP: Non-past dates for Action Points
+    const pastDates = form.details.filter(d => 
+      d.processType === 'ACTION' && 
+      ((d.targetDate && d.targetDate < TODAY) || (d.reviewDate && d.reviewDate < TODAY))
+    );
+    if (pastDates.length > 0) {
+      dispatch(openSnackbar({ open: true, message: 'Target/Review Date cannot be in the past', variant: 'alert', severity: 'error' }));
       return;
     }
 
@@ -634,8 +645,9 @@ export default function AddMeetingMinutes() {
                           value={det.targetDate} 
                           onChange={(e) => handleDetailChange(idx, 'targetDate', e.target.value)} 
                           disabled={det.processType === 'INFO'} 
-                          error={isSunday(det.targetDate)}
-                          helperText={isSunday(det.targetDate) ? 'Sunday!' : ''}
+                          error={isSunday(det.targetDate) || (det.targetDate && det.targetDate < TODAY)}
+                          helperText={isSunday(det.targetDate) ? 'Sunday!' : (det.targetDate && det.targetDate < TODAY ? 'Past Date!' : '')}
+                          inputProps={{ min: TODAY }}
                           sx={seamlessInputSx} 
                         />
                       </TableCell>
@@ -645,7 +657,9 @@ export default function AddMeetingMinutes() {
                           value={det.reviewDate} 
                           onChange={(e) => handleDetailChange(idx, 'reviewDate', e.target.value)} 
                           sx={seamlessInputSx} 
-                          error={det.reviewDate && det.targetDate && det.reviewDate < det.targetDate}
+                          inputProps={{ min: det.targetDate || TODAY }}
+                          error={(det.reviewDate && det.targetDate && det.reviewDate < det.targetDate) || (det.reviewDate && det.reviewDate < TODAY)}
+                          helperText={det.reviewDate && det.reviewDate < TODAY ? 'Past Date!' : ''}
                         />
                       </TableCell>
                       

@@ -26,6 +26,7 @@ const AttendanceEntryDialog = ({ open, onClose, onSave }) => {
   const [attendeeName, setAttendeeName] = useState('Current User');
   const [attendanceStatus, setAttendanceStatus] = useState('PRESENT');
   const [inTime, setInTime] = useState('');
+  const [inTimeRaw, setInTimeRaw] = useState('');
 
   // Load eligible schedules (OPEN or RESCHEDULE, current date, within time window)
   useEffect(() => {
