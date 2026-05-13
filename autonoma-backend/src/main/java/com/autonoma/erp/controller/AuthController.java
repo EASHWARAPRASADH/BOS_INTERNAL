@@ -3,12 +3,15 @@ package com.autonoma.erp.controller;
 import com.autonoma.erp.model.UserCredential;
 import com.autonoma.erp.repository.UserRepository;
 import com.autonoma.erp.service.JwtService;
+import com.autonoma.erp.service.CompanyCredentialService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletRequest;
+import com.autonoma.erp.service.UserSessionService;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -26,16 +29,22 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private CompanyCredentialService companyService;
+
+    @Autowired
+    private UserSessionService userSessionService;
+
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         // Find user by userId
-        Optional<UserCredential> userOpt = userRepository.findByUserId(request.getUsername());
+        Optional<UserCredential> userOpt = userRepository.findByUserId(loginRequest.getUsername());
 
         if (userOpt.isPresent()) {
             UserCredential user = userOpt.get();
 
             // Validate Password
-            if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
 
                 // Validate Status (assuming 1 is Active)
                 if (user.getStatus() != null && user.getStatus() != 1) {
@@ -44,7 +53,31 @@ public class AuthController {
                     return ResponseEntity.status(403).body(error);
                 }
 
+                // License Check
+                java.util.List<com.autonoma.erp.model.CompanyCredential> configs = companyService.findAll();
+                if (!configs.isEmpty()) {
+                    com.autonoma.erp.model.CompanyCredential config = configs.get(0);
+                    if (config.getLicExpiryDate() != null) {
+                        java.util.Date now = new java.util.Date();
+                        if (now.after(config.getLicExpiryDate())) {
+                            // Expired - only allow IS_BOS_ADMIN=1
+                            if (user.getIsBosAdmin() == null || user.getIsBosAdmin() != 1) {
+                                Map<String, String> error = new HashMap<>();
+                                error.put("message", "System License Expired. Please contact support.");
+                                return ResponseEntity.status(403).body(error);
+                            }
+                        }
+                    }
+                }
+
                 String token = jwtService.generateToken(user.getUserId());
+
+                // Set context for auditing before recording session to avoid "anonymousUser" in logs
+                com.autonoma.erp.util.AuditContextHolder.setUserId(user.getUserId());
+                com.autonoma.erp.util.AuditContextHolder.setPageName("Login Page");
+
+                // Record Login Session
+                userSessionService.recordLogin(user.getUserId(), request, request.getHeader("User-Agent"));
 
                 Map<String, Object> response = new HashMap<>();
                 response.put("serviceToken", token);
@@ -55,6 +88,8 @@ public class AuthController {
                 userMap.put("email", user.getUserId());
                 userMap.put("name", "Employee " + user.getEmpId());
                 userMap.put("role", "ADMIN");
+                userMap.put("imgName", user.getImgName());
+                userMap.put("isBosAdmin", user.getIsBosAdmin());
 
                 response.put("user", userMap);
 
@@ -72,22 +107,62 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> me(@RequestHeader("Authorization") String token) {
-        // Return first user or mock for now to satisfy session check
-        // In production, this would use token validation
-        return userRepository.findAll().stream().findFirst()
-                .map(user -> {
-                    Map<String, Object> userMap = new HashMap<>();
-                    userMap.put("id", user.getUserId());
-                    userMap.put("email", user.getUserId());
-                    userMap.put("name", user.getEmpId());
-                    userMap.put("role", "ADMIN");
+    public ResponseEntity<?> me(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body("Missing or invalid Authorization header");
+        }
 
-                    Map<String, Object> resp = new HashMap<>();
-                    resp.put("user", userMap);
-                    return ResponseEntity.ok(resp);
-                })
-                .orElse(ResponseEntity.status(401).build());
+        String token = authHeader.substring(7);
+        try {
+            String userId = jwtService.extractUsername(token);
+            return userRepository.findByUserId(userId)
+                    .map(user -> {
+                        Map<String, Object> userMap = new HashMap<>();
+                        userMap.put("id", user.getUserId());
+                        userMap.put("email", user.getUserId());
+                        userMap.put("name", user.getEmpId());
+                        userMap.put("role", "ADMIN");
+                        userMap.put("imgName", user.getImgName());
+                        userMap.put("isBosAdmin", user.getIsBosAdmin());
+
+                        Map<String, Object> resp = new HashMap<>();
+                        resp.put("user", userMap);
+                        return ResponseEntity.ok(resp);
+                    })
+                    .orElse(ResponseEntity.status(401).build());
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body("Invalid token");
+        }
+    }
+
+    @GetMapping("/license-status")
+    public ResponseEntity<?> getLicenseStatus() {
+        java.util.List<com.autonoma.erp.model.CompanyCredential> configs = companyService.findAll();
+        Map<String, Object> status = new HashMap<>();
+
+        if (!configs.isEmpty()) {
+            com.autonoma.erp.model.CompanyCredential config = configs.get(0);
+            status.put("licExpiryDate", config.getLicExpiryDate());
+            status.put("licExpRemainderDays", config.getLicExpRemainderDays());
+
+            if (config.getLicExpiryDate() != null) {
+                java.util.Date now = new java.util.Date();
+                status.put("isExpired", now.after(config.getLicExpiryDate()));
+
+                long diff = config.getLicExpiryDate().getTime() - now.getTime();
+                long daysLeft = diff / (1000 * 60 * 60 * 24);
+                status.put("daysLeft", daysLeft);
+                status.put("isWarningPeriod", daysLeft <= config.getLicExpRemainderDays() && daysLeft >= 0);
+            } else {
+                status.put("isExpired", false);
+                status.put("isWarningPeriod", false);
+            }
+        } else {
+            status.put("isExpired", false);
+            status.put("isWarningPeriod", false);
+        }
+
+        return ResponseEntity.ok(status);
     }
 
     @GetMapping("/bootstrap")
@@ -101,16 +176,38 @@ public class AuthController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestBody Map<String, String> body) {
+        String userId = body.get("userId");
+        if (userId != null) {
+            com.autonoma.erp.util.AuditContextHolder.setUserId(userId);
+            com.autonoma.erp.util.AuditContextHolder.setPageName("Logout Action");
+            userSessionService.recordLogout(userId);
+        }
+        return ResponseEntity.ok().build();
+    }
 }
 
 class LoginRequest {
     private String username;
     private String password;
 
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     // Getter/Setter for 'email' to handle frontend's payload
     public void setEmail(String email) {
