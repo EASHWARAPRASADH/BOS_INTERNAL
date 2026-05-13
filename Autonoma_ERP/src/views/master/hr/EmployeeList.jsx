@@ -167,26 +167,35 @@ export default function EmployeeList() {
 
   // SOP #16 — Global search + filters
   const filteredRows = useMemo(() => {
+    if (!Array.isArray(rows)) {
+      console.warn('EmployeeList: rows is not an array', rows);
+      return [];
+    }
+    console.debug(`EmployeeList: Filtering ${rows.length} rows. Query: "${globalQuery}", Filters:`, globalFilters);
+
     return rows.filter((row) => {
-      const statusFilter = globalFilters.status || 'All';
+      if (!row) return false;
+      const statusFilter = globalFilters?.status || 'All';
       const matchesStatus = statusFilter === 'All' || row.status === statusFilter;
 
-      const deptFilter = globalFilters.departmentId || '';
-      const matchesDept = !deptFilter || getDeptName(row.departmentId).toLowerCase().includes(deptFilter.toLowerCase());
+      const deptFilter = globalFilters?.departmentId || '';
+      const matchesDept = !deptFilter || getDeptName(row.departmentId).toLowerCase().includes(String(deptFilter).toLowerCase());
 
-      const desigFilter = globalFilters.designationId || '';
-      const matchesDesig = !desigFilter || getDesigName(row.designationId).toLowerCase().includes(desigFilter.toLowerCase());
+      const desigFilter = globalFilters?.designationId || '';
+      const matchesDesig = !desigFilter || getDesigName(row.designationId).toLowerCase().includes(String(desigFilter).toLowerCase());
 
       const matchesSearch = !globalQuery || [
         row.firstName, row.lastName, row.empCode,
         row.homeManager, row.businessManager, row.supplierName, row.vendorName
-      ].some((val) => val && String(val).toLowerCase().includes(globalQuery.toLowerCase()));
+      ].some((val) => val && String(val).toLowerCase().includes(String(globalQuery).toLowerCase()));
 
       return matchesStatus && matchesDept && matchesDesig && matchesSearch;
     });
   }, [rows, globalQuery, globalFilters, departments, designations]);
 
   const paginatedRows = useMemo(() => {
+    if (!Array.isArray(filteredRows)) return [];
+    console.debug(`EmployeeList: Paginating ${filteredRows.length} filtered rows (page ${page}, size ${size})`);
     return filteredRows.slice(page * size, page * size + size).map((row, i) => ({
       ...row,
       index: page * size + i + 1,
