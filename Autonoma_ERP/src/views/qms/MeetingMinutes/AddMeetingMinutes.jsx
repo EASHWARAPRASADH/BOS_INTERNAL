@@ -168,24 +168,70 @@ export default function AddMeetingMinutes() {
     clearErrors();
   }, [editId, fetchMom, clearErrors]);
 
-  const handleScheduleChange = (e, val) => {
+  const handleScheduleChange = async (e, val) => {
     if (!val) return;
-    const participants = (val.participants || []).map(p => ({
-      employee: p.employee,
-      inTime: val.startTime || '09:00',
-      outTime: val.endTime || '10:00',
-      attendanceStatus: 'Present'
-    }));
+    
+    setLoading(true);
+    try {
+      // 1. Fetch actual attendance records for this schedule
+      const { data: attendanceRecords } = await axios.get(`${API_PATHS.QMS.MEETING_ATTENDANCE}/schedule/${val.id}`);
+      
+      // 2. Map participants to attendance status
+      // If a record exists, use its status/times. Otherwise, they are ABSENT.
+      const participants = (val.participants || []).map(p => {
+        const record = attendanceRecords.find(r => r.employee?.id === p.employee?.id);
+        
+        if (record) {
+          return {
+            employee: p.employee,
+            inTime: record.inTime || val.startTime || '09:00',
+            outTime: record.outTime || val.endTime || '10:00',
+            attendanceStatus: record.attendanceStatus || 'Present'
+          };
+        } else {
+          // No attendance posted -> ABSENT
+          return {
+            employee: p.employee,
+            inTime: '',
+            outTime: '',
+            attendanceStatus: 'Absent'
+          };
+        }
+      });
 
-    setForm(p => ({
-      ...p,
-      schedule: val,
-      agenda: val.agenda || '',
-      chairedBy: val.chairedBy,
-      startTime: val.startTime || '09:00',
-      endTime: val.endTime || '10:00',
-      attendanceList: participants
-    }));
+      setForm(p => ({
+        ...p,
+        schedule: val,
+        agenda: val.agenda || '',
+        chairedBy: val.chairedBy,
+        startTime: val.startTime || '09:00',
+        endTime: val.endTime || '10:00',
+        attendanceList: participants
+      }));
+    } catch (error) {
+      console.error('Failed to fetch attendance:', error);
+      dispatch(openSnackbar({ open: true, message: 'Failed to load actual attendance records', variant: 'alert', severity: 'warning' }));
+      
+      // Fallback: Use participants from schedule but mark as Absent by default
+      const fallbackParticipants = (val.participants || []).map(p => ({
+        employee: p.employee,
+        inTime: '',
+        outTime: '',
+        attendanceStatus: 'Absent'
+      }));
+      
+      setForm(p => ({
+        ...p,
+        schedule: val,
+        agenda: val.agenda || '',
+        chairedBy: val.chairedBy,
+        startTime: val.startTime || '09:00',
+        endTime: val.endTime || '10:00',
+        attendanceList: fallbackParticipants
+      }));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const addDetailRow = () => {
