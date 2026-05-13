@@ -19,6 +19,8 @@ public class QmsMomAttendance {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mom_id", nullable = false)
+    @lombok.ToString.Exclude
+    @lombok.EqualsAndHashCode.Exclude
     private QmsMomMaster mom;
 
     @ManyToOne(fetch = FetchType.EAGER)

@@ -23,6 +23,8 @@ public class QmsMomDetail {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mom_id", nullable = false)
+    @lombok.ToString.Exclude
+    @lombok.EqualsAndHashCode.Exclude
     private QmsMomMaster mom;
 
     @Column(name = "discussed_point", columnDefinition = "NVARCHAR(MAX)", nullable = false)
