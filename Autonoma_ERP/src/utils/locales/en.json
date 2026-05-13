@@ -309,5 +309,20 @@
   "Work Items": "Work Items",
   "Supplier Master": "Supplier Master",
   "Sub Contractor": "Sub Contractor",
-  "business-authorization": "Business Authorization"
+  "business-authorization": "Business Authorization",
+  "Session Monitoring": "Session Monitoring",
+  "Checklist": "Checklist",
+  "Meeting": "Meeting",
+  "Meeting Master": "Meeting Master",
+  "Meeting Schedule": "Meeting Schedule",
+  "Minutes of Meeting": "Minutes of Meeting",
+  "Meeting User Attendance": "Meeting User Attendance",
+  "Close MOM": "Close MOM",
+  "MOM Approval": "MOM Approval",
+  "qms-meeting-master": "Meeting Master",
+  "qms-meeting-schedule": "Meeting Schedule",
+  "qms-minutes-of-meeting": "Minutes of Meeting",
+  "qms-meeting-attendance": "Meeting User Attendance",
+  "qms-close-mom": "Close MOM",
+  "qms-mom-approval": "MOM Approval"
 }
