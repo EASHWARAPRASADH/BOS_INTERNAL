@@ -1,33 +1,21 @@
 package com.autonoma.erp.repository;
 
-import com.autonoma.erp.model.DepartmentMaster;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.autonoma.erp.model.Department;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface DepartmentRepository extends JpaRepository<DepartmentMaster, Long> {
+public interface DepartmentRepository extends JpaRepository<Department, Long> {
+    Optional<Department> findByDepartmentNo(Integer departmentNo);
 
-    Optional<DepartmentMaster> findByDeptNo(Integer deptNo);
+    @org.springframework.data.jpa.repository.Query("SELECT MAX(d.sequenceNo) FROM Department d")
+    java.util.Optional<Integer> findMaxSequenceNo();
 
-    boolean existsByDeptNo(Integer deptNo);
-
-    @Query("SELECT MAX(d.deptNo) FROM DepartmentMaster d")
-    Integer findMaxDeptNo();
-
-    Page<DepartmentMaster> findByStatus(String status, Pageable pageable);
-
-    @Query("SELECT d FROM DepartmentMaster d WHERE " +
-           "LOWER(d.deptName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-           "CAST(d.deptNo AS string) LIKE CONCAT('%', :search, '%')")
-    Page<DepartmentMaster> searchByKeyword(String search, Pageable pageable);
-
-    @Query("SELECT d FROM DepartmentMaster d WHERE d.status = :status AND " +
-           "(LOWER(d.deptName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-           "CAST(d.deptNo AS string) LIKE CONCAT('%', :search, '%'))")
-    Page<DepartmentMaster> searchByKeywordAndStatus(String search, String status, Pageable pageable);
+    @org.springframework.data.jpa.repository.Query("SELECT MAX(d.departmentNo) FROM Department d")
+    java.util.Optional<Integer> findMaxDepartmentNo();
+    
+    @org.springframework.data.jpa.repository.Query(value = "SELECT * FROM hrm_department_master WHERE status = :status", nativeQuery = true)
+    java.util.List<Department> findByStatus(@org.springframework.data.repository.query.Param("status") String status);
 }
