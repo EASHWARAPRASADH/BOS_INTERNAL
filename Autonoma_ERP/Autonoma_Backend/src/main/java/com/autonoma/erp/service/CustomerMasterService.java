@@ -36,16 +36,30 @@ public class CustomerMasterService {
         repository.deleteById(id);
     }
 
+    public String getNextCode() {
+        return generateNextCode();
+    }
+
     private String generateNextCode() {
         String maxCode = repository.findMaxCustomerCode();
-        if (maxCode == null || maxCode.isEmpty()) {
-            return "CUST-00001";
+        String year = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yy"));
+        String prefix = "C-" + year + "-";
+        
+        if (maxCode == null || !maxCode.startsWith(prefix)) {
+            return prefix + "00001";
         }
+        
         try {
-            int lastNum = Integer.parseInt(maxCode.split("-")[1]);
-            return String.format("CUST-%05d", lastNum + 1);
+            // Assumes format C-26-00001
+            String[] parts = maxCode.split("-");
+            if (parts.length == 3) {
+                int lastNum = Integer.parseInt(parts[2]);
+                return String.format(prefix + "%05d", lastNum + 1);
+            }
+            return prefix + "00001";
         } catch (Exception e) {
-            return "CUST-00001";
+            return prefix + "00001";
         }
     }
+
 }
