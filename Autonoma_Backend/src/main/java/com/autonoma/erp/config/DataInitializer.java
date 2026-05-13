@@ -25,7 +25,7 @@ public class DataInitializer implements CommandLineRunner {
         UserCredential admin;
         if (existingAdmin.isEmpty()) {
             admin = new UserCredential();
-            admin.setUserId("admin");
+            admin.setUserId("Admin");
             admin.setEmpId(1L);
             admin.setCreatedBy("SYSTEM");
             admin.setCreatedDate(new Date());
