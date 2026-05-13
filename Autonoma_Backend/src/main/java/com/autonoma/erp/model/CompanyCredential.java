@@ -82,6 +82,9 @@ public class CompanyCredential {
     @Column(name = "LIC_EXP_REMAINDER_DAYS")
     private long licExpRemainderDays;
 
+    @Column(name = "RESTORE_ENABLE_DAYS")
+    private Integer restoreEnableDays;
+
     public long getId() {
         return id;
     }
@@ -248,5 +251,13 @@ public class CompanyCredential {
 
     public void setLicExpRemainderDays(long licExpRemainderDays) {
         this.licExpRemainderDays = licExpRemainderDays;
+    }
+
+    public Integer getRestoreEnableDays() {
+        return restoreEnableDays;
+    }
+
+    public void setRestoreEnableDays(Integer restoreEnableDays) {
+        this.restoreEnableDays = restoreEnableDays;
     }
 }
