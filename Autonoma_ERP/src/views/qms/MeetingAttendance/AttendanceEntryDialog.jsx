@@ -42,12 +42,18 @@ const AttendanceEntryDialog = ({ open, onClose, onSave }) => {
           const eligible = allSchedules.filter(s => {
             if (s.status !== 'OPEN' && s.status !== 'RESCHEDULE') return false;
             if (s.meetingDate !== today) return false;
-            if (s.startTime) {
               const [h, m] = s.startTime.split(':').map(Number);
               const startMs = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m).getTime();
+              
+              // End Time Check
+              if (s.endTime) {
+                const [eh, em] = s.endTime.split(':').map(Number);
+                const endMs = new Date(now.getFullYear(), now.getMonth(), now.getDate(), eh, em).getTime();
+                if (now.getTime() > endMs) return false; // Too late, meeting ended
+              }
+
               const tenMinBefore = startMs - 10 * 60 * 1000;
               if (now.getTime() < tenMinBefore) return false;
-            }
             return true;
           });
           setSchedules(eligible);
