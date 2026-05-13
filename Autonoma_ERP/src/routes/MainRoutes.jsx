@@ -219,7 +219,7 @@ const MeetingSchedule = Loadable(lazy(() => import('views/qms/MeetingSchedule/Me
 const MeetingMinutes = Loadable(lazy(() => import('views/qms/MeetingMinutes/MomList')));
 const AddMeetingMinutes = Loadable(lazy(() => import('views/qms/MeetingMinutes/AddMeetingMinutes')));
 const MeetingAttendance = Loadable(lazy(() => import('views/qms/MeetingAttendance/AttendanceList')));
-const CloseMom = Loadable(lazy(() => import('views/qms/CloseMom/CloseMomList')));
+const CloseMom = Loadable(lazy(() => import('views/qms/MomActionReview/MomActionReviewList')));
 const MomApproval = Loadable(lazy(() => import('views/qms/MomApproval/MomApprovalList')));
 
 // sales & marketing routing

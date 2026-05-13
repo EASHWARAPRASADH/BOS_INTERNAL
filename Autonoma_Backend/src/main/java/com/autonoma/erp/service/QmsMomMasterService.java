@@ -15,6 +15,7 @@ import java.util.Map;
 public class QmsMomMasterService {
     private final QmsMomMasterRepository repository;
     private final EmployeeMasterRepository employeeRepository;
+    private final com.autonoma.erp.repository.QmsMomDetailRepository detailRepository;
 
     public List<QmsMomMaster> getAllMoms() {
         return repository.findAll();
@@ -22,6 +23,41 @@ public class QmsMomMasterService {
 
     public QmsMomMaster getMomById(Long id) {
         return repository.findById(id).orElseThrow(() -> new RuntimeException("MOM not found"));
+    }
+
+    public List<com.autonoma.erp.dto.MomActionSummaryDTO> getAllActions() {
+        return detailRepository.findAllActions().stream().map(d -> {
+            com.autonoma.erp.dto.MomActionSummaryDTO dto = new com.autonoma.erp.dto.MomActionSummaryDTO();
+            dto.setId(d.getId());
+            dto.setMomId(d.getMom().getId());
+            dto.setMomNo(d.getMom().getMomNo());
+            dto.setMomDate(d.getMom().getMomDate());
+            if (d.getMom().getSchedule() != null) {
+                dto.setScheduleNo(d.getMom().getSchedule().getScheduleNo());
+            }
+            
+            // To figure out meetNo and amendMeetNo, we ideally want to just rely on DB index if stored,
+            // but currently they are transient on UI. Wait, are they stored?
+            // Actually, looking at QmsMomDetail, meetNo is NOT stored!
+            // It's calculated dynamically on UI. I'll just pass the ID and calculate on UI, 
+            // but I'll add basic indexing logic if possible, or just leave meetNo empty here.
+            dto.setDiscussedPoint(d.getDiscussedPoint());
+            dto.setPointType(d.getPointType());
+            dto.setMaterialList(d.getMaterialList());
+            dto.setProcessType(d.getProcessType());
+            dto.setAssignedBy(d.getAssignedBy() != null ? d.getAssignedBy().getEmployeeName() : null);
+            dto.setAssignedTo(d.getAssignedTo() != null ? d.getAssignedTo().getEmployeeName() : null);
+            dto.setTargetDate(d.getTargetDate());
+            dto.setReviewDate(d.getReviewDate());
+            dto.setAttachmentRequired(d.getAttachmentRequired());
+            dto.setStatus(d.getStatus());
+            dto.setActionTaken(d.getActionTaken());
+            dto.setActionObservation(d.getActionObservation());
+            dto.setCancelRemarks(d.getCancelRemarks());
+            dto.setCreatedAt(d.getCreatedAt());
+            dto.setCreatedBy(d.getCreatedBy());
+            return dto;
+        }).toList();
     }
 
     @Transactional
