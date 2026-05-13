@@ -1,7 +1,7 @@
 package com.autonoma.erp.service;
 
-import com.autonoma.erp.model.CustomerMaster;
-import com.autonoma.erp.repository.CustomerMasterRepository;
+import com.autonoma.erp.model.SupplierMaster;
+import com.autonoma.erp.repository.SupplierMasterRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,28 +11,28 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class CustomerMasterService {
+public class SupplierMasterService {
 
-    private final CustomerMasterRepository repository;
+    private final SupplierMasterRepository repository;
 
-    public List<CustomerMaster> getAllCustomers() {
+    public List<SupplierMaster> getAllSuppliers() {
         return repository.findAll();
     }
 
-    public Optional<CustomerMaster> getCustomerById(Long id) {
+    public Optional<SupplierMaster> getSupplierById(Long id) {
         return repository.findById(id);
     }
 
     @Transactional
-    public CustomerMaster saveCustomer(CustomerMaster customer) {
-        if (customer.getCustomerCode() == null || customer.getCustomerCode().isEmpty()) {
-            customer.setCustomerCode(generateNextCode());
+    public SupplierMaster saveSupplier(SupplierMaster supplier) {
+        if (supplier.getSupplierCode() == null || supplier.getSupplierCode().isEmpty()) {
+            supplier.setSupplierCode(generateNextCode());
         }
-        return repository.save(customer);
+        return repository.save(supplier);
     }
 
     @Transactional
-    public void deleteCustomer(Long id) {
+    public void deleteSupplier(Long id) {
         repository.deleteById(id);
     }
 
@@ -41,16 +41,16 @@ public class CustomerMasterService {
     }
 
     private String generateNextCode() {
-        String maxCode = repository.findMaxCustomerCode();
+        String maxCode = repository.findMaxSupplierCode();
         String year = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yy"));
-        String prefix = "C-" + year + "-";
+        String prefix = "S-" + year + "-";
         
         if (maxCode == null || !maxCode.startsWith(prefix)) {
             return prefix + "00001";
         }
         
         try {
-            // Assumes format C-26-00001
+            // Assumes format S-26-00001
             String[] parts = maxCode.split("-");
             if (parts.length == 3) {
                 int lastNum = Integer.parseInt(parts[2]);
@@ -61,5 +61,4 @@ public class CustomerMasterService {
             return prefix + "00001";
         }
     }
-
 }
