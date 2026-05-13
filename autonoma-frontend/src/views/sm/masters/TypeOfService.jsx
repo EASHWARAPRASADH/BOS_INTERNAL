@@ -31,7 +31,7 @@ export default function TypeOfService() {
 
   const fetchRows = async () => {
     try {
-      const res = await axios.get('http://localhost:8081/api/type-of-service');
+      const res = await axios.get('/api/type-of-service');
       setRows(res.data);
     } catch (err) {
       console.error(err);
@@ -68,9 +68,9 @@ export default function TypeOfService() {
   const handleSubmit = async () => {
     try {
       if (editId) {
-        await axios.put(`http://localhost:8081/api/type-of-service/${editId}`, formData);
+        await axios.put(`/api/type-of-service/${editId}`, formData);
       } else {
-        await axios.post('http://localhost:8081/api/type-of-service', formData);
+        await axios.post('/api/type-of-service', formData);
       }
       handleClose();
       fetchRows();
@@ -82,7 +82,7 @@ export default function TypeOfService() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this service type?')) {
       try {
-        await axios.delete(`http://localhost:8081/api/type-of-service/${id}`);
+        await axios.delete(`/api/type-of-service/${id}`);
         fetchRows();
       } catch (err) {
         console.error(err);

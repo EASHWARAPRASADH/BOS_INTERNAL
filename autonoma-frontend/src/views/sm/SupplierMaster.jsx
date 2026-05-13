@@ -14,6 +14,7 @@ import useKeyboardShortcuts, { shortcutTooltip } from 'hooks/useKeyboardShortcut
 import { useDispatch } from 'react-redux';
 import { openSnackbar } from 'store/slices/snackbar';
 import axios from 'axios';
+import { STATES_INDIA, COUNTRIES, YES_NO_OPTIONS, STATUS_OPTIONS } from 'utils/constants';
 
 const INITIAL = {
   supplierCode: '',
@@ -84,10 +85,10 @@ export default function SupplierMaster() {
   const fetchMasterData = useCallback(async () => {
     try {
       const [dt, pt, ts, cur] = await Promise.all([
-        axios.get('http://localhost:8081/api/delivery-terms'),
-        axios.get('http://localhost:8081/api/payment-terms'),
-        axios.get('http://localhost:8081/api/type-of-service'),
-        axios.get('http://localhost:8081/api/currency')
+        axios.get('/api/delivery-terms'),
+        axios.get('/api/payment-terms'),
+        axios.get('/api/type-of-service'),
+        axios.get('/api/currency')
       ]);
       setDeliveryTerms(dt.data);
       setPaymentTerms(pt.data);
@@ -99,7 +100,7 @@ export default function SupplierMaster() {
   const fetchSupplier = useCallback(async () => {
     if (!supplierId) return;
     try {
-      const { data } = await axios.get(`http://localhost:8081/api/sm/suppliers/${supplierId}`);
+      const { data } = await axios.get(`/api/sm/suppliers/${supplierId}`);
       const d = { ...INITIAL };
       Object.keys(d).forEach((k) => { if (data[k] !== undefined && data[k] !== null) d[k] = data[k]; });
       if (d.isoExpiryDate && typeof d.isoExpiryDate === 'string') d.isoExpiryDate = d.isoExpiryDate.split('T')[0];
@@ -110,7 +111,7 @@ export default function SupplierMaster() {
   const fetchNextCode = useCallback(async () => {
     if (supplierId) return;
     try {
-      const { data } = await axios.get('http://localhost:8081/api/sm/suppliers/next-code');
+      const { data } = await axios.get('/api/sm/suppliers/next-code');
       setForm(p => ({ ...p, supplierCode: data }));
     } catch (e) { 
       console.error(e);
@@ -136,7 +137,7 @@ export default function SupplierMaster() {
 
     setUploading(true);
     try {
-      const res = await axios.post('http://localhost:8081/api/files/upload', formData, {
+      const res = await axios.post('/api/files/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setForm(p => ({ ...p, uploadFiles: res.data }));
@@ -154,10 +155,10 @@ export default function SupplierMaster() {
     setLoading(true);
     try {
       if (supplierId) {
-        await axios.put(`http://localhost:8081/api/sm/suppliers/${supplierId}`, form);
+        await axios.put(`/api/sm/suppliers/${supplierId}`, form);
         dispatch(openSnackbar({ open: true, message: 'Supplier updated!', variant: 'alert', alert: { variant: 'filled' }, severity: 'success', close: false }));
       } else {
-        const { data } = await axios.post('http://localhost:8081/api/sm/suppliers', form);
+        const { data } = await axios.post('/api/sm/suppliers', form);
         dispatch(openSnackbar({ open: true, message: 'Supplier created!', variant: 'alert', alert: { variant: 'filled' }, severity: 'success', close: false }));
         navigate(`/sm/suppliers/create?id=${data.id}`, { replace: true });
       }
@@ -169,7 +170,7 @@ export default function SupplierMaster() {
   const handleDelete = async () => {
     setDeleteOpen(false);
     try {
-      await axios.delete(`http://localhost:8081/api/sm/suppliers/${supplierId}`);
+      await axios.delete(`/api/sm/suppliers/${supplierId}`);
       dispatch(openSnackbar({ open: true, message: 'Supplier deleted!', variant: 'alert', alert: { variant: 'filled' }, severity: 'success', close: false }));
       navigate('/sm/suppliers');
     } catch (e) {
@@ -219,43 +220,11 @@ export default function SupplierMaster() {
             <R><BOSTextField name="city" label="City" value={form.city} onChange={h} /></R>
             <R><BOSTextField name="state" label="State" value={form.state} onChange={h} select>
                 <MenuItem value="">-Select-</MenuItem>
-                <MenuItem value="Andhra Pradesh">Andhra Pradesh</MenuItem>
-                <MenuItem value="Arunachal Pradesh">Arunachal Pradesh</MenuItem>
-                <MenuItem value="Assam">Assam</MenuItem>
-                <MenuItem value="Bihar">Bihar</MenuItem>
-                <MenuItem value="Chhattisgarh">Chhattisgarh</MenuItem>
-                <MenuItem value="Goa">Goa</MenuItem>
-                <MenuItem value="Gujarat">Gujarat</MenuItem>
-                <MenuItem value="Haryana">Haryana</MenuItem>
-                <MenuItem value="Himachal Pradesh">Himachal Pradesh</MenuItem>
-                <MenuItem value="Jharkhand">Jharkhand</MenuItem>
-                <MenuItem value="Karnataka">Karnataka</MenuItem>
-                <MenuItem value="Kerala">Kerala</MenuItem>
-                <MenuItem value="Madhya Pradesh">Madhya Pradesh</MenuItem>
-                <MenuItem value="Maharashtra">Maharashtra</MenuItem>
-                <MenuItem value="Manipur">Manipur</MenuItem>
-                <MenuItem value="Meghalaya">Meghalaya</MenuItem>
-                <MenuItem value="Mizoram">Mizoram</MenuItem>
-                <MenuItem value="Nagaland">Nagaland</MenuItem>
-                <MenuItem value="Odisha">Odisha</MenuItem>
-                <MenuItem value="Punjab">Punjab</MenuItem>
-                <MenuItem value="Rajasthan">Rajasthan</MenuItem>
-                <MenuItem value="Sikkim">Sikkim</MenuItem>
-                <MenuItem value="Tamil Nadu">Tamil Nadu</MenuItem>
-                <MenuItem value="Telangana">Telangana</MenuItem>
-                <MenuItem value="Tripura">Tripura</MenuItem>
-                <MenuItem value="Uttar Pradesh">Uttar Pradesh</MenuItem>
-                <MenuItem value="Uttarakhand">Uttarakhand</MenuItem>
-                <MenuItem value="West Bengal">West Bengal</MenuItem>
+                {STATES_INDIA.map(s => <MenuItem key={s} value={s}>{s}</MenuItem>)}
               </BOSTextField>
             </R>
             <R><BOSTextField name="country" label="Country" value={form.country} onChange={h} select>
-                <MenuItem value="India">India</MenuItem>
-                <MenuItem value="USA">USA</MenuItem>
-                <MenuItem value="UK">UK</MenuItem>
-                <MenuItem value="Germany">Germany</MenuItem>
-                <MenuItem value="China">China</MenuItem>
-                <MenuItem value="Japan">Japan</MenuItem>
+                {COUNTRIES.map(c => <MenuItem key={c} value={c}>{c}</MenuItem>)}
               </BOSTextField>
             </R>
             <R><BOSTextField name="pincode" label="Pin Code" value={form.pincode} onChange={h} /></R>
@@ -270,26 +239,22 @@ export default function SupplierMaster() {
             <R><BOSTextField name="isoExpiryDate" label="ISO Expiry Date" value={form.isoExpiryDate} onChange={h} type="date" InputLabelProps={{ shrink: true }} /></R>
             <R>
               <BOSTextField name="approvedSupplier" label="Approved Supplier" value={form.approvedSupplier} onChange={h} select>
-                <MenuItem value="Yes">Yes</MenuItem>
-                <MenuItem value="No">No</MenuItem>
+                {YES_NO_OPTIONS.map(o => <MenuItem key={o} value={o}>{o}</MenuItem>)}
               </BOSTextField>
             </R>
             <R>
               <BOSTextField name="ndaRequired" label="NDA Required" value={form.ndaRequired} onChange={h} select>
-                <MenuItem value="Yes">Yes</MenuItem>
-                <MenuItem value="No">No</MenuItem>
+                {YES_NO_OPTIONS.map(o => <MenuItem key={o} value={o}>{o}</MenuItem>)}
               </BOSTextField>
             </R>
             <R>
               <BOSTextField name="primeSupplier" label="Prime Supplier" value={form.primeSupplier} onChange={h} select>
-                <MenuItem value="Yes">Yes</MenuItem>
-                <MenuItem value="No">No</MenuItem>
+                {YES_NO_OPTIONS.map(o => <MenuItem key={o} value={o}>{o}</MenuItem>)}
               </BOSTextField>
             </R>
             <R>
               <BOSTextField name="isAuditorConsultant" label="Is Auditor/Consultant" value={form.isAuditorConsultant} onChange={h} select>
-                <MenuItem value="Yes">Yes</MenuItem>
-                <MenuItem value="No">No</MenuItem>
+                {YES_NO_OPTIONS.map(o => <MenuItem key={o} value={o}>{o}</MenuItem>)}
               </BOSTextField>
             </R>
           </Grid>
@@ -315,9 +280,6 @@ export default function SupplierMaster() {
                 {deliveryTerms.map(t => (
                   <MenuItem key={t.id} value={t.termName}>{t.termName}</MenuItem>
                 ))}
-                <MenuItem value="ADD_NEW" onClick={() => navigate('/sm/ocr/delivery-terms')} sx={{ color: 'primary.main', fontWeight: 600 }}>
-                  <IconPlus size={16} style={{ marginRight: 8 }} /> Add New
-                </MenuItem>
               </BOSTextField>
             </R>
             <R>
@@ -326,9 +288,6 @@ export default function SupplierMaster() {
                 {typesOfService.map(s => (
                   <MenuItem key={s.id} value={s.serviceName}>{s.serviceName}</MenuItem>
                 ))}
-                <MenuItem value="ADD_NEW" onClick={() => navigate('/sm/ocr/type-of-service')} sx={{ color: 'primary.main', fontWeight: 600 }}>
-                  <IconPlus size={16} style={{ marginRight: 8 }} /> Add New
-                </MenuItem>
               </BOSTextField>
             </R>
             <R>
@@ -337,9 +296,6 @@ export default function SupplierMaster() {
                 {paymentTerms.map(p => (
                   <MenuItem key={p.id} value={p.termName}>{p.termName}</MenuItem>
                 ))}
-                <MenuItem value="ADD_NEW" onClick={() => navigate('/sm/ocr/payment-terms')} sx={{ color: 'primary.main', fontWeight: 600 }}>
-                  <IconPlus size={16} style={{ marginRight: 8 }} /> Add New
-                </MenuItem>
               </BOSTextField>
             </R>
             <R>
@@ -354,9 +310,6 @@ export default function SupplierMaster() {
                 {currencies.map(c => (
                   <MenuItem key={c.id} value={c.currencyCode}>{c.currencyCode} - {c.currencyName}</MenuItem>
                 ))}
-                <MenuItem value="ADD_NEW" onClick={() => navigate('/sm/ocr/currency-master')} sx={{ color: 'primary.main', fontWeight: 600 }}>
-                  <IconPlus size={16} style={{ marginRight: 8 }} /> Add New
-                </MenuItem>
               </BOSTextField>
             </R>
             <R><BOSTextField name="dueDays" label="Due Days" value={form.dueDays} onChange={h} type="number" /></R>
@@ -397,7 +350,7 @@ export default function SupplierMaster() {
                           color="secondary"
                           size="small" 
                           startIcon={<IconFileCheck size={18} />}
-                          onClick={() => window.open(`http://localhost:8081/api/files/view/${form.uploadFiles}`, '_blank')}
+                          onClick={() => window.open(`/api/files/view/${form.uploadFiles}`, '_blank')}
                         >
                           View Uploaded File
                         </Button>
