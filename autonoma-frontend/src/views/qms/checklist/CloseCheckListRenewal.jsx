@@ -119,7 +119,10 @@ export default function CloseCheckListRenewal() {
         toDate: filters.considerDate === 'Yes' ? filters.toDate : undefined,
         searchBy: filters.searchBy !== 'All' ? filters.searchBy : undefined,
         searchValue: globalQuery || undefined,
-        masterVerifyStatus: 'Verified'
+        masterVerifyStatus: 'Verified',
+        excludeCompleted: true,
+        taskType: filters.taskType || 'Mine',
+        currentUser: 'Current User'
       };
       const response = await axios.get('/api/qms/checklist/assignments', { params });
       setRows(response.data.content || []);
@@ -212,9 +215,16 @@ export default function CloseCheckListRenewal() {
       let s = row.status;
       if (typeof s === 'object' && s !== null) s = s.name;
       s = s || 'Pending';
+
+      // SOP Rule 18: Expiry Status Logic
+      const isExpired = master.expiryDate && new Date(master.expiryDate) < new Date();
+      if (isExpired && s !== 'Verified' && s !== 'Accepted' && s !== 'Completed') {
+        s = 'EXPIRED';
+      }
+
       let chipStatus = 'PENDING';
       if (s === 'Accepted' || s === 'Verified' || s === 'Completed') chipStatus = 'ACTIVE';
-      if (s === 'Rejected' || s === 'Not Accepted' || s === 'Missed') chipStatus = 'INACTIVE';
+      if (s === 'Rejected' || s === 'Not Accepted' || s === 'Missed' || s === 'EXPIRED') chipStatus = 'INACTIVE';
       return <Chip label={s} size="small" sx={getStatusChipSx(chipStatus)} />;
     }
     return row[col.id] || master[col.id] || '-';
@@ -236,7 +246,7 @@ export default function CloseCheckListRenewal() {
             </IconButton>
           </Tooltip>
           <Button variant="outlined" color="primary" size="medium" startIcon={<IconFileDownload size={18} />} onClick={handleExport} sx={btnExport}>
-            Export Excel
+            Export
           </Button>
         </Stack>
       }
@@ -256,6 +266,23 @@ export default function CloseCheckListRenewal() {
         showActions={false}
         renderCell={renderCell}
         id="close-renewal-table"
+        sx={{
+          '& .MuiTableRow-root': {
+            cursor: 'pointer',
+            transition: 'background-color 0.2s',
+            '&:hover': { bgcolor: 'primary.lighter' }
+          },
+          '& .expired-row': {
+            bgcolor: 'error.lighter',
+            '&:hover': { bgcolor: 'error.light' }
+          }
+        }}
+        rowClassName={(row) => {
+          const master = row.checklist || {};
+          const isExpired = master.expiryDate && new Date(master.expiryDate) < new Date();
+          const s = typeof row.status === 'object' ? row.status?.name : row.status;
+          return (isExpired && s !== 'Verified' && s !== 'Accepted' && s !== 'Completed') ? 'expired-row' : '';
+        }}
       />
 
       <ExecutionVerifyDialog
