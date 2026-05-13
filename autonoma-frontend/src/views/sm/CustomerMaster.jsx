@@ -10,7 +10,9 @@ import useBOSValidation from 'hooks/useBOSValidation';
 import useKeyboardShortcuts, { shortcutTooltip } from 'hooks/useKeyboardShortcuts';
 import { useDispatch } from 'react-redux';
 import { openSnackbar } from 'store/slices/snackbar';
-import axios from 'utils/axios';
+import axios from 'axios';
+import { STATES_INDIA, COUNTRIES, YES_NO_OPTIONS, STATUS_OPTIONS } from 'utils/constants';
+import { IconPlus } from '@tabler/icons-react';
 
 const INITIAL = {
   customerCode: '',
@@ -66,6 +68,30 @@ export default function CustomerMaster() {
   const [loading, setLoading] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
+  // Master Data
+  const [deliveryTerms, setDeliveryTerms] = useState([]);
+  const [paymentTerms, setPaymentTerms] = useState([]);
+  const [currencies, setCurrencies] = useState([]);
+  const [segments, setSegments] = useState([]);
+  const [subSegments, setSubSegments] = useState([]);
+
+  const fetchMasterData = useCallback(async () => {
+    try {
+      const [dt, pt, cur, seg, sub] = await Promise.all([
+        axios.get('/api/delivery-terms'),
+        axios.get('/api/payment-terms'),
+        axios.get('/api/currency'),
+        axios.get('/api/sm/segments'),
+        axios.get('/api/sm/sub-segments')
+      ]);
+      setDeliveryTerms(dt.data);
+      setPaymentTerms(pt.data);
+      setCurrencies(cur.data);
+      setSegments(seg.data);
+      setSubSegments(sub.data);
+    } catch (e) { console.error('Error fetching master data:', e); }
+  }, []);
+
   const fetchCustomer = useCallback(async () => {
     if (!customerId) return;
     try {
@@ -92,9 +118,10 @@ export default function CustomerMaster() {
 
 
   useEffect(() => { 
+    fetchMasterData();
     if (customerId) fetchCustomer(); 
     else fetchNextCode();
-  }, [customerId, fetchCustomer, fetchNextCode]);
+  }, [customerId, fetchCustomer, fetchNextCode, fetchMasterData]);
 
   const h = (e) => setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
 
@@ -160,9 +187,16 @@ export default function CustomerMaster() {
           <Grid container spacing={2.5}>
             <R lg={6}><BOSTextField name="address" label="Address" value={form.address} onChange={h} multiline rows={2} /></R>
             <R><BOSTextField name="city" label="City" value={form.city} onChange={h} /></R>
-            <R><BOSTextField name="state" label="State" value={form.state} onChange={h} /></R>
+            <R><BOSTextField name="state" label="State" value={form.state} onChange={h} select>
+                <MenuItem value="">-Select-</MenuItem>
+                {STATES_INDIA.map(s => <MenuItem key={s} value={s}>{s}</MenuItem>)}
+              </BOSTextField>
+            </R>
             <R><BOSTextField name="stateCode" label="State Code" value={form.stateCode} onChange={h} /></R>
-            <R><BOSTextField name="country" label="Country" value={form.country} onChange={h} /></R>
+            <R><BOSTextField name="country" label="Country" value={form.country} onChange={h} select>
+                {COUNTRIES.map(c => <MenuItem key={c} value={c}>{c}</MenuItem>)}
+              </BOSTextField>
+            </R>
             <R><BOSTextField name="pincode" label="Pin Code" value={form.pincode} onChange={h} /></R>
             <R><BOSTextField name="distance" label="Distance (KM)" value={form.distance} onChange={h} type="number" /></R>
             <R><BOSTextField name="location" label="Location" value={form.location} onChange={h} /></R>
@@ -195,32 +229,50 @@ export default function CustomerMaster() {
           <Grid container spacing={2.5}>
             <R>
               <BOSTextField name="currency" label="Currency" value={form.currency} onChange={h} select required>
-                <MenuItem value="INR">INR</MenuItem>
-                <MenuItem value="USD">USD</MenuItem>
-                <MenuItem value="EUR">EUR</MenuItem>
+                <MenuItem value="">-Select-</MenuItem>
+                {currencies.map(c => (
+                  <MenuItem key={c.id} value={c.currencyCode}>{c.currencyCode} - {c.currencyName}</MenuItem>
+                ))}
               </BOSTextField>
             </R>
-            <R><BOSTextField name="segment" label="Segment" value={form.segment} onChange={h} /></R>
-            <R><BOSTextField name="subSegment" label="Sub Segment" value={form.subSegment} onChange={h} /></R>
-            <R><BOSTextField name="paymentTerms" label="Payment Terms" value={form.paymentTerms} onChange={h} /></R>
-            <R><BOSTextField name="deliveryTerms" label="Delivery Terms" value={form.deliveryTerms} onChange={h} /></R>
+            <R>
+              <BOSTextField name="segment" label="Segment" value={form.segment} onChange={h} select>
+                <MenuItem value="">-Select-</MenuItem>
+                {segments.map(s => <MenuItem key={s.id} value={s.segmentName}>{s.segmentName}</MenuItem>)}
+              </BOSTextField>
+            </R>
+            <R>
+              <BOSTextField name="subSegment" label="Sub Segment" value={form.subSegment} onChange={h} select>
+                <MenuItem value="">-Select-</MenuItem>
+                {subSegments.map(s => <MenuItem key={s.id} value={s.subSegmentName}>{s.subSegmentName}</MenuItem>)}
+              </BOSTextField>
+            </R>
+            <R>
+              <BOSTextField name="paymentTerms" label="Payment Terms" value={form.paymentTerms} onChange={h} select>
+                <MenuItem value="">-Select-</MenuItem>
+                {paymentTerms.map(p => <MenuItem key={p.id} value={p.termName}>{p.termName}</MenuItem>)}
+              </BOSTextField>
+            </R>
+            <R>
+              <BOSTextField name="deliveryTerms" label="Delivery Terms" value={form.deliveryTerms} onChange={h} select>
+                <MenuItem value="">-Select-</MenuItem>
+                {deliveryTerms.map(t => <MenuItem key={t.id} value={t.termName}>{t.termName}</MenuItem>)}
+              </BOSTextField>
+            </R>
             <R><BOSTextField name="freight" label="Freight" value={form.freight} onChange={h} /></R>
             <R>
               <BOSTextField name="ldApplicable" label="LD Applicable" value={form.ldApplicable} onChange={h} select>
-                <MenuItem value="Yes">Yes</MenuItem>
-                <MenuItem value="No">No</MenuItem>
+                {YES_NO_OPTIONS.map(o => <MenuItem key={o} value={o}>{o}</MenuItem>)}
               </BOSTextField>
             </R>
             <R>
               <BOSTextField name="negotiateCustomer" label="Is Negotiate Customer" value={form.negotiateCustomer} onChange={h} select>
-                <MenuItem value="Yes">Yes</MenuItem>
-                <MenuItem value="No">No</MenuItem>
+                {YES_NO_OPTIONS.map(o => <MenuItem key={o} value={o}>{o}</MenuItem>)}
               </BOSTextField>
             </R>
             <R>
               <BOSTextField name="status" label="Status" value={form.status} onChange={h} select>
-                <MenuItem value="Active">Active</MenuItem>
-                <MenuItem value="Inactive">Inactive</MenuItem>
+                {STATUS_OPTIONS.map(o => <MenuItem key={o} value={o}>{o}</MenuItem>)}
               </BOSTextField>
             </R>
           </Grid>

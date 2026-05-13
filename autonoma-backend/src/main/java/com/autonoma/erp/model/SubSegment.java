@@ -1,0 +1,22 @@
+package com.autonoma.erp.model;
+
+import jakarta.persistence.*;
+import lombok.Data;
+
+@Data
+@Entity
+@Table(name = "SM_SUB_SEGMENT")
+public class SubSegment {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "SUB_SEGMENT_CODE")
+    private String subSegmentCode;
+
+    @Column(name = "SUB_SEGMENT_NAME")
+    private String subSegmentName;
+
+    @Column(name = "STATUS")
+    private String status = "Active";
+}

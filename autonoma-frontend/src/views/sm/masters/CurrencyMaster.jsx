@@ -28,7 +28,7 @@ export default function CurrencyMaster() {
 
   const fetchData = useCallback(async () => {
     try {
-      const { data } = await axios.get('http://localhost:8081/api/currency');
+      const { data } = await axios.get('/api/currency');
       setRows(data.map((r, i) => ({ ...r, index: i + 1 })));
     } catch (e) { console.error(e); }
   }, []);
@@ -43,8 +43,8 @@ export default function CurrencyMaster() {
       return;
     }
     try {
-      if (selectedId) await axios.put(`http://localhost:8081/api/currency/${selectedId}`, form);
-      else await axios.post('http://localhost:8081/api/currency', form);
+      if (selectedId) await axios.put(`/api/currency/${selectedId}`, form);
+      else await axios.post('/api/currency', form);
       
       dispatch(openSnackbar({ open: true, message: `Currency ${selectedId ? 'updated' : 'created'}!`, variant: 'alert', alert: { variant: 'filled' }, severity: 'success', close: false }));
       setShowForm(false);
@@ -57,7 +57,7 @@ export default function CurrencyMaster() {
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this currency?')) return;
     try {
-      await axios.delete(`http://localhost:8081/api/currency/${id}`);
+      await axios.delete(`/api/currency/${id}`);
       dispatch(openSnackbar({ open: true, message: 'Currency deleted!', variant: 'alert', alert: { variant: 'filled' }, severity: 'success', close: false }));
       fetchData();
     } catch (e) { console.error(e); }

@@ -31,7 +31,7 @@ export default function DeliveryTerms() {
 
   const fetchRows = async () => {
     try {
-      const res = await axios.get('http://localhost:8081/api/delivery-terms');
+      const res = await axios.get('/api/delivery-terms');
       setRows(res.data);
     } catch (err) {
       console.error(err);
@@ -68,9 +68,9 @@ export default function DeliveryTerms() {
   const handleSubmit = async () => {
     try {
       if (editId) {
-        await axios.put(`http://localhost:8081/api/delivery-terms/${editId}`, formData);
+        await axios.put(`/api/delivery-terms/${editId}`, formData);
       } else {
-        await axios.post('http://localhost:8081/api/delivery-terms', formData);
+        await axios.post('/api/delivery-terms', formData);
       }
       handleClose();
       fetchRows();
@@ -82,7 +82,7 @@ export default function DeliveryTerms() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this term?')) {
       try {
-        await axios.delete(`http://localhost:8081/api/delivery-terms/${id}`);
+        await axios.delete(`/api/delivery-terms/${id}`);
         fetchRows();
       } catch (err) {
         console.error(err);

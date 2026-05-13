@@ -33,7 +33,7 @@ export default function PaymentTerms() {
 
   const fetchRows = async () => {
     try {
-      const res = await axios.get('http://localhost:8081/api/payment-terms');
+      const res = await axios.get('/api/payment-terms');
       setRows(res.data);
     } catch (err) {
       console.error(err);
@@ -72,9 +72,9 @@ export default function PaymentTerms() {
   const handleSubmit = async () => {
     try {
       if (editId) {
-        await axios.put(`http://localhost:8081/api/payment-terms/${editId}`, formData);
+        await axios.put(`/api/payment-terms/${editId}`, formData);
       } else {
-        await axios.post('http://localhost:8081/api/payment-terms', formData);
+        await axios.post('/api/payment-terms', formData);
       }
       handleClose();
       fetchRows();
@@ -86,7 +86,7 @@ export default function PaymentTerms() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this term?')) {
       try {
-        await axios.delete(`http://localhost:8081/api/payment-terms/${id}`);
+        await axios.delete(`/api/payment-terms/${id}`);
         fetchRows();
       } catch (err) {
         console.error(err);
