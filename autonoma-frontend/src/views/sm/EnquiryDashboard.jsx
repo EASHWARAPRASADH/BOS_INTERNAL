@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Typography, Stack, Tooltip, IconButton, Button } from '@mui/material';
-import { IconFileDownload, IconRefresh, IconMail, IconPlus } from '@tabler/icons-react';
+import { IconRefresh, IconMail, IconPlus } from '@tabler/icons-react';
 import axios from 'utils/axios';
 import { API_PATHS } from 'utils/api-constants';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,8 +9,7 @@ import { openSnackbar } from 'store/slices/snackbar';
 import { format } from 'date-fns';
 
 import MainCard from 'ui-component/cards/MainCard';
-import { BOSDataTable, BOSExportButton, btnExport, btnNew } from 'ui-component/bos';
-import { exportToExcel } from 'utils/excelExport';
+import { BOSDataTable, BOSExportButton, btnNew } from 'ui-component/bos';
 import useKeyboardShortcuts, { shortcutTooltip } from 'hooks/useKeyboardShortcuts';
 import WorkItemMasterDialog from './WorkItemMasterDialog';
 import ConfirmDeleteDialog from 'ui-component/ConfirmDeleteDialog';
@@ -130,30 +129,7 @@ export default function EnquiryDashboard() {
     }
   };
 
-  const handleExport = () => {
-    const exportData = filteredRows.map((r) => ({
-      'WI NO': r.wiNo,
-      'DATE & TIME': r.dateTime,
-      'CATEGORY': r.category,
-      'CUST CODE': r.custCode,
-      'CUST NAME': r.custName,
-      'FROM': r.from,
-      'TO': r.to,
-      'SUBJECT': r.subject,
-      'NO OF ITEMS': r.noOfItems,
-      'Enquiry No': r.enquiryNo,
-      'Enq Entry': r.enqEntry,
-      'Quote No': r.quoteNo,
-      'Quote Entry': r.quoteEntry,
-      'Sale Order No': r.saleOrderNo,
-      'Sale Order Entr': r.saleOrderEntr,
-      'Att': r.att,
-      'Mode': r.mode,
-      'Updated User Id': r.updatedUserId,
-      'Updated Date Tim': r.updatedDateTime
-    }));
-    exportToExcel(exportData, 'Enquiry_Dashboard');
-  };
+
 
   const filteredRows = useMemo(() => {
     return data
@@ -226,9 +202,22 @@ export default function EnquiryDashboard() {
               <IconRefresh size={20} />
             </IconButton>
           </Tooltip>
-          <Button variant="outlined" color="primary" size="medium" startIcon={<IconFileDownload size={18} />} onClick={handleExport} sx={btnExport}>
-            Export
-          </Button>
+          <BOSExportButton
+            data={filteredRows}
+            filename="Enquiry_Dashboard"
+            columns={[
+              { header: 'WI No', key: 'wiNo' },
+              { header: 'Date & Time', key: 'dateTime' },
+              { header: 'Category', key: 'category' },
+              { header: 'Cust Code', key: 'custCode' },
+              { header: 'Cust Name', key: 'custName' },
+              { header: 'From', key: 'from' },
+              { header: 'Subject', key: 'subject' },
+              { header: 'Enquiry No', key: 'enquiryNo' },
+              { header: 'Quote No', key: 'quoteNo' },
+              { header: 'Mode', key: 'mode' }
+            ]}
+          />
           <Tooltip title={shortcutTooltip('Create New Enquiry', 'Ctrl + N')}>
             <Button variant="contained" color="primary" size="medium" onClick={handleOpenAdd} sx={btnNew}>
               + New

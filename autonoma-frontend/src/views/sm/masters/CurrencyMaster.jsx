@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Typography, Stack, MenuItem, useTheme, Button, Tooltip, Grid, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { IconCoins, IconDeviceFloppy, IconPlus, IconTrash, IconX } from '@tabler/icons-react';
 import MainCard from 'ui-component/cards/MainCard';
-import { BOSDataTable, BOSTextField, btnSave, btnDelete, btnCancel } from 'ui-component/bos';
+import { BOSDataTable, BOSExportButton, BOSTextField, btnSave, btnDelete, btnCancel } from 'ui-component/bos';
 import ConfirmDeleteDialog from 'ui-component/ConfirmDeleteDialog';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
@@ -86,9 +86,21 @@ export default function CurrencyMaster() {
         </Stack>
       }
       secondary={
-        <Button variant="contained" startIcon={<IconPlus size={18} />} onClick={() => setShowForm(true)}>
-          Add New
-        </Button>
+        <Stack direction="row" spacing={1.5} alignItems="center">
+          <BOSExportButton
+            data={rows}
+            filename="Currency_Master"
+            columns={[
+              { header: 'Currency Code', key: 'currencyCode' },
+              { header: 'Currency Name', key: 'currencyName' },
+              { header: 'Symbol', key: 'symbol' },
+              { header: 'Status', key: 'status' }
+            ]}
+          />
+          <Button variant="contained" startIcon={<IconPlus size={18} />} onClick={() => setShowForm(true)}>
+            Add New
+          </Button>
+        </Stack>
       }
     >
       <BOSDataTable

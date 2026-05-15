@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Typography, Stack, MenuItem, useTheme, Button, Grid } from '@mui/material';
 import { IconChartBar, IconDeviceFloppy, IconPlus, IconX } from '@tabler/icons-react';
 import MainCard from 'ui-component/cards/MainCard';
-import { BOSDataTable, BOSTextField, btnSave, btnDelete, btnCancel } from 'ui-component/bos';
+import { BOSDataTable, BOSExportButton, BOSTextField, btnSave, btnDelete, btnCancel } from 'ui-component/bos';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { openSnackbar } from 'store/slices/snackbar';
@@ -70,9 +70,20 @@ export default function SegmentMaster() {
       }
       secondary={
         !showForm && (
-          <Button variant="contained" startIcon={<IconPlus size={18} />} onClick={() => setShowForm(true)} sx={btnSave}>
-            Add New
-          </Button>
+          <Stack direction="row" spacing={1.5} alignItems="center">
+            <BOSExportButton
+              data={rows}
+              filename="Segment_Master"
+              columns={[
+                { header: 'Segment Code', key: 'segmentCode' },
+                { header: 'Segment Name', key: 'segmentName' },
+                { header: 'Status', key: 'status' }
+              ]}
+            />
+            <Button variant="contained" startIcon={<IconPlus size={18} />} onClick={() => setShowForm(true)} sx={btnSave}>
+              Add New
+            </Button>
+          </Stack>
         )
       }
     >

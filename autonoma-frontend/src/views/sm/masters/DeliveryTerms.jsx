@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { 
   Typography, Stack, Button, Dialog, DialogTitle, DialogContent, 
-  DialogActions, TextField, MenuItem, IconButton, Tooltip 
+  DialogActions, TextField, MenuItem
 } from '@mui/material';
-import { IconTruckDelivery, IconPlus, IconEdit, IconTrash } from '@tabler/icons-react';
+import { IconTruckDelivery, IconPlus } from '@tabler/icons-react';
 import MainCard from 'ui-component/cards/MainCard';
-import { BOSDataTable } from 'ui-component/bos';
+import { BOSDataTable, BOSExportButton } from 'ui-component/bos';
 import ConfirmDeleteDialog from 'ui-component/ConfirmDeleteDialog';
 import axios from 'axios';
 
@@ -103,11 +103,22 @@ export default function DeliveryTerms() {
   return (
     <MainCard
       title={
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Stack direction="row" alignItems="center" spacing={1.5}>
-            <IconTruckDelivery size={24} />
-            <Typography variant="h3">Delivery Terms Master</Typography>
-          </Stack>
+        <Stack direction="row" alignItems="center" spacing={1.5}>
+          <IconTruckDelivery size={24} />
+          <Typography variant="h3">Delivery Terms Master</Typography>
+        </Stack>
+      }
+      secondary={
+        <Stack direction="row" spacing={1.5} alignItems="center">
+          <BOSExportButton
+            data={rows}
+            filename="Delivery_Terms"
+            columns={[
+              { header: 'Delivery Term', key: 'termName' },
+              { header: 'Description', key: 'description' },
+              { header: 'Status', key: 'status' }
+            ]}
+          />
           <Button variant="contained" startIcon={<IconPlus size={18} />} onClick={() => handleOpen()}>
             New Term
           </Button>

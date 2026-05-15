@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Grid, Box, Button, Typography, Stack, MenuItem, useTheme, Tooltip, IconButton } from '@mui/material';
+import { Grid, Box, Button, Typography, Stack, MenuItem, useTheme, Tooltip, Autocomplete, TextField as MuiTextField } from '@mui/material';
 import { 
   IconUserPlus, IconDeviceFloppy, IconArrowLeft, IconTrash, IconEraser, 
   IconUser, IconMapPin, IconBusinessplan, IconBuildingBank, IconTruckDelivery, 
-  IconPlus, IconCloudUpload, IconFileCheck, IconX, IconFiles
+  IconFiles
 } from '@tabler/icons-react';
 import MainCard from 'ui-component/cards/MainCard';
 import { 
@@ -24,8 +24,8 @@ import useBOSValidation from 'hooks/useBOSValidation';
 import useKeyboardShortcuts, { shortcutTooltip } from 'hooks/useKeyboardShortcuts';
 import { useDispatch } from 'react-redux';
 import { openSnackbar } from 'store/slices/snackbar';
-import axios from 'axios';
-import { STATES_INDIA, COUNTRIES, YES_NO_OPTIONS, STATUS_OPTIONS } from 'utils/constants';
+import axios from 'utils/axios';
+import { YES_NO_OPTIONS, STATUS_OPTIONS } from 'utils/constants';
 
 const INITIAL = {
   supplierCode: '',
@@ -37,7 +37,8 @@ const INITIAL = {
   address: '',
   city: '',
   state: '',
-  country: 'India',
+  stateCode: '',
+  country: '',
   pincode: '',
   mobileNo: '',
   contactPerson: '',
@@ -54,7 +55,7 @@ const INITIAL = {
   paymentTerms: '',
   primeSupplier: 'No',
   freightRequired: 'No',
-  currency: 'INR',
+  currency: '',
   dueDays: '',
   isAuditorConsultant: 'No',
   accountNo: '',
@@ -72,7 +73,7 @@ const RULES = [
   { field: 'supplierName', label: 'Supplier Name', required: true, maxLength: 200 }
 ];
 
-const R = ({ children, lg = 3 }) => <Grid item xs={12} sm={6} md={4} lg={lg}>{children}</Grid>;
+const R = ({ children, lg = 3, md = 4, sm = 6 }) => <Grid item xs={12} sm={sm} md={md} lg={lg}>{children}</Grid>;
 
 export default function SupplierMaster() {
   const theme = useTheme();
@@ -93,19 +94,25 @@ export default function SupplierMaster() {
   const [paymentTerms, setPaymentTerms] = useState([]);
   const [typesOfService, setTypesOfService] = useState([]);
   const [currencies, setCurrencies] = useState([]);
+  const [countries, setCountries] = useState([]);
+  const [allStates, setAllStates] = useState([]);
 
   const fetchMasterData = useCallback(async () => {
     try {
-      const [dt, pt, ts, cur] = await Promise.all([
+      const [dt, pt, ts, cur, countryRes, stateRes] = await Promise.all([
         axios.get('/api/delivery-terms'),
         axios.get('/api/payment-terms'),
         axios.get('/api/type-of-service'),
-        axios.get('/api/currency')
+        axios.get('/api/currency'),
+        axios.get('/api/master/countries'),
+        axios.get('/api/master/states')
       ]);
-      setDeliveryTerms(dt.data);
-      setPaymentTerms(pt.data);
-      setTypesOfService(ts.data);
-      setCurrencies(cur.data);
+      setDeliveryTerms(dt.data.filter(t => t.status === 'Active'));
+      setPaymentTerms(pt.data.filter(p => p.status === 'Active'));
+      setTypesOfService(ts.data.filter(s => s.status === 'Active'));
+      setCurrencies(cur.data.filter(c => c.status === 'Active'));
+      setCountries(countryRes.data.filter(c => c.status === 'Active'));
+      setAllStates(stateRes.data.filter(s => s.status === 'Active'));
     } catch (e) { console.error('Error fetching master data:', e); }
   }, []);
 
@@ -141,11 +148,33 @@ export default function SupplierMaster() {
 
   const h = (e) => setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
 
+  // Autocomplete Handlers
+  const handleAC = (field) => (event, newValue) => {
+    setForm(p => ({ ...p, [field]: newValue || '' }));
+  };
+
+  const handleCountryChange = (event, newValue) => {
+    setForm(p => ({ ...p, country: newValue || '', state: '', stateCode: '' }));
+  };
+
+  const handleStateChange = (event, newValue) => {
+    if (newValue) {
+      const s = allStates.find(x => x.stateName === newValue);
+      setForm(p => ({ 
+        ...p, 
+        state: newValue, 
+        stateCode: s?.stateCode || '', 
+        country: s?.countryName || p.country 
+      }));
+    } else {
+      setForm(p => ({ ...p, state: '', stateCode: '' }));
+    }
+  };
+
   const handleSave = async () => {
     if (!validate(form, RULES)) return;
     setLoading(true);
     try {
-      // Handle file uploads
       const uploadFile = async (f) => f.isServer ? f.name : await autoUploadFile(f.file, 'SALES_SUPPLIER');
       const finalFiles = await Promise.all(uploadedFiles.map(uploadFile));
       const updatedForm = { ...form, uploadFiles: finalFiles.join(',') };
@@ -178,6 +207,23 @@ export default function SupplierMaster() {
 
   useKeyboardShortcuts({ 'ctrl+s': handleSave, 'escape': () => navigate('/sm/suppliers') });
 
+  const filteredStates = useMemo(() => {
+    return form.country 
+      ? allStates.filter(s => s.countryName === form.country)
+      : allStates;
+  }, [form.country, allStates]);
+
+  const acSx = {
+    width: '100%',
+    '& .MuiOutlinedInput-root': {
+      borderRadius: '12px',
+      backgroundColor: theme.palette.mode === 'dark' ? theme.palette.dark[800] : theme.palette.grey[50],
+      '&:hover': {
+        backgroundColor: theme.palette.mode === 'dark' ? theme.palette.dark[700] : theme.palette.grey[100]
+      }
+    }
+  };
+
   return (
     <MainCard
       title={<Stack direction="row" alignItems="center" spacing={1.5}><IconUserPlus size={24} /><Typography variant="h3">{supplierId ? 'Edit Supplier' : 'New Supplier'}</Typography></Stack>}
@@ -196,11 +242,7 @@ export default function SupplierMaster() {
             <R><BOSTextField name="supplierCode" label="Supplier Code" value={form.supplierCode} onChange={h} disabled inputProps={{ readOnly: true }} sx={{ '& .MuiInputBase-input': { fontWeight: 700, color: 'primary.main' } }} /></R>
             <R><BOSTextField name="gstNo" label="GST No" value={form.gstNo} onChange={h} /></R>
             <R><BOSTextField name="supplierName" label="Supplier Name" value={form.supplierName} onChange={h} required error={!!errors.supplierName} helperText={errors.supplierName} /></R>
-            <R><BOSTextField name="ledgerName" label="Ledger Name" value={form.ledgerName} onChange={h} select>
-                <MenuItem value="">-Select-</MenuItem>
-                <MenuItem value="General Ledger">General Ledger</MenuItem>
-              </BOSTextField>
-            </R>
+            <R><BOSTextField name="ledgerName" label="Ledger Name" value={form.ledgerName} onChange={h} /></R>
             <R><BOSTextField name="shortName" label="Short Name" value={form.shortName} onChange={h} /></R>
             <R><BOSTextField name="supplierPrintName" label="Supplier Print Name" value={form.supplierPrintName} onChange={h} /></R>
             <R><BOSTextField name="mobileNo" label="Mobile No" value={form.mobileNo} onChange={h} /></R>
@@ -211,19 +253,19 @@ export default function SupplierMaster() {
         </BOSFormSection>
 
         <BOSFormSection icon={<IconMapPin size={20} color={theme.palette.primary.main} />} title="Location Details">
-          <Grid container spacing={2.5}>
-            <Grid item xs={12}><BOSTextField name="address" label="Address" value={form.address} onChange={h} multiline rows={4} /></Grid>
-            <R><BOSTextField name="city" label="City" value={form.city} onChange={h} /></R>
-            <R><BOSTextField name="state" label="State" value={form.state} onChange={h} select>
-                <MenuItem value="">-Select-</MenuItem>
-                {STATES_INDIA.map(s => <MenuItem key={s} value={s}>{s}</MenuItem>)}
-              </BOSTextField>
-            </R>
-            <R><BOSTextField name="country" label="Country" value={form.country} onChange={h} select>
-                {COUNTRIES.map(c => <MenuItem key={c} value={c}>{c}</MenuItem>)}
-              </BOSTextField>
-            </R>
-            <R><BOSTextField name="pincode" label="Pin Code" value={form.pincode} onChange={h} /></R>
+          <Grid container spacing={3}>
+            <Grid item xs={12} lg={6}>
+              <BOSTextField fullWidth name="address" label="Address" value={form.address} onChange={h} multiline rows={5} placeholder="Enter supplier address..." />
+            </Grid>
+            <Grid item xs={12} lg={6}>
+              <Grid container spacing={2}>
+                <R lg={6} md={6}><BOSTextField fullWidth name="city" label="City" value={form.city} onChange={h} /></R>
+                <R lg={6} md={6}><Autocomplete fullWidth value={form.country || null} onChange={handleCountryChange} options={countries.map(c => c.country)} renderInput={(params) => <BOSTextField {...params} label="Country" sx={acSx} />} /></R>
+                <R lg={6} md={6}><Autocomplete fullWidth value={form.state || null} onChange={handleStateChange} options={filteredStates.map(s => s.stateName)} renderInput={(params) => <BOSTextField {...params} label="State Name" sx={acSx} />} noOptionsText={form.country ? 'No states found' : 'Select country first'} /></R>
+                <R lg={6} md={6}><BOSTextField fullWidth name="stateCode" label="State Code" value={form.stateCode} onChange={h} disabled placeholder="Auto-filled" /></R>
+                <R lg={12} md={12}><BOSTextField fullWidth name="pincode" label="Pin Code" value={form.pincode} onChange={h} /></R>
+              </Grid>
+            </Grid>
           </Grid>
         </BOSFormSection>
 
@@ -269,52 +311,16 @@ export default function SupplierMaster() {
         </BOSFormSection>
 
         <BOSFormSection icon={<IconTruckDelivery size={20} color={theme.palette.primary.main} />} title="Terms & Status">
-          <Grid container spacing={2.5}>
-            <R>
-              <BOSTextField name="deliveryTerms" label="Delivery Terms" value={form.deliveryTerms} onChange={h} select>
-                <MenuItem value="">-Select-</MenuItem>
-                {deliveryTerms.map(t => (
-                  <MenuItem key={t.id} value={t.termName}>{t.termName}</MenuItem>
-                ))}
-              </BOSTextField>
+          <Grid container spacing={3}>
+            <R lg={4} md={6}>
+              <Autocomplete fullWidth value={form.currency || null} onChange={handleAC('currency')} options={currencies.map(c => c.currencyCode)} renderOption={(props, option) => { const { key, ...optionProps } = props; const c = currencies.find(x => x.currencyCode === option); return (<li key={key} {...optionProps}><Typography variant="body2"><b>{option}</b> - {c?.currencyName}</Typography></li>); }} renderInput={(params) => <BOSTextField {...params} label="Currency" sx={acSx} required />} />
             </R>
-            <R>
-              <BOSTextField name="typeOfService" label="Type Of Service" value={form.typeOfService} onChange={h} select>
-                <MenuItem value="">-Select-</MenuItem>
-                {typesOfService.map(s => (
-                  <MenuItem key={s.id} value={s.serviceName}>{s.serviceName}</MenuItem>
-                ))}
-              </BOSTextField>
-            </R>
-            <R>
-              <BOSTextField name="paymentTerms" label="Payment Terms" value={form.paymentTerms} onChange={h} select>
-                <MenuItem value="">-Select-</MenuItem>
-                {paymentTerms.map(p => (
-                  <MenuItem key={p.id} value={p.termName}>{p.termName}</MenuItem>
-                ))}
-              </BOSTextField>
-            </R>
-            <R>
-              <BOSTextField name="freightRequired" label="Freight Required" value={form.freightRequired} onChange={h} select>
-                <MenuItem value="Yes">Yes</MenuItem>
-                <MenuItem value="No">No</MenuItem>
-              </BOSTextField>
-            </R>
-            <R>
-              <BOSTextField name="currency" label="Currency" value={form.currency} onChange={h} select required>
-                <MenuItem value="">-Select-</MenuItem>
-                {currencies.map(c => (
-                  <MenuItem key={c.id} value={c.currencyCode}>{c.currencyCode} - {c.currencyName}</MenuItem>
-                ))}
-              </BOSTextField>
-            </R>
-            <R><BOSTextField name="dueDays" label="Due Days" value={form.dueDays} onChange={h} type="number" /></R>
-            <R>
-              <BOSTextField name="status" label="Status" value={form.status} onChange={h} select>
-                <MenuItem value="Active">Active</MenuItem>
-                <MenuItem value="Inactive">Inactive</MenuItem>
-              </BOSTextField>
-            </R>
+            <R lg={4} md={6}><Autocomplete fullWidth value={form.typeOfService || null} onChange={handleAC('typeOfService')} options={typesOfService.map(s => s.serviceName)} renderInput={(params) => <BOSTextField {...params} label="Type Of Service" sx={acSx} />} /></R>
+            <R lg={4} md={6}><Autocomplete fullWidth value={form.paymentTerms || null} onChange={handleAC('paymentTerms')} options={paymentTerms.map(p => p.termName)} renderInput={(params) => <BOSTextField {...params} label="Payment Terms" sx={acSx} />} /></R>
+            <R lg={4} md={6}><Autocomplete fullWidth value={form.deliveryTerms || null} onChange={handleAC('deliveryTerms')} options={deliveryTerms.map(t => t.termName)} renderInput={(params) => <BOSTextField {...params} label="Delivery Terms" sx={acSx} />} /></R>
+            <R lg={4} md={4}><BOSTextField fullWidth name="freightRequired" label="Freight Required" value={form.freightRequired} onChange={h} select><MenuItem value="Yes">Yes</MenuItem><MenuItem value="No">No</MenuItem></BOSTextField></R>
+            <R lg={4} md={4}><BOSTextField fullWidth name="dueDays" label="Due Days" value={form.dueDays} onChange={h} type="number" /></R>
+            <R lg={12} md={12}><BOSTextField fullWidth name="status" label="Status" value={form.status} onChange={h} select><MenuItem value="Active">Active</MenuItem><MenuItem value="Inactive">Inactive</MenuItem></BOSTextField></R>
           </Grid>
         </BOSFormSection>
 
