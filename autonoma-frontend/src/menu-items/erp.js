@@ -31,7 +31,21 @@ import {
   IconNotes,
   IconBuilding,
   IconCertificate,
-  IconShieldCheck
+  IconShieldCheck,
+  IconTags,
+  IconFileText,
+  IconBuildingBank,
+  IconClock,
+  IconCalendar,
+  IconLock,
+  IconGasStation,
+  IconTruck,
+  IconRuler2,
+  IconChartDonut,
+  IconPlaneTilt,
+  IconTractor,
+  IconMoodSmile,
+  IconSearch
 } from '@tabler/icons-react';
 
 const icons = {
@@ -67,7 +81,21 @@ const icons = {
   IconNotes,
   IconBuilding,
   IconCertificate,
-  IconShieldCheck
+  IconShieldCheck,
+  IconTags,
+  IconFileText,
+  IconBuildingBank,
+  IconClock,
+  IconCalendar,
+  IconLock,
+  IconGasStation,
+  IconTruck,
+  IconRuler2,
+  IconChartDonut,
+  IconPlaneTilt,
+  IconTractor,
+  IconMoodSmile,
+  IconSearch
 };
 
 export const masters = {
@@ -84,32 +112,154 @@ export const masters = {
       icon: icons.IconUsers,
       children: [
         {
-          id: 'master-hr-dept-details',
-          title: 'Department Details',
-          type: 'item',
-          url: '/master/hr/department',
-          icon: icons.IconBuilding
+          id: 'master-hr-ats',
+          title: 'ATS',
+          type: 'collapse',
+          icon: icons.IconSearch,
+          children: [
+            {
+              id: 'master-hr-ats-interview',
+              title: 'Interview Criteria Master',
+              type: 'item',
+              url: '/master/hr/ats/interview-criteria',
+              icon: icons.IconClipboardCheck
+            },
+            {
+              id: 'master-hr-ats-email',
+              title: 'Email Content Master',
+              type: 'item',
+              url: '/master/hr/ats/email-content',
+              icon: icons.IconMessage2
+            },
+            {
+              id: 'master-hr-ats-verification',
+              title: 'Applicant Verification Criteria',
+              type: 'item',
+              url: '/master/hr/ats/verification',
+              icon: icons.IconShieldCheck
+            },
+            {
+              id: 'master-hr-ats-induction',
+              title: 'Induction Criteria',
+              type: 'item',
+              url: '/master/hr/ats/induction',
+              icon: icons.IconUserPlus
+            }
+          ]
         },
         {
-          id: 'master-hr-designation-details',
-          title: 'Designation Details',
-          type: 'item',
-          url: '/master/hr/designation',
-          icon: icons.IconUserCheck
+          id: 'master-hr-employee',
+          title: 'Employee',
+          type: 'collapse',
+          icon: icons.IconUsers,
+          children: [
+            {
+              id: 'master-hr-employee-type',
+              title: 'Employee Type',
+              type: 'item',
+              url: '/master/hr/employee-type',
+              icon: icons.IconTags
+            },
+            {
+              id: 'master-hr-dept-details',
+              title: 'Department',
+              type: 'item',
+              url: '/master/hr/department',
+              icon: icons.IconBuilding
+            },
+            {
+              id: 'master-hr-designation-details',
+              title: 'Designation',
+              type: 'item',
+              url: '/master/hr/designation',
+              icon: icons.IconBriefcase
+            },
+            {
+              id: 'master-hr-designation-level',
+              title: 'Level',
+              type: 'item',
+              url: '/master/hr/desg-level',
+              icon: icons.IconHierarchy
+            },
+            {
+              id: 'master-hr-employee-satisfaction',
+              title: 'Employee Satisfaction Criteria',
+              type: 'item',
+              url: '/master/hr/satisfaction',
+              icon: icons.IconAward
+            },
+            {
+              id: 'master-hr-employee-master',
+              title: 'Employee Master',
+              type: 'item',
+              url: '/hra/employee/master',
+              icon: icons.IconUserPlus
+            }
+          ]
         },
         {
-          id: 'master-hr-grade-details',
-          title: 'Grade Details',
-          type: 'item',
-          url: '/master/hr/grade',
-          icon: icons.IconAward
-        },
-        {
-          id: 'master-hr-designation-level',
-          title: 'Designation Level',
-          type: 'item',
-          url: '/master/hr/desg-level',
-          icon: icons.IconHierarchy
+          id: 'master-hr-payroll',
+          title: 'Payroll',
+          type: 'collapse',
+          icon: icons.IconCoins,
+          children: [
+            {
+              id: 'master-hr-payroll-holiday',
+              title: 'Holiday',
+              type: 'item',
+              url: '/master/hr/payroll/holiday',
+              icon: icons.IconCalendarEvent
+            },
+            {
+              id: 'master-hr-payroll-bank',
+              title: 'Bank Details',
+              type: 'item',
+              url: '/master/hr/payroll/bank',
+              icon: icons.IconBuildingBank
+            },
+            {
+              id: 'master-hr-payroll-shift',
+              title: 'Shift',
+              type: 'item',
+              url: '/master/hr/payroll/shift',
+              icon: icons.IconClock
+            },
+            {
+              id: 'master-hr-payroll-loan',
+              title: 'Loan Master',
+              type: 'item',
+              url: '/master/hr/payroll/loan',
+              icon: icons.IconCoins
+            },
+            {
+              id: 'master-hr-payroll-leave',
+              title: 'Leave Master',
+              type: 'item',
+              url: '/master/hr/payroll/leave',
+              icon: icons.IconCalendar
+            },
+            {
+              id: 'master-hr-payroll-permission',
+              title: 'Permission Master',
+              type: 'item',
+              url: '/master/hr/payroll/permission',
+              icon: icons.IconLock
+            },
+            {
+              id: 'master-hr-payroll-petrol',
+              title: 'Petrol Allowance',
+              type: 'item',
+              url: '/master/hr/payroll/petrol',
+              icon: icons.IconGasStation
+            },
+            {
+              id: 'master-hr-payroll-policy',
+              title: 'Policy Master',
+              type: 'item',
+              url: '/master/hr/payroll/policy',
+              icon: icons.IconFileText
+            }
+          ]
         }
       ]
     },
@@ -121,13 +271,13 @@ export const masters = {
       children: [
         {
           id: 'master-qms-checklist-parent',
-          title: 'Checklist',
+          title: 'Check List',
           type: 'collapse',
           icon: icons.IconClipboardCheck,
           children: [
             {
               id: 'master-qms-checklist',
-              title: 'Checklist Master',
+              title: 'Check List Master',
               type: 'item',
               url: '/master/qms/checklist/master',
               icon: icons.IconClipboardCheck
@@ -162,21 +312,79 @@ export const masters = {
               icon: icons.IconShieldCheck
             }
           ]
+        },
+        {
+          id: 'master-qms-meeting',
+          title: 'Meeting',
+          type: 'collapse',
+          icon: icons.IconMessage2,
+          children: [
+            {
+              id: 'master-qms-meeting-master',
+              title: 'Meeting Master',
+              type: 'item',
+              url: '/master/qms/meeting/master',
+              icon: icons.IconCalendarEvent
+            }
+          ]
         }
       ]
     },
     {
-      id: 'master-meeting',
-      title: 'Meeting',
+      id: 'master-npd',
+      title: 'NPD',
       type: 'collapse',
-      icon: icons.IconMessage2,
+      icon: icons.IconRocket,
       children: [
         {
-          id: 'master-meeting-master',
-          title: 'Meeting Master',
-          type: 'item',
-          url: '/master/qms/meeting/master',
-          icon: icons.IconCalendarEvent
+          id: 'master-npd-product',
+          title: 'Product',
+          type: 'collapse',
+          icon: icons.IconBuildingFactory,
+          children: [
+            {
+              id: 'master-npd-product-type',
+              title: 'Product Item Type',
+              type: 'item',
+              url: '/master/npd/product-type',
+              icon: icons.IconListCheck
+            },
+            {
+              id: 'master-npd-product-subtype',
+              title: 'Product Item Sub Type',
+              type: 'item',
+              url: '/master/npd/product-subtype',
+              icon: icons.IconNotes
+            },
+            {
+              id: 'master-npd-product-oem',
+              title: 'Product OEM Master',
+              type: 'item',
+              url: '/master/npd/product-oem',
+              icon: icons.IconBuilding
+            },
+            {
+              id: 'master-npd-product-oem-mapping',
+              title: 'Product OEM Mapping',
+              type: 'item',
+              url: '/master/npd/product-oem-mapping',
+              icon: icons.IconHierarchy
+            },
+            {
+              id: 'master-npd-product-model',
+              title: 'Product Model Master',
+              type: 'item',
+              url: '/master/npd/product-model',
+              icon: icons.IconSettings
+            },
+            {
+              id: 'master-npd-product-capacity',
+              title: 'Product Capacity Master',
+              type: 'item',
+              url: '/master/npd/product-capacity',
+              icon: icons.IconAward
+            }
+          ]
         }
       ]
     },
@@ -203,117 +411,129 @@ export const masters = {
       ]
     },
     {
-      id: 'master-accounts',
-      title: 'Accounts',
-      type: 'collapse',
-      icon: icons.IconReceiptTax,
-      children: [
-        {
-          id: 'sm-customer-master',
-          title: 'Customer Master',
-          type: 'item',
-          url: '/sm/customers',
-          icon: icons.IconUsers
-        },
-        {
-          id: 'master-accounts-currency',
-          title: 'Currency',
-          type: 'item',
-          url: '/master/accounts/currency',
-          icon: icons.IconCoins
-        }
-      ]
-    },
-    {
-      id: 'master-common',
-      title: 'Common Master',
-      type: 'collapse',
-      icon: icons.IconSettings,
-      children: [
-        {
-          id: 'master-common-delivery-terms',
-          title: 'Delivery Terms Master',
-          type: 'item',
-          url: '/master/common/delivery-terms',
-          icon: icons.IconTruckDelivery
-        },
-        {
-          id: 'master-common-payment-terms',
-          title: 'Payment Terms Master',
-          type: 'item',
-          url: '/master/common/payment-terms',
-          icon: icons.IconCreditCard
-        },
-        {
-          id: 'master-common-state',
-          title: 'State Master',
-          type: 'item',
-          url: '/master/common/state',
-          icon: icons.IconMapPin
-        },
-        {
-          id: 'master-common-country',
-          title: 'Country Master',
-          type: 'item',
-          url: '/master/common/country',
-          icon: icons.IconWorld
-        }
-      ]
-    },
-
-    {
-      id: 'sam',
+      id: 'master-sales',
       title: 'Sales',
       type: 'collapse',
       icon: icons.IconBriefcase,
       children: [
         {
-          id: 'sam-ocr',
-          title: 'OCR',
+          id: 'master-sales-crm',
+          title: 'CRM',
           type: 'collapse',
-          icon: icons.IconServerCog,
+          icon: icons.IconUserCheck,
           children: [
-
-
             {
-              id: 'sm-contact-master',
+              id: 'master-sales-crm-satisfaction',
+              title: 'Customer Satisfaction Criteria',
+              type: 'item',
+              url: '/master/sales/crm/satisfaction',
+              icon: icons.IconMoodSmile
+            },
+            {
+              id: 'master-sales-crm-contact',
               title: 'Contact Master',
               type: 'item',
               url: '/sm/contacts',
               icon: icons.IconUsers
             },
             {
-              id: 'sm-customer-address',
-              title: 'Customer Address',
+              id: 'master-sales-crm-customer',
+              title: 'Customer Master',
               type: 'item',
-              url: '/sm/customer-address',
+              url: '/sm/customers',
+              icon: icons.IconBuilding
+            },
+            {
+              id: 'master-sales-crm-potential',
+              title: 'Customer Potential',
+              type: 'item',
+              url: '/master/sales/crm/potential',
+              icon: icons.IconChartBar
+            }
+          ]
+        },
+        {
+          id: 'master-sales-logistics',
+          title: 'Terms & Logistics',
+          type: 'collapse',
+          icon: icons.IconTruck,
+          children: [
+            {
+              id: 'master-sales-logistics-payment-terms',
+              title: 'Payment Terms',
+              type: 'item',
+              url: '/master/common/payment-terms',
+              icon: icons.IconCreditCard
+            },
+            {
+              id: 'master-sales-logistics-delivery-terms',
+              title: 'Delivery Terms',
+              type: 'item',
+              url: '/master/common/delivery-terms',
+              icon: icons.IconTruckDelivery
+            },
+            {
+              id: 'master-sales-logistics-currency',
+              title: 'Currency',
+              type: 'item',
+              url: '/master/accounts/currency',
+              icon: icons.IconCoins
+            },
+            {
+              id: 'master-sales-logistics-uom',
+              title: 'Unit of Measurement',
+              type: 'item',
+              url: '/master/sales/logistics/uom',
+              icon: icons.IconRuler2
+            },
+            {
+              id: 'master-sales-logistics-country',
+              title: 'Country Master',
+              type: 'item',
+              url: '/master/common/country',
+              icon: icons.IconWorld
+            },
+            {
+              id: 'master-sales-logistics-state',
+              title: 'State Master',
+              type: 'item',
+              url: '/master/common/state',
               icon: icons.IconMapPin
             },
             {
-              id: 'sm-segment-master',
-              title: 'Segment Master',
+              id: 'master-sales-logistics-segment',
+              title: 'Segment',
               type: 'item',
               url: '/sm/ocr/segment-master',
-              icon: icons.IconChartBar
-            },
-            {
-              id: 'sm-sub-segment-master',
-              title: 'Sub Segment Master',
-              type: 'item',
-              url: '/sm/ocr/sub-segment-master',
               icon: icons.IconChartPie
             },
             {
-              id: 'sm-type-of-service',
-              title: 'Type of Service',
+              id: 'master-sales-logistics-subsegment',
+              title: 'Sub Segment',
               type: 'item',
-              url: '/sm/ocr/type-of-service',
-              icon: icons.IconSettings
+              url: '/sm/ocr/sub-segment-master',
+              icon: icons.IconChartDonut
+            }
+,
+            {
+              id: 'master-sales-logistics-despatch-mode',
+              title: 'Mode of Despatch',
+              type: 'item',
+              url: '/master/sales/logistics/despatch-mode',
+              icon: icons.IconPlaneTilt
+            },
+            {
+              id: 'master-sales-logistics-freight',
+              title: 'Freight',
+              type: 'item',
+              url: '/master/sales/logistics/freight',
+              icon: icons.IconTractor
             }
           ]
         }
       ]
-    }
+    },
+
   ]
 };
 

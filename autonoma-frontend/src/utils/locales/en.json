@@ -331,5 +331,13 @@
   "Vendor Master": "Vendor Master",
   "Accounts": "Accounts",
   "Common Master": "Common Master",
-  "Sales": "Sales"
+  "Sales": "Sales",
+  "NPD": "NPD",
+  "ATS": "ATS",
+  "Payroll": "Payroll",
+  "Employee Type": "Employee Type",
+  "Department": "Department",
+  "Designation": "Designation",
+  "Level": "Level",
+  "Employee Satisfaction Criteria": "Employee Satisfaction Criteria"
 }

@@ -47,6 +47,21 @@ export default function BOSExportButton({
       columns.forEach(col => {
         mappedRow[col.header] = row[col.key] || '-';
       });
+      
+      // Auto-append Audit Columns if they exist in the row data (SOP Standard)
+      const auditFields = [
+        { key: 'createdBy', label: 'Created By' },
+        { key: 'createdDate', label: 'Created Date' },
+        { key: 'updatedBy', label: 'Updated By' },
+        { key: 'updatedDate', label: 'Updated Date' }
+      ];
+      
+      auditFields.forEach(field => {
+        if (row[field.key]) {
+          mappedRow[field.label] = row[field.key];
+        }
+      });
+      
       return mappedRow;
     });
   };
