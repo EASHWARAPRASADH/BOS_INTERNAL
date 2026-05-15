@@ -4,13 +4,13 @@ import { Grid, Box, Button, Typography, Stack, MenuItem, useTheme, Tooltip } fro
 import { IconUserPlus, IconDeviceFloppy, IconArrowLeft, IconTrash, IconEraser, IconUser, IconMapPin, IconBusinessplan, IconTruckDelivery } from '@tabler/icons-react';
 import { useColorScheme } from '@mui/material/styles';
 import MainCard from 'ui-component/cards/MainCard';
-import { 
-  BOSFormSection, 
-  BOSTextField, 
-  btnSave, 
-  btnDelete, 
-  btnCancel, 
-  btnClear, 
+import {
+  BOSFormSection,
+  BOSTextField,
+  btnSave,
+  btnDelete,
+  btnCancel,
+  btnClear,
   BOSDocumentPreviewDialog,
   BOSFileUpload,
   formatBOSFiles
@@ -124,7 +124,7 @@ export default function CustomerMaster() {
     try {
       const { data } = await axios.get('/api/sm/customers/next-code');
       setForm(p => ({ ...p, customerCode: data }));
-    } catch (e) { 
+    } catch (e) {
       console.error(e);
       // Fallback in case of error
       const year = new Date().getFullYear().toString().slice(-2);
@@ -133,13 +133,11 @@ export default function CustomerMaster() {
   }, [customerId]);
 
 
-  useEffect(() => { 
+  useEffect(() => {
     fetchMasterData();
-    if (customerId) fetchCustomer(); 
+    if (customerId) fetchCustomer();
     else fetchNextCode();
   }, [customerId, fetchCustomer, fetchNextCode, fetchMasterData]);
-
-  const h = (e) => setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
 
   const h = (e) => setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
 
@@ -211,14 +209,14 @@ export default function CustomerMaster() {
             <Grid item xs={12}><BOSTextField name="address" label="Address" value={form.address} onChange={h} multiline rows={4} /></Grid>
             <R><BOSTextField name="city" label="City" value={form.city} onChange={h} /></R>
             <R><BOSTextField name="state" label="State" value={form.state} onChange={h} select>
-                <MenuItem value="">-Select-</MenuItem>
-                {STATES_INDIA.map(s => <MenuItem key={s} value={s}>{s}</MenuItem>)}
-              </BOSTextField>
+              <MenuItem value="">-Select-</MenuItem>
+              {STATES_INDIA.map(s => <MenuItem key={s} value={s}>{s}</MenuItem>)}
+            </BOSTextField>
             </R>
             <R><BOSTextField name="stateCode" label="State Code" value={form.stateCode} onChange={h} /></R>
             <R><BOSTextField name="country" label="Country" value={form.country} onChange={h} select>
-                {COUNTRIES.map(c => <MenuItem key={c} value={c}>{c}</MenuItem>)}
-              </BOSTextField>
+              {COUNTRIES.map(c => <MenuItem key={c} value={c}>{c}</MenuItem>)}
+            </BOSTextField>
             </R>
             <R><BOSTextField name="pincode" label="Pin Code" value={form.pincode} onChange={h} /></R>
             <R><BOSTextField name="distance" label="Distance (KM)" value={form.distance} onChange={h} type="number" /></R>
@@ -302,9 +300,9 @@ export default function CustomerMaster() {
         </BOSFormSection>
 
         <BOSFormSection icon={<IconFiles size={22} color={theme.palette.primary.main} />} title="Standard Attachments">
-          <BOSFileUpload 
-            files={uploadedFiles} 
-            onChange={setUploadedFiles} 
+          <BOSFileUpload
+            files={uploadedFiles}
+            onChange={setUploadedFiles}
             module="SALES_CUSTOMER"
             label="Upload Customer Documents"
             helperText="PDFs, Images, or Excel sheets"
@@ -314,7 +312,7 @@ export default function CustomerMaster() {
 
 
       <ConfirmDeleteDialog open={deleteOpen} onClose={() => setDeleteOpen(false)} onConfirm={handleDelete} title="Delete Customer" message="Are you sure you want to delete this customer?" itemName={form.customerName} />
-      
+
       <BOSDocumentPreviewDialog
         open={previewOpen}
         onClose={() => setPreviewOpen(false)}
