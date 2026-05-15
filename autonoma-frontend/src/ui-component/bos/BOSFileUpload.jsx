@@ -206,13 +206,13 @@ export default function BOSFileUpload({
   return (
     <Box>
       {/* ── Drop Zone ── */}
-      {!disabled && !atLimit && (
+      {(!atLimit || disabled) && (
         <Box
-          onDragEnter={handleDrag}
-          onDragLeave={handleDrag}
-          onDragOver={handleDrag}
-          onDrop={handleDrop}
-          component="label"
+          onDragEnter={!disabled ? handleDrag : undefined}
+          onDragLeave={!disabled ? handleDrag : undefined}
+          onDragOver={!disabled ? handleDrag : undefined}
+          onDrop={!disabled ? handleDrop : undefined}
+          component={disabled ? 'div' : 'label'}
           sx={{
             display: 'flex',
             flexDirection: compact ? 'row' : 'column',
@@ -225,40 +225,43 @@ export default function BOSFileUpload({
             borderRadius: 2.5,
             bgcolor: dragActive 
               ? alpha(theme.palette.primary.main, 0.04)
-              : 'transparent',
-            cursor: 'pointer',
+              : (disabled ? alpha(theme.palette.grey[500], 0.04) : 'transparent'),
+            cursor: disabled ? 'default' : 'pointer',
+            opacity: disabled ? 0.6 : 1,
             transition: 'all 0.25s ease',
-            '&:hover': {
+            '&:hover': !disabled ? {
               borderColor: 'primary.light',
               bgcolor: alpha(theme.palette.primary.main, 0.02)
-            }
+            } : {}
           }}
         >
-          <input
-            type="file"
-            hidden
-            multiple={multiple}
-            accept={accept}
-            onChange={handleInputChange}
-          />
+          {!disabled && (
+            <input
+              type="file"
+              hidden
+              multiple={multiple}
+              accept={accept}
+              onChange={handleInputChange}
+            />
+          )}
           <Box sx={{
             p: compact ? 0.8 : 1.5,
             borderRadius: '50%',
-            bgcolor: alpha(theme.palette.primary.main, 0.08),
+            bgcolor: alpha(disabled ? theme.palette.grey[500] : theme.palette.primary.main, 0.08),
             display: 'flex'
           }}>
             <IconCloudUpload 
               size={compact ? 20 : 32} 
-              color={theme.palette.primary.main} 
+              color={disabled ? theme.palette.grey[500] : theme.palette.primary.main} 
               stroke={1.5} 
             />
           </Box>
           <Box sx={{ textAlign: compact ? 'left' : 'center' }}>
-            <Typography variant={compact ? 'body2' : 'subtitle2'} fontWeight={600} color="text.primary">
-              {label}
+            <Typography variant={compact ? 'body2' : 'subtitle2'} fontWeight={600} color={disabled ? 'text.disabled' : 'text.primary'}>
+              {label} {disabled && '(Disabled)'}
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              {helperText || `Drag & drop or click • ${multiple ? `Up to ${maxFiles} files` : 'Single file'} • Max ${maxSizeMB}MB each`}
+              {disabled ? 'NDA document not required' : (helperText || `Drag & drop or click • ${multiple ? `Up to ${maxFiles} files` : 'Single file'} • Max ${maxSizeMB}MB each`)}
             </Typography>
           </Box>
         </Box>

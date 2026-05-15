@@ -55,17 +55,17 @@ public class Designation {
     private String createdBy;
 
     @Column(name = "created_at")
-    private java.util.Date createdAt;
+    private java.util.Date createdDate;
 
     @Column(name = "updated_by")
     private String updatedBy;
 
     @Column(name = "updated_at")
-    private java.util.Date updatedAt;
+    private java.util.Date updatedDate;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = new java.util.Date();
+        createdDate = new java.util.Date();
         if (createdBy == null) {
             createdBy = com.autonoma.erp.util.SecurityUtils.getCurrentUserId();
         }
@@ -73,7 +73,7 @@ public class Designation {
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = new java.util.Date();
+        updatedDate = new java.util.Date();
         updatedBy = com.autonoma.erp.util.SecurityUtils.getCurrentUserId();
     }
 
@@ -102,10 +102,10 @@ public class Designation {
     public void setBudgetedPositions(Integer budgetedPositions) { this.budgetedPositions = budgetedPositions; }
     public String getCreatedBy() { return createdBy; }
     public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }
-    public java.util.Date getCreatedAt() { return createdAt; }
-    public void setCreatedAt(java.util.Date createdAt) { this.createdAt = createdAt; }
+    public java.util.Date getCreatedDate() { return createdDate; }
+    public void setCreatedDate(java.util.Date createdDate) { this.createdDate = createdDate; }
     public String getUpdatedBy() { return updatedBy; }
     public void setUpdatedBy(String updatedBy) { this.updatedBy = updatedBy; }
-    public java.util.Date getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(java.util.Date updatedAt) { this.updatedAt = updatedAt; }
+    public java.util.Date getUpdatedDate() { return updatedDate; }
+    public void setUpdatedDate(java.util.Date updatedDate) { this.updatedDate = updatedDate; }
 }

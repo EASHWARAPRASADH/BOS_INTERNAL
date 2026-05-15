@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Grid, useTheme, MenuItem, Button, Box, Typography, Autocomplete, TextField as MuiTextField } from '@mui/material';
+import { Grid, useTheme, MenuItem, Button, Box, Typography, Autocomplete, TextField as MuiTextField, alpha } from '@mui/material';
 import { IconUser, IconMail, IconPhone, IconMapPin, IconFileTypography, IconPlus, IconUserPlus } from '@tabler/icons-react';
 import axios from 'utils/axios';
 import { useDispatch } from 'react-redux';
 import { openSnackbar } from 'store/slices/snackbar';
 import useBOSValidation from 'hooks/useBOSValidation';
-import { BOSFormDialog, BOSFormSection, BOSTextField, BOSFileGallery } from 'ui-component/bos';
+import { BOSFormDialog, BOSFormSection, BOSTextField, BOSFileGallery, BOSFileUpload } from 'ui-component/bos';
 import AddContactDialog from './AddContactDialog';
 import { API_PATHS } from 'utils/api-constants';
 
@@ -30,6 +30,7 @@ export default function AddCustomerDialog({ open, handleClose, initialData, read
     customerCode: '',
     gstin: '',
     customerName: '',
+    customerPrintName: '',
     accountsLedger: '',
     groupName: '',
     shortName: '',
@@ -59,7 +60,8 @@ export default function AddCustomerDialog({ open, handleClose, initialData, read
     ldApplicable: 'No',
     negotiateCustomer: 'No',
     status: 'Active',
-    fileUpload: ''
+    fileUpload: '',
+    panFileInfo: ''
   });
 
   const [countries, setCountries] = useState([]);
@@ -119,6 +121,11 @@ export default function AddCustomerDialog({ open, handleClose, initialData, read
         } else {
           setAttachments([]);
         }
+        if (initialData.panFileInfo) {
+          setPanFile([{ id: 'server-pan', fileName: initialData.panFileInfo.split('_').slice(1).join('_') || initialData.panFileInfo, serverFileName: initialData.panFileInfo, isLoaded: true }]);
+        } else {
+          setPanFile([]);
+        }
       } else {
         setFormData({ 
           customerCode: '', gstin: '', customerName: '', accountsLedger: '', groupName: '', shortName: '', address: '', city: '', state: '', stateCode: '', country: '', pincode: '', primeCustomer: 'No', panNo: '', website: '', registerNo: '', cinNo: '', isoNumber: '', isoExpiry: '', ndaRequired: 'No', currency: '', segment: '', subSegment: '', paymentTerms: '', deliveryTerms: '', freight: '', domainName: '', distance: '', location: '', ldApplicable: 'No', negotiateCustomer: 'No', status: 'Active'
@@ -145,6 +152,18 @@ export default function AddCustomerDialog({ open, handleClose, initialData, read
 
   const handleSubmit = async () => {
     if (!validate(formData, fieldConfigs)) return;
+
+    if (formData.ndaRequired === 'Yes' && attachments.length === 0) {
+      dispatch(openSnackbar({ 
+        open: true, 
+        message: 'NDA document is required when "NDA Required" is set to Yes. Please upload the document in the Documents section.', 
+        variant: 'alert', 
+        alert: { variant: 'filled' }, 
+        severity: 'error', 
+        close: false 
+      }));
+      return;
+    }
     try {
       const updatedAttachments = [...attachments];
       for (let i = 0; i < updatedAttachments.length; i++) {
@@ -156,7 +175,22 @@ export default function AddCustomerDialog({ open, handleClose, initialData, read
           updatedAttachments[i] = { ...att, serverFileName: uploadRes.data, isLoaded: true };
         }
       }
-      const finalFormData = { ...formData, fileUpload: updatedAttachments.map(att => att.serverFileName).join(',') };
+
+      let finalPanFileInfo = formData.panFileInfo;
+      if (panFile.length > 0 && !panFile[0].isLoaded) {
+        const fileData = new FormData();
+        fileData.append('file', panFile[0].file);
+        const uploadRes = await axios.post(`${API_PATHS.FILES}/upload`, fileData, { headers: { 'Content-Type': 'multipart/form-data' } });
+        finalPanFileInfo = uploadRes.data;
+      } else if (panFile.length === 0) {
+        finalPanFileInfo = '';
+      }
+
+      const finalFormData = { 
+        ...formData, 
+        fileUpload: updatedAttachments.map(att => att.serverFileName).join(','),
+        panFileInfo: finalPanFileInfo
+      };
       if (isEdit) await axios.put(`/api/sm/customers/${initialData.id}`, finalFormData);
       else await axios.post('/api/sm/customers', finalFormData);
       dispatch(openSnackbar({ open: true, message: `Customer ${isEdit ? 'updated' : 'created'} successfully!`, variant: 'alert', alert: { variant: 'filled' }, severity: 'success', close: false }));
@@ -200,6 +234,7 @@ export default function AddCustomerDialog({ open, handleClose, initialData, read
           <R><BOSTextField name="customerCode" label="Customer Code" value={formData.customerCode} onChange={handleChange} disabled placeholder="Auto-generated" /></R>
           <R><BOSTextField name="gstin" label="GSTIN No" value={formData.gstin} onChange={handleChange} disabled={readOnly} /></R>
           <R lg={6} md={6}><BOSTextField name="customerName" label="Customer Name" value={formData.customerName} onChange={handleChange} disabled={readOnly} required error={!!errors.customerName} helperText={errors.customerName} /></R>
+          <R lg={6} md={6}><BOSTextField name="customerPrintName" label="Customer Print Name" value={formData.customerPrintName} onChange={handleChange} disabled={readOnly} /></R>
           
           <R><BOSTextField name="accountsLedger" label="Accounts Ledger" value={formData.accountsLedger} onChange={handleChange} disabled={readOnly} /></R>
           <R><BOSTextField name="groupName" label="Group Name" value={formData.groupName} onChange={handleChange} disabled={readOnly} /></R>
@@ -224,12 +259,39 @@ export default function AddCustomerDialog({ open, handleClose, initialData, read
       <BOSFormSection icon={<IconMail size={20} color={theme.palette.primary.main} />} title="Business & Compliance">
         <Grid container spacing={2.5}>
           <R><BOSTextField name="primeCustomer" label="Prime Customer" value={formData.primeCustomer} onChange={handleChange} disabled={readOnly} select><MenuItem value="Yes">Yes</MenuItem><MenuItem value="No">No</MenuItem></BOSTextField></R>
-          <R><BOSTextField name="panNo" label="PAN No" value={formData.panNo} onChange={handleChange} disabled={readOnly} /></R>
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <BOSTextField name="panNo" label="PAN No" value={formData.panNo} onChange={handleChange} disabled={readOnly} fullWidth />
+              <BOSFileUpload
+                files={panFile}
+                onChange={setPanFile}
+                module="SALES_CUSTOMER"
+                label="PAN"
+                compact
+                multiple={false}
+                disabled={readOnly}
+              />
+            </Stack>
+          </Grid>
           <R><BOSTextField name="registerNo" label="Register No" value={formData.registerNo} onChange={handleChange} disabled={readOnly} /></R>
           <R><BOSTextField name="cinNo" label="CIN No" value={formData.cinNo} onChange={handleChange} disabled={readOnly} /></R>
           <R><BOSTextField name="isoNumber" label="ISO No" value={formData.isoNumber} onChange={handleChange} disabled={readOnly} /></R>
           <R><BOSTextField name="isoExpiry" label="ISO Expiry Date" value={formData.isoExpiry} onChange={handleChange} disabled={readOnly} type="date" InputLabelProps={{ shrink: true }} /></R>
           <R><BOSTextField name="ndaRequired" label="NDA Required" value={formData.ndaRequired} onChange={handleChange} disabled={readOnly} select><MenuItem value="Yes">Yes</MenuItem><MenuItem value="No">No</MenuItem></BOSTextField></R>
+          <Grid item xs={12} lg={6}>
+            <Box sx={{ border: '1px dashed', borderColor: formData.ndaRequired === 'Yes' ? 'primary.main' : 'divider', borderRadius: 2, bgcolor: alpha(theme.palette.primary.main, 0.02) }}>
+              <BOSFileUpload
+                files={attachments}
+                onChange={setAttachments}
+                module="SALES_CUSTOMER"
+                label="Upload NDA Document"
+                compact
+                multiple={true}
+                disabled={readOnly || formData.ndaRequired === 'No'}
+                helperText="Upload signed NDA agreement."
+              />
+            </Box>
+          </Grid>
           <R lg={6} md={6}><BOSTextField name="website" label="Website" value={formData.website} onChange={handleChange} disabled={readOnly} /></R>
           <R lg={6} md={6}><BOSTextField name="domainName" label="Domain Name" value={formData.domainName} onChange={handleChange} disabled={readOnly} /></R>
         </Grid>

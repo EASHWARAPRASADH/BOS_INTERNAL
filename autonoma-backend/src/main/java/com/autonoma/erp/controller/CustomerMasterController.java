@@ -48,6 +48,7 @@ public class CustomerMasterController {
                 .map(customer -> {
                     customer.setCustomerCode(customerDetails.getCustomerCode());
                     customer.setCustomerName(customerDetails.getCustomerName());
+                    customer.setCustomerPrintName(customerDetails.getCustomerPrintName());
                     customer.setAccountsLedger(customerDetails.getAccountsLedger());
                     customer.setGroupName(customerDetails.getGroupName());
                     customer.setShortName(customerDetails.getShortName());

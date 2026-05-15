@@ -26,21 +26,25 @@ public class SupplierMasterService {
         if (supplier.getId() == null) {
             // New record
             if (repository.existsBySupplierName(supplier.getSupplierName())) {
-                throw new RuntimeException("Supplier Name already exists!");
+                throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "Duplicate value! Please check.");
             }
             if (supplier.getSupplierCode() != null && !supplier.getSupplierCode().isEmpty()) {
                 if (repository.existsBySupplierCode(supplier.getSupplierCode())) {
-                    throw new RuntimeException("Supplier Code already exists!");
+                    throw new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.BAD_REQUEST, "Duplicate value! Please check.");
                 }
             }
         } else {
             // Update
             if (repository.existsBySupplierNameAndIdNot(supplier.getSupplierName(), supplier.getId())) {
-                throw new RuntimeException("Supplier Name already exists!");
+                throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "Duplicate value! Please check.");
             }
             if (supplier.getSupplierCode() != null && !supplier.getSupplierCode().isEmpty()) {
                 if (repository.existsBySupplierCodeAndIdNot(supplier.getSupplierCode(), supplier.getId())) {
-                    throw new RuntimeException("Supplier Code already exists!");
+                    throw new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.BAD_REQUEST, "Duplicate value! Please check.");
                 }
             }
         }

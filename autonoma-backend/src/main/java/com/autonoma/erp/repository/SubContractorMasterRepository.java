@@ -12,4 +12,6 @@ public interface SubContractorMasterRepository extends JpaRepository<SubContract
     
     @Query("SELECT MAX(s.subcontractorCode) FROM SubContractorMaster s")
     String findMaxSubcontractorCode();
+    boolean existsBySubcontractorNameIgnoreCase(String name);
+    boolean existsBySubcontractorNameIgnoreCaseAndIdNot(String name, Long id);
 }

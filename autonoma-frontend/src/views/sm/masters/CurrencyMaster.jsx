@@ -13,7 +13,11 @@ const columns = [
   { id: 'currencyCode', label: 'Currency Code', minWidth: 120, bold: true },
   { id: 'currencyName', label: 'Currency Name', minWidth: 150 },
   { id: 'symbol', label: 'Symbol', minWidth: 80 },
-  { id: 'status', label: 'Status', minWidth: 100 }
+  { id: 'status', label: 'Status', minWidth: 100 },
+  { id: 'createdBy', label: 'Created By', minWidth: 120 },
+  { id: 'createdDate', label: 'Created Date', minWidth: 150 },
+  { id: 'updatedBy', label: 'Updated By', minWidth: 120 },
+  { id: 'updatedDate', label: 'Updated Date', minWidth: 150 }
 ];
 
 const INITIAL = { currencyCode: '', currencyName: '', symbol: '', status: 'Active' };

@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Grid, useTheme, MenuItem, Button, Box, Typography, Autocomplete, TextField as MuiTextField } from '@mui/material';
+import { Grid, useTheme, MenuItem, Button, Box, Typography, Autocomplete, TextField as MuiTextField, alpha } from '@mui/material';
 import { IconUser, IconMail, IconPhone, IconMapPin, IconFileTypography, IconPlus } from '@tabler/icons-react';
 import axios from 'utils/axios';
 import { useDispatch } from 'react-redux';
 import { openSnackbar } from 'store/slices/snackbar';
 import useBOSValidation from 'hooks/useBOSValidation';
-import { BOSFormDialog, BOSFormSection, BOSTextField, BOSFileGallery } from 'ui-component/bos';
+import { BOSFormDialog, BOSFormSection, BOSTextField, BOSFileGallery, BOSFileUpload } from 'ui-component/bos';
 import { API_PATHS } from 'utils/api-constants';
 
 const fieldConfigs = [
@@ -82,6 +82,18 @@ export default function AddSubContractorDialog({ open, handleClose, initialData,
 
   const handleSubmit = async () => {
     if (!validate(formData, fieldConfigs)) return;
+
+    if (formData.ndaRequired === 'Yes' && attachments.length === 0) {
+      dispatch(openSnackbar({ 
+        open: true, 
+        message: 'NDA document is required when "NDA Required" is set to Yes. Please upload the document in the Documents section.', 
+        variant: 'alert', 
+        alert: { variant: 'filled' }, 
+        severity: 'error', 
+        close: false 
+      }));
+      return;
+    }
     try {
       const updatedAttachments = [...attachments];
       for (let i = 0; i < updatedAttachments.length; i++) {
@@ -148,6 +160,20 @@ export default function AddSubContractorDialog({ open, handleClose, initialData,
           <R><BOSTextField name="isoNumber" label="ISO Number" value={formData.isoNumber} onChange={handleChange} disabled={readOnly} /></R>
           <R><BOSTextField name="isoExpiry" label="ISO Expiry Date" value={formData.isoExpiry} onChange={handleChange} disabled={readOnly} type="date" InputLabelProps={{ shrink: true }} /></R>
           <R><BOSTextField name="ndaRequired" label="NDA Required" value={formData.ndaRequired} onChange={handleChange} disabled={readOnly} select><MenuItem value="Yes">Yes</MenuItem><MenuItem value="No">No</MenuItem></BOSTextField></R>
+          <Grid item xs={12} lg={6}>
+            <Box sx={{ border: '1px dashed', borderColor: formData.ndaRequired === 'Yes' ? 'primary.main' : 'divider', borderRadius: 2, bgcolor: alpha(theme.palette.primary.main, 0.02) }}>
+              <BOSFileUpload
+                files={attachments}
+                onChange={setAttachments}
+                module="SALES_SUB_CONTRACTOR"
+                label="Upload NDA Document"
+                compact
+                multiple={true}
+                disabled={readOnly || formData.ndaRequired === 'No'}
+                helperText="Upload signed NDA agreement."
+              />
+            </Box>
+          </Grid>
         </Grid>
       </BOSFormSection>
 

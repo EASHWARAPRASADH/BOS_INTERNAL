@@ -22,4 +22,16 @@ public class StateMaster {
 
     @Column(name = "STATUS", length = 20)
     private String status;
+
+    @Column(name = "created_by")
+    private String createdBy;
+
+    @Column(name = "created_at")
+    private java.time.LocalDateTime createdAt;
+
+    @Column(name = "updated_by")
+    private String updatedBy;
+
+    @Column(name = "updated_at")
+    private java.time.LocalDateTime updatedAt;
 }

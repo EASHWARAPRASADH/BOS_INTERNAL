@@ -4,20 +4,23 @@
 [[1;34mINFO[m] [1mBuilding Autonoma ERP Backend 0.0.1-SNAPSHOT[m
 [[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
 [[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-clean-plugin:3.3.2:clean[m [1m(default-clean)[m @ [36merp-backend[0;1m ---[m
+[[1;34mINFO[m] Deleting /Users/darshankrishnakumar/Downloads/Autonoma_ERP-main/autonoma-backend/target
+[[1;34mINFO[m] 
 [[1;34mINFO[m] [1m>>> [0;32mspring-boot-maven-plugin:3.2.5:run[m [1m(default-cli)[0;1m > [0;1mtest-compile[m @ [36merp-backend[0;1m >>>[m
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36merp-backend[0;1m ---[m
 [[1;34mINFO[m] Copying 1 resource from src/main/resources to target/classes
-[[1;34mINFO[m] Copying 137 resources from src/main/resources to target/classes
+[[1;34mINFO[m] Copying 152 resources from src/main/resources to target/classes
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.13.0:compile[m [1m(default-compile)[m @ [36merp-backend[0;1m ---[m
 [[1;34mINFO[m] Recompiling the module because of [1mchanged source code[m.
-[[1;34mINFO[m] Compiling 240 source files with javac [forked debug parameters release 21] to target/classes
-[[1;33mWARNING[m] /Users/eash/Desktop/ERP 1.11.56 AM/autonoma-backend/src/main/java/com/autonoma/erp/model/UserSessionActivity.java:[43,20] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
-[[1;33mWARNING[m] /Users/eash/Desktop/ERP 1.11.56 AM/autonoma-backend/src/main/java/com/autonoma/erp/model/UserSessionActivity.java:[46,17] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[[1;34mINFO[m] Compiling 248 source files with javac [forked debug parameters release 21] to target/classes
+[[1;33mWARNING[m] /Users/darshankrishnakumar/Downloads/Autonoma_ERP-main/autonoma-backend/src/main/java/com/autonoma/erp/model/UserSessionActivity.java:[43,20] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[[1;33mWARNING[m] /Users/darshankrishnakumar/Downloads/Autonoma_ERP-main/autonoma-backend/src/main/java/com/autonoma/erp/model/UserSessionActivity.java:[46,17] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36merp-backend[0;1m ---[m
-[[1;34mINFO[m] skip non existing resourceDirectory /Users/eash/Desktop/ERP 1.11.56 AM/autonoma-backend/src/test/resources
+[[1;34mINFO[m] skip non existing resourceDirectory /Users/darshankrishnakumar/Downloads/Autonoma_ERP-main/autonoma-backend/src/test/resources
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.13.0:testCompile[m [1m(default-testCompile)[m @ [36merp-backend[0;1m ---[m
 [[1;34mINFO[m] No sources to compile
@@ -34,415 +37,70 @@
  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
   '  |____| .__|_| |_|_| |_\__, | / / / /
  =========|_|==============|___/=/_/_/_/
-[32m :: Spring Boot :: [39m              [2m (v3.2.5)[0;39m
+ :: Spring Boot ::                (v3.2.5)
 
-[2m2026-05-14T00:13:19.431+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mc.a.erp.AutonomaBackendApplication      [0;39m [2m:[0;39m Starting AutonomaBackendApplication using Java 23.0.1 with PID 63503 (/Users/eash/Desktop/ERP 1.11.56 AM/autonoma-backend/target/classes started by eash in /Users/eash/Desktop/ERP 1.11.56 AM/autonoma-backend)
-[2m2026-05-14T00:13:19.433+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mc.a.erp.AutonomaBackendApplication      [0;39m [2m:[0;39m No active profile set, falling back to 1 default profile: "default"
-[2m2026-05-14T00:13:19.453+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36m.e.DevToolsPropertyDefaultsPostProcessor[0;39m [2m:[0;39m Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
-[2m2026-05-14T00:13:19.453+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36m.e.DevToolsPropertyDefaultsPostProcessor[0;39m [2m:[0;39m For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
-[2m2026-05-14T00:13:19.791+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36m.s.d.r.c.RepositoryConfigurationDelegate[0;39m [2m:[0;39m Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-[2m2026-05-14T00:13:19.852+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36m.s.d.r.c.RepositoryConfigurationDelegate[0;39m [2m:[0;39m Finished Spring Data repository scanning in 57 ms. Found 64 JPA repository interfaces.
-[2m2026-05-14T00:13:20.187+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.s.b.w.embedded.tomcat.TomcatWebServer [0;39m [2m:[0;39m Tomcat initialized with port 8081 (http)
-[2m2026-05-14T00:13:20.193+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.apache.catalina.core.StandardService  [0;39m [2m:[0;39m Starting service [Tomcat]
-[2m2026-05-14T00:13:20.193+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.apache.catalina.core.StandardEngine   [0;39m [2m:[0;39m Starting Servlet engine: [Apache Tomcat/10.1.20]
-[2m2026-05-14T00:13:20.209+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.a.c.c.C.[Tomcat].[localhost].[/]      [0;39m [2m:[0;39m Initializing Spring embedded WebApplicationContext
-[2m2026-05-14T00:13:20.210+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mw.s.c.ServletWebServerApplicationContext[0;39m [2m:[0;39m Root WebApplicationContext: initialization completed in 757 ms
-[2m2026-05-14T00:13:20.240+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mcom.zaxxer.hikari.HikariDataSource      [0;39m [2m:[0;39m HikariPool-1 - Starting...
-[2m2026-05-14T00:13:20.484+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Added connection ConnectionID:1 ClientConnectionId: eaddc534-b048-425d-8589-9f3833e9bade
-[2m2026-05-14T00:13:20.485+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mcom.zaxxer.hikari.HikariDataSource      [0;39m [2m:[0;39m HikariPool-1 - Start completed.
-[2m2026-05-14T00:13:20.513+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.s.b.a.h2.H2ConsoleAutoConfiguration   [0;39m [2m:[0;39m H2 console available at '/h2-console'. Databases available at 'jdbc:sqlserver://localhost:1433;connectRetryInterval=10;connectRetryCount=1;maxResultBuffer=-1;sendTemporalDataTypesAsStringForBulkCopy=true;delayLoadingLobs=true;useFmtOnly=false;useBulkCopyForBatchInsert=false;cancelQueryTimeout=-1;sslProtocol=TLS;jaasConfigurationName=SQLJDBCDriver;statementPoolingCacheSize=0;serverPreparedStatementDiscardThreshold=10;enablePrepareOnFirstPreparedStatementCall=false;fips=false;socketTimeout=0;authentication=NotSpecified;authenticationScheme=nativeAuthentication;xopenStates=false;datetimeParameterType=datetime2;sendTimeAsDatetime=true;replication=false;trustStoreType=JKS;trustServerCertificate=true;TransparentNetworkIPResolution=true;iPAddressPreference=IPv4First;serverNameAsACE=false;sendStringParametersAsUnicode=true;selectMethod=direct;responseBuffering=adaptive;queryTimeout=-1;packetSize=8000;multiSubnetFailover=false;loginTimeout=30;lockTimeout=-1;lastUpdateCount=true;prepareMethod=prepexec;encrypt=True;disableStatementPooling=true;databaseName=AUTONOMA;columnEncryptionSetting=Disabled;applicationName=Microsoft JDBC Driver for SQL Server;applicationIntent=readwrite;', 'jdbc:sqlserver://localhost:1433;connectRetryInterval=10;connectRetryCount=1;maxResultBuffer=-1;sendTemporalDataTypesAsStringForBulkCopy=true;delayLoadingLobs=true;useFmtOnly=false;useBulkCopyForBatchInsert=false;cancelQueryTimeout=-1;sslProtocol=TLS;jaasConfigurationName=SQLJDBCDriver;statementPoolingCacheSize=0;serverPreparedStatementDiscardThreshold=10;enablePrepareOnFirstPreparedStatementCall=false;fips=false;socketTimeout=0;authentication=NotSpecified;authenticationScheme=nativeAuthentication;xopenStates=false;datetimeParameterType=datetime2;sendTimeAsDatetime=true;replication=false;trustStoreType=JKS;trustServerCertificate=true;TransparentNetworkIPResolution=true;iPAddressPreference=IPv4First;serverNameAsACE=false;sendStringParametersAsUnicode=true;selectMethod=direct;responseBuffering=adaptive;queryTimeout=-1;packetSize=8000;multiSubnetFailover=false;loginTimeout=30;lockTimeout=-1;lastUpdateCount=true;prepareMethod=prepexec;encrypt=True;disableStatementPooling=true;databaseName=AUTONOMA;columnEncryptionSetting=Disabled;applicationName=Microsoft JDBC Driver for SQL Server;applicationIntent=readwrite;'
-[2m2026-05-14T00:13:20.596+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.internal.license.VersionPrinter   [0;39m [2m:[0;39m Flyway Community Edition 9.22.3 by Redgate
-[2m2026-05-14T00:13:20.596+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.internal.license.VersionPrinter   [0;39m [2m:[0;39m See release notes here: https://rd.gt/416ObMi
-[2m2026-05-14T00:13:20.596+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.internal.license.VersionPrinter   [0;39m [2m:[0;39m 
-[2m2026-05-14T00:13:20.605+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36morg.flywaydb.core.FlywayExecutor        [0;39m [2m:[0;39m Database: jdbc:sqlserver://localhost:1433;connectRetryInterval=10;connectRetryCount=1;maxResultBuffer=-1;sendTemporalDataTypesAsStringForBulkCopy=true;delayLoadingLobs=true;useFmtOnly=false;useBulkCopyForBatchInsert=false;cancelQueryTimeout=-1;sslProtocol=TLS;jaasConfigurationName=SQLJDBCDriver;statementPoolingCacheSize=0;serverPreparedStatementDiscardThreshold=10;enablePrepareOnFirstPreparedStatementCall=false;fips=false;socketTimeout=0;authentication=NotSpecified;authenticationScheme=nativeAuthentication;xopenStates=false;datetimeParameterType=datetime2;sendTimeAsDatetime=true;replication=false;trustStoreType=JKS;trustServerCertificate=true;TransparentNetworkIPResolution=true;iPAddressPreference=IPv4First;serverNameAsACE=false;sendStringParametersAsUnicode=true;selectMethod=direct;responseBuffering=adaptive;queryTimeout=-1;packetSize=8000;multiSubnetFailover=false;loginTimeout=30;lockTimeout=-1;lastUpdateCount=true;prepareMethod=prepexec;encrypt=True;disableStatementPooling=true;databaseName=AUTONOMA;columnEncryptionSetting=Disabled;applicationName=Microsoft JDBC Driver for SQL Server;applicationIntent=readwrite; (Microsoft SQL Server 16.0)
-[2m2026-05-14T00:13:20.704+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.core.internal.command.DbMigrate     [0;39m [2m:[0;39m Current version of schema [dbo]: 7.1
-[2m2026-05-14T00:13:20.713+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.core.internal.command.DbMigrate     [0;39m [2m:[0;39m Migrating schema [dbo] to version "8.0 - Schema Cleanup And Normalization  TIS"
-[2m2026-05-14T00:13:20.973+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.i.s.DefaultSqlScriptExecutor      [0;39m [2m:[0;39m DB: Caution: Changing any part of an object name could break scripts and stored procedures. (SQL State: S0001 - Error Code: 15477)
-[2m2026-05-14T00:13:20.973+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.i.s.DefaultSqlScriptExecutor      [0;39m [2m:[0;39m DB: Caution: Changing any part of an object name could break scripts and stored procedures. (SQL State: S0001 - Error Code: 15477)
-[2m2026-05-14T00:13:20.973+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.i.s.DefaultSqlScriptExecutor      [0;39m [2m:[0;39m DB: Caution: Changing any part of an object name could break scripts and stored procedures. (SQL State: S0001 - Error Code: 15477)
-[2m2026-05-14T00:13:20.973+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.i.s.DefaultSqlScriptExecutor      [0;39m [2m:[0;39m DB: Caution: Changing any part of an object name could break scripts and stored procedures. (SQL State: S0001 - Error Code: 15477)
-[2m2026-05-14T00:13:20.973+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.i.s.DefaultSqlScriptExecutor      [0;39m [2m:[0;39m DB: Caution: Changing any part of an object name could break scripts and stored procedures. (SQL State: S0001 - Error Code: 15477)
-[2m2026-05-14T00:13:20.973+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.i.s.DefaultSqlScriptExecutor      [0;39m [2m:[0;39m DB: Caution: Changing any part of an object name could break scripts and stored procedures. (SQL State: S0001 - Error Code: 15477)
-[2m2026-05-14T00:13:20.973+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.i.s.DefaultSqlScriptExecutor      [0;39m [2m:[0;39m DB: Caution: Changing any part of an object name could break scripts and stored procedures. (SQL State: S0001 - Error Code: 15477)
-[2m2026-05-14T00:13:20.973+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.i.s.DefaultSqlScriptExecutor      [0;39m [2m:[0;39m DB: Caution: Changing any part of an object name could break scripts and stored procedures. (SQL State: S0001 - Error Code: 15477)
-[2m2026-05-14T00:13:20.973+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.i.s.DefaultSqlScriptExecutor      [0;39m [2m:[0;39m DB: Caution: Changing any part of an object name could break scripts and stored procedures. (SQL State: S0001 - Error Code: 15477)
-[2m2026-05-14T00:13:20.973+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.i.s.DefaultSqlScriptExecutor      [0;39m [2m:[0;39m DB: Caution: Changing any part of an object name could break scripts and stored procedures. (SQL State: S0001 - Error Code: 15477)
-[2m2026-05-14T00:13:20.974+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.i.s.DefaultSqlScriptExecutor      [0;39m [2m:[0;39m DB: Caution: Changing any part of an object name could break scripts and stored procedures. (SQL State: S0001 - Error Code: 15477)
-[2m2026-05-14T00:13:20.974+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.i.s.DefaultSqlScriptExecutor      [0;39m [2m:[0;39m DB: Caution: Changing any part of an object name could break scripts and stored procedures. (SQL State: S0001 - Error Code: 15477)
-[2m2026-05-14T00:13:20.974+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.i.s.DefaultSqlScriptExecutor      [0;39m [2m:[0;39m DB: Caution: Changing any part of an object name could break scripts and stored procedures. (SQL State: S0001 - Error Code: 15477)
-[2m2026-05-14T00:13:20.974+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.i.s.DefaultSqlScriptExecutor      [0;39m [2m:[0;39m DB: Caution: Changing any part of an object name could break scripts and stored procedures. (SQL State: S0001 - Error Code: 15477)
-[2m2026-05-14T00:13:20.974+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.i.s.DefaultSqlScriptExecutor      [0;39m [2m:[0;39m DB: Caution: Changing any part of an object name could break scripts and stored procedures. (SQL State: S0001 - Error Code: 15477)
-[2m2026-05-14T00:13:20.974+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.i.s.DefaultSqlScriptExecutor      [0;39m [2m:[0;39m DB: Caution: Changing any part of an object name could break scripts and stored procedures. (SQL State: S0001 - Error Code: 15477)
-[2m2026-05-14T00:13:20.974+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.i.s.DefaultSqlScriptExecutor      [0;39m [2m:[0;39m DB: Caution: Changing any part of an object name could break scripts and stored procedures. (SQL State: S0001 - Error Code: 15477)
-[2m2026-05-14T00:13:20.974+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.i.s.DefaultSqlScriptExecutor      [0;39m [2m:[0;39m DB: Caution: Changing any part of an object name could break scripts and stored procedures. (SQL State: S0001 - Error Code: 15477)
-[2m2026-05-14T00:13:20.974+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.i.s.DefaultSqlScriptExecutor      [0;39m [2m:[0;39m DB: Caution: Changing any part of an object name could break scripts and stored procedures. (SQL State: S0001 - Error Code: 15477)
-[2m2026-05-14T00:13:20.974+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.i.s.DefaultSqlScriptExecutor      [0;39m [2m:[0;39m DB: Caution: Changing any part of an object name could break scripts and stored procedures. (SQL State: S0001 - Error Code: 15477)
-[2m2026-05-14T00:13:20.974+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.c.i.s.DefaultSqlScriptExecutor      [0;39m [2m:[0;39m DB: Caution: Changing any part of an object name could break scripts and stored procedures. (SQL State: S0001 - Error Code: 15477)
-[2m2026-05-14T00:13:21.006+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.f.core.internal.command.DbMigrate     [0;39m [2m:[0;39m Successfully applied 1 migration to schema [dbo], now at version v8.0 (execution time 00:00.262s)
-[2m2026-05-14T00:13:21.079+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.hibernate.jpa.internal.util.LogHelper [0;39m [2m:[0;39m HHH000204: Processing PersistenceUnitInfo [name: default]
-[2m2026-05-14T00:13:21.098+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36morg.hibernate.Version                   [0;39m [2m:[0;39m HHH000412: Hibernate ORM core version 6.4.4.Final
-[2m2026-05-14T00:13:21.108+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.h.c.internal.RegionFactoryInitiator   [0;39m [2m:[0;39m HHH000026: Second-level cache disabled
-[2m2026-05-14T00:13:21.182+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.s.o.j.p.SpringPersistenceUnitInfo     [0;39m [2m:[0;39m No LoadTimeWeaver setup: ignoring JPA class transformer
-[2m2026-05-14T00:13:21.198+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36morg.hibernate.orm.deprecation           [0;39m [2m:[0;39m HHH90000025: SQLServerDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-[2m2026-05-14T00:13:21.976+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.h.e.t.j.p.i.JtaPlatformInitiator      [0;39m [2m:[0;39m HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-[2m2026-05-14T00:13:21.977+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mj.LocalContainerEntityManagerFactoryBean[0;39m [2m:[0;39m Initialized JPA EntityManagerFactory for persistence unit 'default'
-[2m2026-05-14T00:13:22.165+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.s.d.j.r.query.QueryEnhancerFactory    [0;39m [2m:[0;39m Hibernate is in classpath; If applicable, HQL parser will be used.
-[2m2026-05-14T00:13:22.974+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mJpaBaseConfiguration$JpaWebConfiguration[0;39m [2m:[0;39m spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-[2m2026-05-14T00:13:22.986+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36m.s.s.UserDetailsServiceAutoConfiguration[0;39m [2m:[0;39m 
+2026-05-15T18:00:59.870+05:30  INFO 33774 --- [  restartedMain] c.a.erp.AutonomaBackendApplication       : Starting AutonomaBackendApplication using Java 21.0.7 with PID 33774 (/Users/darshankrishnakumar/Downloads/Autonoma_ERP-main/autonoma-backend/target/classes started by darshankrishnakumar in /Users/darshankrishnakumar/Downloads/Autonoma_ERP-main/autonoma-backend)
+2026-05-15T18:00:59.871+05:30  INFO 33774 --- [  restartedMain] c.a.erp.AutonomaBackendApplication       : No active profile set, falling back to 1 default profile: "default"
+2026-05-15T18:00:59.885+05:30  INFO 33774 --- [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-05-15T18:00:59.885+05:30  INFO 33774 --- [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-05-15T18:01:00.190+05:30  INFO 33774 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-05-15T18:01:00.250+05:30  INFO 33774 --- [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 58 ms. Found 66 JPA repository interfaces.
+2026-05-15T18:01:00.560+05:30  INFO 33774 --- [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2026-05-15T18:01:00.565+05:30  INFO 33774 --- [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-05-15T18:01:00.565+05:30  INFO 33774 --- [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.20]
+2026-05-15T18:01:00.582+05:30  INFO 33774 --- [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-05-15T18:01:00.582+05:30  INFO 33774 --- [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 697 ms
+2026-05-15T18:01:00.614+05:30  INFO 33774 --- [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-05-15T18:01:00.739+05:30  INFO 33774 --- [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection ConnectionID:1 ClientConnectionId: c6e88840-ff35-40aa-bb9d-2422b4652a72
+2026-05-15T18:01:00.740+05:30  INFO 33774 --- [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-05-15T18:01:00.754+05:30  INFO 33774 --- [  restartedMain] o.s.b.a.h2.H2ConsoleAutoConfiguration    : H2 console available at '/h2-console'. Databases available at 'jdbc:sqlserver://localhost:1433;connectRetryInterval=10;connectRetryCount=1;maxResultBuffer=-1;sendTemporalDataTypesAsStringForBulkCopy=true;delayLoadingLobs=true;useFmtOnly=false;useBulkCopyForBatchInsert=false;cancelQueryTimeout=-1;sslProtocol=TLS;jaasConfigurationName=SQLJDBCDriver;statementPoolingCacheSize=0;serverPreparedStatementDiscardThreshold=10;enablePrepareOnFirstPreparedStatementCall=false;fips=false;socketTimeout=0;authentication=NotSpecified;authenticationScheme=nativeAuthentication;xopenStates=false;datetimeParameterType=datetime2;sendTimeAsDatetime=true;replication=false;trustStoreType=JKS;trustServerCertificate=true;TransparentNetworkIPResolution=true;iPAddressPreference=IPv4First;serverNameAsACE=false;sendStringParametersAsUnicode=true;selectMethod=direct;responseBuffering=adaptive;queryTimeout=-1;packetSize=8000;multiSubnetFailover=false;loginTimeout=30;lockTimeout=-1;lastUpdateCount=true;prepareMethod=prepexec;encrypt=True;disableStatementPooling=true;databaseName=AUTONOMA;columnEncryptionSetting=Disabled;applicationName=Microsoft JDBC Driver for SQL Server;applicationIntent=readwrite;', 'jdbc:sqlserver://localhost:1433;connectRetryInterval=10;connectRetryCount=1;maxResultBuffer=-1;sendTemporalDataTypesAsStringForBulkCopy=true;delayLoadingLobs=true;useFmtOnly=false;useBulkCopyForBatchInsert=false;cancelQueryTimeout=-1;sslProtocol=TLS;jaasConfigurationName=SQLJDBCDriver;statementPoolingCacheSize=0;serverPreparedStatementDiscardThreshold=10;enablePrepareOnFirstPreparedStatementCall=false;fips=false;socketTimeout=0;authentication=NotSpecified;authenticationScheme=nativeAuthentication;xopenStates=false;datetimeParameterType=datetime2;sendTimeAsDatetime=true;replication=false;trustStoreType=JKS;trustServerCertificate=true;TransparentNetworkIPResolution=true;iPAddressPreference=IPv4First;serverNameAsACE=false;sendStringParametersAsUnicode=true;selectMethod=direct;responseBuffering=adaptive;queryTimeout=-1;packetSize=8000;multiSubnetFailover=false;loginTimeout=30;lockTimeout=-1;lastUpdateCount=true;prepareMethod=prepexec;encrypt=True;disableStatementPooling=true;databaseName=AUTONOMA;columnEncryptionSetting=Disabled;applicationName=Microsoft JDBC Driver for SQL Server;applicationIntent=readwrite;'
+2026-05-15T18:01:00.832+05:30  INFO 33774 --- [  restartedMain] o.f.c.internal.license.VersionPrinter    : Flyway Community Edition 9.22.3 by Redgate
+2026-05-15T18:01:00.832+05:30  INFO 33774 --- [  restartedMain] o.f.c.internal.license.VersionPrinter    : See release notes here: https://rd.gt/416ObMi
+2026-05-15T18:01:00.832+05:30  INFO 33774 --- [  restartedMain] o.f.c.internal.license.VersionPrinter    : 
+2026-05-15T18:01:00.840+05:30  INFO 33774 --- [  restartedMain] org.flywaydb.core.FlywayExecutor         : Database: jdbc:sqlserver://localhost:1433;connectRetryInterval=10;connectRetryCount=1;maxResultBuffer=-1;sendTemporalDataTypesAsStringForBulkCopy=true;delayLoadingLobs=true;useFmtOnly=false;useBulkCopyForBatchInsert=false;cancelQueryTimeout=-1;sslProtocol=TLS;jaasConfigurationName=SQLJDBCDriver;statementPoolingCacheSize=0;serverPreparedStatementDiscardThreshold=10;enablePrepareOnFirstPreparedStatementCall=false;fips=false;socketTimeout=0;authentication=NotSpecified;authenticationScheme=nativeAuthentication;xopenStates=false;datetimeParameterType=datetime2;sendTimeAsDatetime=true;replication=false;trustStoreType=JKS;trustServerCertificate=true;TransparentNetworkIPResolution=true;iPAddressPreference=IPv4First;serverNameAsACE=false;sendStringParametersAsUnicode=true;selectMethod=direct;responseBuffering=adaptive;queryTimeout=-1;packetSize=8000;multiSubnetFailover=false;loginTimeout=30;lockTimeout=-1;lastUpdateCount=true;prepareMethod=prepexec;encrypt=True;disableStatementPooling=true;databaseName=AUTONOMA;columnEncryptionSetting=Disabled;applicationName=Microsoft JDBC Driver for SQL Server;applicationIntent=readwrite; (Microsoft SQL Server 16.0)
+2026-05-15T18:01:00.907+05:30  INFO 33774 --- [  restartedMain] o.f.core.internal.command.DbMigrate      : Current version of schema [dbo]: 8.7
+2026-05-15T18:01:00.910+05:30  INFO 33774 --- [  restartedMain] o.f.core.internal.command.DbMigrate      : Schema [dbo] is up to date. No migration necessary.
+2026-05-15T18:01:00.968+05:30  INFO 33774 --- [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-15T18:01:00.993+05:30  INFO 33774 --- [  restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-05-15T18:01:01.007+05:30  INFO 33774 --- [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-05-15T18:01:01.094+05:30  INFO 33774 --- [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-05-15T18:01:01.112+05:30  WARN 33774 --- [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: SQLServerDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-15T18:01:01.915+05:30  INFO 33774 --- [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-15T18:01:01.916+05:30  INFO 33774 --- [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-05-15T18:01:02.184+05:30  INFO 33774 --- [  restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-05-15T18:01:02.840+05:30  WARN 33774 --- [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-15T18:01:02.852+05:30  WARN 33774 --- [  restartedMain] .s.s.UserDetailsServiceAutoConfiguration : 
 
-Using generated security password: 554fd7f4-9804-467c-89ac-cc38f2ac8308
+Using generated security password: 8dd9efb3-d56f-4a9e-b281-f5d69ce67846
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 
-[2m2026-05-14T00:13:23.143+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.s.s.web.DefaultSecurityFilterChain    [0;39m [2m:[0;39m Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@106b2a34, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@7891bf4, org.springframework.security.web.context.SecurityContextHolderFilter@70af0728, org.springframework.security.web.header.HeaderWriterFilter@579d495, org.springframework.web.filter.CorsFilter@54bb2e2e, org.springframework.security.web.authentication.logout.LogoutFilter@11939a35, com.autonoma.erp.config.JwtAuthenticationFilter@5b87e01f, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@36b072fc, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@195fde82, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@2625e310, org.springframework.security.web.session.SessionManagementFilter@7e0d3408, org.springframework.security.web.access.ExceptionTranslationFilter@35bc3d9c, org.springframework.security.web.access.intercept.AuthorizationFilter@4602ac7f]
-[2m2026-05-14T00:13:23.304+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.s.b.d.a.OptionalLiveReloadServer      [0;39m [2m:[0;39m LiveReload server is running on port 35729
-[2m2026-05-14T00:13:23.323+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mo.s.b.w.embedded.tomcat.TomcatWebServer [0;39m [2m:[0;39m Tomcat started on port 8081 (http) with context path ''
-[2m2026-05-14T00:13:23.330+05:30[0;39m [32m INFO[0;39m [35m63503[0;39m [2m---[0;39m [2m[  restartedMain][0;39m [2m[0;39m[36mc.a.erp.AutonomaBackendApplication      [0;39m [2m:[0;39m Started AutonomaBackendApplication in 4.019 seconds (process running for 4.186)
-======================================
-SQL MIGRATION STARTED
-======================================
-ALREADY EXECUTED : 20260512_V1.0__Initial_Full_Schema.sql
-ALREADY EXECUTED : 20260512_V1.1__App_Preferences.sql
-ALREADY EXECUTED : 20260512_V1.2__Company_Profile.sql
-ALREADY EXECUTED : 20260512_V1.3__User_Credentials.sql
-ALREADY EXECUTED : 20260512_V1.4__Populate_Product_Master.sql
-ALREADY EXECUTED : 20260512_V1.5__Add_Checklist_Flags.sql
-ALREADY EXECUTED : 20260512_V1.6__Sync_Checklist_Columns.sql
-ALREADY EXECUTED : 20260512_V1.7__Add_Checklist_Attachments.sql
-ALREADY EXECUTED : 20260512_V1.8__Add_Customer_And_Contact_Master.sql
-ALREADY EXECUTED : 20260512_V1.9__Create_HRM_Employee_Master.sql
-ALREADY EXECUTED : 20260512_V2.0__Employee_Master_Expansion.sql
-ALREADY EXECUTED : 20260512_V2.1__Seed_HRM_Lookups.sql
-ALREADY EXECUTED : 20260512_V2.2__Add_Checklist_Amendment_Fields.sql
-ALREADY EXECUTED : 20260512_V2.3__Create_HRM_Master_Tables.sql
-ALREADY EXECUTED : 20260512_V2.4__Sync_Company_Credentials.sql
-ALREADY EXECUTED : 20260512_V2.5__Sync_Audit_Area.sql
-ALREADY EXECUTED : 20260512_V2.6__Add_Employee_Abilities.sql
-ALREADY EXECUTED : 20260512_V2.7__Make_Employee_Fields_Nullable.sql
-ALREADY EXECUTED : 20260512_V2.8__Sync_Audit_Schedule_Schema.sql
-ALREADY EXECUTED : 20260512_V2.9__Sync_Audit_Type_Schema.sql
-ALREADY EXECUTED : 20260512_V3.0__Create_Checklist_Workflow_Tables.sql
-ALREADY EXECUTED : 20260512_V3.1__Add_Audit_Schedule_Personnel_Types.sql
-ALREADY EXECUTED : 20260512_V3.2__Update_Checklist_FK_Cascade.sql
-ALREADY EXECUTED : 20260512_V3.3__Convert_Text_To_NvarcharMax.sql
-ALREADY EXECUTED : 20260512_V3.4.1__Create_User_Session_Audit.sql
-ALREADY EXECUTED : 20260512_V3.4_1__Create_User_Session_Audit.sql
-ALREADY EXECUTED : 20260512_V3.4__Add_Audit_Schedule_Min_Count.sql
-ALREADY EXECUTED : 20260512_V3.5__Standardize_Audit_Schedule_Column_Names.sql
-ALREADY EXECUTED : 20260512_V3.6__Normalize_Schema_And_Drop_Duplicates.sql
-ALREADY EXECUTED : 20260512_V3.7__Standardize_Remaining_Audit_Schedule_Columns.sql
-ALREADY EXECUTED : 20260512_V3.8__Fix_Audit_Schedule_Criteria_Seq_No_Type.sql
-ALREADY EXECUTED : 20260512_V3.9__Normalize_Audit_Observations_Schema.sql
-ALREADY EXECUTED : 20260512_V4.0__Add_Ncr_No_To_Observation_Details.sql
-ALREADY EXECUTED : 20260512_V4.10__Add_Employee_Email_Phone.sql
-ALREADY EXECUTED : 20260512_V4.11__Relax_Mandatory_Employee_Fields.sql
-ALREADY EXECUTED : 20260512_V4.12__Harden_Employee_Schema_Nullable.sql
-ALREADY EXECUTED : 20260512_V4.13__Create_NCR_OFI_Tables.sql
-ALREADY EXECUTED : 20260512_V4.14__Add_Missing_Employee_Ability_File_Columns.sql
-ALREADY EXECUTED : 20260512_V4.15__Add_Preventive_Action_To_Ncr_Master.sql
-ALREADY EXECUTED : 20260512_V4.16__Normalize_Audit_Attendance_Columns.sql
-ALREADY EXECUTED : 20260512_V4.17__Relax_NCR_Master_Constraints.sql
-ALREADY EXECUTED : 20260512_V4.18__Add_Is_Bos_Admin_To_User_Credential.sql
-ALREADY EXECUTED : 20260512_V4.18__Create_Audit_Trail_Table.sql
-ALREADY EXECUTED : 20260512_V4.19__Add_Lic_Exp_Remainder_Days.sql
-ALREADY EXECUTED : 20260512_V4.19__Create_User_Session_Activity.sql
-ALREADY EXECUTED : 20260512_V4.1__Standardize_ERP_Naming_Convention.sql
-ALREADY EXECUTED : 20260512_V4.20__Add_Idle_Tracking.sql
-ALREADY EXECUTED : 20260512_V4.21__Add_Restore_Enable_Days_And_Audit_Restored_Fields.sql
-ALREADY EXECUTED : 20260512_V4.22__Fix_Null_Restore_Days.sql
-ALREADY EXECUTED : 20260512_V4.2__Standardize_ERP_Naming_Convention_Final.sql
-ALREADY EXECUTED : 20260512_V4.3__Normalize_All_Tables_Audit_Columns.sql
-ALREADY EXECUTED : 20260512_V4.4__Global_Column_Lowercasing_Standardization.sql
-ALREADY EXECUTED : 20260512_V4.5__QMS_Data_Consistency_Repair.sql
-ALREADY EXECUTED : 20260512_V4.6__Emergency_Data_Cleanup.sql
-ALREADY EXECUTED : 20260512_V4.7__Final_Audit_Schema_Normalization.sql
-ALREADY EXECUTED : 20260512_V4.8__Repair_Department_Status.sql
-ALREADY EXECUTED : 20260512_V4.9__Sync_Employee_And_Designation_Columns.sql
-ALREADY EXECUTED : 20260512_V5.0__Create_Division_Master.sql
-======================================
-SQL MIGRATION COMPLETED
-======================================
-Hibernate: 
-    select
-        uc1_0.user_id,
-        uc1_0.created_by,
-        uc1_0.created_at,
-        uc1_0.emp_id,
-        uc1_0.img_name,
-        uc1_0.IS_BOS_ADMIN,
-        uc1_0.password,
-        uc1_0.status,
-        uc1_0.updated_by,
-        uc1_0.updated_at 
-    from
-        ad_user_credential uc1_0 
-    where
-        uc1_0.user_id=?
-Updating existing admin user...
-Hibernate: 
-    select
-        uc1_0.user_id,
-        uc1_0.created_by,
-        uc1_0.created_at,
-        uc1_0.emp_id,
-        uc1_0.img_name,
-        uc1_0.IS_BOS_ADMIN,
-        uc1_0.password,
-        uc1_0.status,
-        uc1_0.updated_by,
-        uc1_0.updated_at 
-    from
-        ad_user_credential uc1_0 
-    where
-        uc1_0.user_id=?
-Admin password initialized/updated with reversible encryption.
-Hibernate: 
-    select
-        count_big(*) 
-    from
-        sm_customer_master cm1_0
-[2m2026-05-14T02:22:53.529+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2m21s566ms).
-[2m2026-05-14T02:26:50.243+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=3m26s702ms).
-[2m2026-05-14T02:42:35.953+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=15m15s699ms).
-[2m2026-05-14T02:58:21.473+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=15m15s509ms).
-[2m2026-05-14T03:14:07.515+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=15m16s32ms).
-[2m2026-05-14T03:29:57.659+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=15m20s121ms).
-[2m2026-05-14T03:33:37.175+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=3m9s481ms).
-[2m2026-05-14T03:37:18.321+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=3m11s135ms).
-[2m2026-05-14T03:52:33.542+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=15m15s221ms).
-[2m2026-05-14T04:08:18.683+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=15m15s135ms).
-[2m2026-05-14T04:21:29.646+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=13m10s963ms).
-[2m2026-05-14T04:37:18.049+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=13m45s585ms).
-[2m2026-05-14T04:53:03.727+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=15m15s671ms).
-[2m2026-05-14T05:08:49.572+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=15m15s823ms).
-[2m2026-05-14T05:22:33.322+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=12m37s702ms).
-[2m2026-05-14T05:40:53.660+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=18m20s338ms).
-[2m2026-05-14T05:48:21.091+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=7m27s431ms).
-[2m2026-05-14T05:51:46.290+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2m55s192ms).
-[2m2026-05-14T06:07:34.837+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=15m18s537ms).
-[2m2026-05-14T06:13:58.966+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=5m54s113ms).
-[2m2026-05-14T06:15:08.151+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m9s185ms).
-[2m2026-05-14T06:23:29.645+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=8m21s494ms).
-[2m2026-05-14T06:29:01.960+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=5m2s293ms).
-[2m2026-05-14T06:44:32.279+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=15m30s319ms).
-[2m2026-05-14T07:00:20.627+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=15m18s214ms).
-[2m2026-05-14T07:16:09.084+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=15m18s451ms).
-[2m2026-05-14T07:24:29.697+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=7m50s602ms).
-[2m2026-05-14T07:27:24.119+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2m24s411ms).
-[2m2026-05-14T07:29:38.278+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m44s155ms).
-[2m2026-05-14T07:39:18.668+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=9m10s383ms).
-[2m2026-05-14T07:41:00.438+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m11s762ms).
-[2m2026-05-14T07:43:53.473+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2m23s24ms).
-[2m2026-05-14T07:46:15.994+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m52s510ms).
-[2m2026-05-14T07:48:35.440+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m49s436ms).
-[2m2026-05-14T07:50:18.245+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m12s798ms).
-[2m2026-05-14T07:54:09.232+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=3m20s977ms).
-[2m2026-05-14T07:56:31.124+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m51s894ms).
-[2m2026-05-14T07:58:32.372+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m31s238ms).
-[2m2026-05-14T08:01:04.913+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2m2s534ms).
-[2m2026-05-14T08:02:40.749+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m35s836ms).
-[2m2026-05-14T08:18:28.509+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=15m17s752ms).
-[2m2026-05-14T08:25:29.658+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=6m31s175ms).
-[2m2026-05-14T08:29:16.308+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=3m16s650ms).
-[2m2026-05-14T08:31:59.904+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2m43s596ms).
-[2m2026-05-14T08:36:05.338+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=4m5s434ms).
-[2m2026-05-14T08:49:33.116+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=12m25s228ms).
-[2m2026-05-14T08:59:02.037+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=6m44s636ms).
-[2m2026-05-14T09:03:14.367+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m9s743ms).
-[2m2026-05-14T09:05:56.342+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m4s475ms).
-[2m2026-05-14T09:40:28.680+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=17m18s628ms).
-[2m2026-05-14T09:44:18.089+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=3m49s409ms).
-[2m2026-05-14T09:57:47.354+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=12m59s257ms).
-[2m2026-05-14T10:15:58.476+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=17m41s117ms).
-[2m2026-05-14T10:17:05.588+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m7s112ms).
-[2m2026-05-14T10:33:49.656+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=16m44s68ms).
-[2m2026-05-14T10:34:51.230+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m1s573ms).
-[2m2026-05-14T10:53:00.766+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=17m39s532ms).
-[2m2026-05-14T11:11:00.662+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=17m29s887ms).
-[2m2026-05-14T11:12:02.536+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m1s874ms).
-[2m2026-05-14T11:23:24.443+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=10m51s899ms).
-[2m2026-05-14T11:24:52.503+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=58s59ms).
-[2m2026-05-14T11:27:04.884+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m42s370ms).
-[2m2026-05-14T11:31:36.480+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=4m1s594ms).
-[2m2026-05-14T11:33:38.043+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2m1s563ms).
-[2m2026-05-14T11:50:34.585+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=16m26s532ms).
-[2m2026-05-14T11:51:42.938+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m8s353ms).
-[2m2026-05-14T12:09:16.121+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=17m3s173ms).
-[2m2026-05-14T12:12:15.572+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2m29s441ms).
-[2m2026-05-14T12:13:39.649+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=54s66ms).
-[2m2026-05-14T12:18:01.099+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=3m51s440ms).
-[2m2026-05-14T12:24:13.691+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=6m12s592ms).
-[2m2026-05-14T12:25:52.733+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m9s32ms).
-[2m2026-05-14T12:43:19.655+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=16m56s915ms).
-[2m2026-05-14T12:44:25.828+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m6s173ms).
-[2m2026-05-14T13:02:47.258+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=17m51s419ms).
-[2m2026-05-14T13:21:30.643+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=18m13s382ms).
-[2m2026-05-14T13:22:24.336+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=53s693ms).
-[2m2026-05-14T13:23:40.533+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1m16s197ms).
-[2m2026-05-14T13:39:27.985+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=15m17s443ms).
-[2m2026-05-14T13:53:13.194+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=13m45s209ms).
-[2m2026-05-14T13:58:28.286+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[l-1 housekeeper][0;39m [2m[0;39m[36mcom.zaxxer.hikari.pool.HikariPool       [0;39m [2m:[0;39m HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=3m44s984ms).
-[2m2026-05-14T13:59:16.489+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[   scheduling-1][0;39m [2m[0;39m[36mo.h.engine.jdbc.spi.SqlExceptionHelper  [0;39m [2m:[0;39m SQL Error: 0, SQLState: 08S01
-[2m2026-05-14T13:59:16.490+05:30[0;39m [31mERROR[0;39m [35m63503[0;39m [2m---[0;39m [2m[   scheduling-1][0;39m [2m[0;39m[36mo.h.engine.jdbc.spi.SqlExceptionHelper  [0;39m [2m:[0;39m HikariPool-1 - Connection is not available, request timed out after 30007ms.
-[2m2026-05-14T13:59:16.490+05:30[0;39m [31mERROR[0;39m [35m63503[0;39m [2m---[0;39m [2m[   scheduling-1][0;39m [2m[0;39m[36mo.h.engine.jdbc.spi.SqlExceptionHelper  [0;39m [2m:[0;39m The TCP/IP connection to the host localhost, port 1433 has failed. Error: "Connection refused. Verify the connection properties. Make sure that an instance of SQL Server is running on the host and accepting TCP/IP connections at the port. Make sure that TCP connections to the port are not blocked by a firewall.".
-[2m2026-05-14T13:59:16.499+05:30[0;39m [31mERROR[0;39m [35m63503[0;39m [2m---[0;39m [2m[   scheduling-1][0;39m [2m[0;39m[36mo.s.s.s.TaskUtils$LoggingErrorHandler   [0;39m [2m:[0;39m Unexpected error occurred in scheduled task
+2026-05-15T18:01:03.001+05:30  INFO 33774 --- [  restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@6dc9ee26, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@6ca2837b, org.springframework.security.web.context.SecurityContextHolderFilter@7ccb0c3, org.springframework.security.web.header.HeaderWriterFilter@48fcd1d9, org.springframework.web.filter.CorsFilter@14346b0d, org.springframework.security.web.authentication.logout.LogoutFilter@184fc7e1, com.autonoma.erp.config.JwtAuthenticationFilter@71be6e62, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@45cde03e, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@502eef68, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@5f68925e, org.springframework.security.web.session.SessionManagementFilter@15dd7c8a, org.springframework.security.web.access.ExceptionTranslationFilter@4b6493d, org.springframework.security.web.access.intercept.AuthorizationFilter@7671d3f9]
+2026-05-15T18:01:03.168+05:30  WARN 33774 --- [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : Unable to start LiveReload server
+2026-05-15T18:01:03.183+05:30  WARN 33774 --- [  restartedMain] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2026-05-15T18:01:03.188+05:30  INFO 33774 --- [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-05-15T18:01:03.189+05:30  INFO 33774 --- [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-05-15T18:01:03.190+05:30  INFO 33774 --- [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-05-15T18:01:03.195+05:30  INFO 33774 --- [  restartedMain] .s.b.a.l.ConditionEvaluationReportLogger : 
 
-org.springframework.transaction.CannotCreateTransactionException: Could not open JPA EntityManager for transaction
-	at org.springframework.orm.jpa.JpaTransactionManager.doBegin(JpaTransactionManager.java:466) ~[spring-orm-6.1.6.jar:6.1.6]
-	at org.springframework.transaction.support.AbstractPlatformTransactionManager.startTransaction(AbstractPlatformTransactionManager.java:531) ~[spring-tx-6.1.6.jar:6.1.6]
-	at org.springframework.transaction.support.AbstractPlatformTransactionManager.getTransaction(AbstractPlatformTransactionManager.java:405) ~[spring-tx-6.1.6.jar:6.1.6]
-	at org.springframework.transaction.interceptor.TransactionAspectSupport.createTransactionIfNecessary(TransactionAspectSupport.java:617) ~[spring-tx-6.1.6.jar:6.1.6]
-	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:386) ~[spring-tx-6.1.6.jar:6.1.6]
-	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119) ~[spring-tx-6.1.6.jar:6.1.6]
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184) ~[spring-aop-6.1.6.jar:6.1.6]
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:768) ~[spring-aop-6.1.6.jar:6.1.6]
-	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:720) ~[spring-aop-6.1.6.jar:6.1.6]
-	at com.autonoma.erp.service.MeetingSchedulerService$$SpringCGLIB$$0.dailyMeetingMaintenance(<generated>) ~[classes/:na]
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
-	at org.springframework.scheduling.support.ScheduledMethodRunnable.runInternal(ScheduledMethodRunnable.java:130) ~[spring-context-6.1.6.jar:6.1.6]
-	at org.springframework.scheduling.support.ScheduledMethodRunnable.lambda$run$2(ScheduledMethodRunnable.java:124) ~[spring-context-6.1.6.jar:6.1.6]
-	at io.micrometer.observation.Observation.observe(Observation.java:499) ~[micrometer-observation-1.12.5.jar:1.12.5]
-	at org.springframework.scheduling.support.ScheduledMethodRunnable.run(ScheduledMethodRunnable.java:124) ~[spring-context-6.1.6.jar:6.1.6]
-	at org.springframework.scheduling.support.DelegatingErrorHandlingRunnable.run(DelegatingErrorHandlingRunnable.java:54) ~[spring-context-6.1.6.jar:6.1.6]
-	at org.springframework.scheduling.concurrent.ReschedulingRunnable.run(ReschedulingRunnable.java:96) ~[spring-context-6.1.6.jar:6.1.6]
-	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572) ~[na:na]
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317) ~[na:na]
-	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
-	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144) ~[na:na]
-	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642) ~[na:na]
-	at java.base/java.lang.Thread.run(Thread.java:1575) ~[na:na]
-Caused by: org.hibernate.exception.JDBCConnectionException: Unable to acquire JDBC Connection [HikariPool-1 - Connection is not available, request timed out after 30007ms.] [n/a]
-	at org.hibernate.exception.internal.SQLExceptionTypeDelegate.convert(SQLExceptionTypeDelegate.java:51) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:58) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:108) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:94) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.hibernate.resource.jdbc.internal.LogicalConnectionManagedImpl.acquireConnectionIfNeeded(LogicalConnectionManagedImpl.java:116) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.hibernate.resource.jdbc.internal.LogicalConnectionManagedImpl.getPhysicalConnection(LogicalConnectionManagedImpl.java:143) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.hibernate.resource.jdbc.internal.LogicalConnectionManagedImpl.getConnectionForTransactionManagement(LogicalConnectionManagedImpl.java:273) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.hibernate.resource.jdbc.internal.LogicalConnectionManagedImpl.begin(LogicalConnectionManagedImpl.java:281) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.hibernate.resource.transaction.backend.jdbc.internal.JdbcResourceLocalTransactionCoordinatorImpl$TransactionDriverControlImpl.begin(JdbcResourceLocalTransactionCoordinatorImpl.java:232) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.hibernate.engine.transaction.internal.TransactionImpl.begin(TransactionImpl.java:83) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.springframework.orm.jpa.vendor.HibernateJpaDialect.beginTransaction(HibernateJpaDialect.java:176) ~[spring-orm-6.1.6.jar:6.1.6]
-	at org.springframework.orm.jpa.JpaTransactionManager.doBegin(JpaTransactionManager.java:420) ~[spring-orm-6.1.6.jar:6.1.6]
-	... 23 common frames omitted
-Caused by: java.sql.SQLTransientConnectionException: HikariPool-1 - Connection is not available, request timed out after 30007ms.
-	at com.zaxxer.hikari.pool.HikariPool.createTimeoutException(HikariPool.java:696) ~[HikariCP-5.0.1.jar:na]
-	at com.zaxxer.hikari.pool.HikariPool.getConnection(HikariPool.java:181) ~[HikariCP-5.0.1.jar:na]
-	at com.zaxxer.hikari.pool.HikariPool.getConnection(HikariPool.java:146) ~[HikariCP-5.0.1.jar:na]
-	at com.zaxxer.hikari.HikariDataSource.getConnection(HikariDataSource.java:128) ~[HikariCP-5.0.1.jar:na]
-	at org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource.getConnection(AbstractRoutingDataSource.java:213) ~[spring-jdbc-6.1.6.jar:6.1.6]
-	at org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl.getConnection(DatasourceConnectionProviderImpl.java:122) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.hibernate.internal.NonContextualJdbcConnectionAccess.obtainConnection(NonContextualJdbcConnectionAccess.java:46) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.hibernate.resource.jdbc.internal.LogicalConnectionManagedImpl.acquireConnectionIfNeeded(LogicalConnectionManagedImpl.java:113) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	... 30 common frames omitted
-Caused by: com.microsoft.sqlserver.jdbc.SQLServerException: The TCP/IP connection to the host localhost, port 1433 has failed. Error: "Connection refused. Verify the connection properties. Make sure that an instance of SQL Server is running on the host and accepting TCP/IP connections at the port. Make sure that TCP connections to the port are not blocked by a firewall.".
-	at com.microsoft.sqlserver.jdbc.SQLServerException.makeFromDriverError(SQLServerException.java:231) ~[mssql-jdbc-12.4.2.jre11.jar:na]
-	at com.microsoft.sqlserver.jdbc.SQLServerException.convertConnectExceptionToSQLServerException(SQLServerException.java:282) ~[mssql-jdbc-12.4.2.jre11.jar:na]
-	at com.microsoft.sqlserver.jdbc.SocketFinder.findSocket(IOBuffer.java:2578) ~[mssql-jdbc-12.4.2.jre11.jar:na]
-	at com.microsoft.sqlserver.jdbc.TDSChannel.open(IOBuffer.java:719) ~[mssql-jdbc-12.4.2.jre11.jar:na]
-	at com.microsoft.sqlserver.jdbc.SQLServerConnection.connectHelper(SQLServerConnection.java:3523) ~[mssql-jdbc-12.4.2.jre11.jar:na]
-	at com.microsoft.sqlserver.jdbc.SQLServerConnection.login(SQLServerConnection.java:3172) ~[mssql-jdbc-12.4.2.jre11.jar:na]
-	at com.microsoft.sqlserver.jdbc.SQLServerConnection.connectInternal(SQLServerConnection.java:3014) ~[mssql-jdbc-12.4.2.jre11.jar:na]
-	at com.microsoft.sqlserver.jdbc.SQLServerConnection.connect(SQLServerConnection.java:1836) ~[mssql-jdbc-12.4.2.jre11.jar:na]
-	at com.microsoft.sqlserver.jdbc.SQLServerDriver.connect(SQLServerDriver.java:1246) ~[mssql-jdbc-12.4.2.jre11.jar:na]
-	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138) ~[HikariCP-5.0.1.jar:na]
-	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359) ~[HikariCP-5.0.1.jar:na]
-	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201) ~[HikariCP-5.0.1.jar:na]
-	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470) ~[HikariCP-5.0.1.jar:na]
-	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733) ~[HikariCP-5.0.1.jar:na]
-	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712) ~[HikariCP-5.0.1.jar:na]
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317) ~[na:na]
-	... 3 common frames omitted
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-05-15T18:01:03.202+05:30 ERROR 33774 --- [  restartedMain] o.s.b.d.LoggingFailureAnalysisReporter   : 
 
-[2m2026-05-14T13:59:46.517+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[   scheduling-1][0;39m [2m[0;39m[36mo.h.engine.jdbc.spi.SqlExceptionHelper  [0;39m [2m:[0;39m SQL Error: 0, SQLState: 08S01
-[2m2026-05-14T13:59:46.518+05:30[0;39m [31mERROR[0;39m [35m63503[0;39m [2m---[0;39m [2m[   scheduling-1][0;39m [2m[0;39m[36mo.h.engine.jdbc.spi.SqlExceptionHelper  [0;39m [2m:[0;39m HikariPool-1 - Connection is not available, request timed out after 30005ms.
-[2m2026-05-14T13:59:46.519+05:30[0;39m [31mERROR[0;39m [35m63503[0;39m [2m---[0;39m [2m[   scheduling-1][0;39m [2m[0;39m[36mo.h.engine.jdbc.spi.SqlExceptionHelper  [0;39m [2m:[0;39m The TCP/IP connection to the host localhost, port 1433 has failed. Error: "Connection refused. Verify the connection properties. Make sure that an instance of SQL Server is running on the host and accepting TCP/IP connections at the port. Make sure that TCP connections to the port are not blocked by a firewall.".
-[2m2026-05-14T13:59:46.519+05:30[0;39m [31mERROR[0;39m [35m63503[0;39m [2m---[0;39m [2m[   scheduling-1][0;39m [2m[0;39m[36mo.s.s.s.TaskUtils$LoggingErrorHandler   [0;39m [2m:[0;39m Unexpected error occurred in scheduled task
+***************************
+APPLICATION FAILED TO START
+***************************
 
-org.springframework.transaction.CannotCreateTransactionException: Could not open JPA EntityManager for transaction
-	at org.springframework.orm.jpa.JpaTransactionManager.doBegin(JpaTransactionManager.java:466) ~[spring-orm-6.1.6.jar:6.1.6]
-	at org.springframework.transaction.support.AbstractPlatformTransactionManager.startTransaction(AbstractPlatformTransactionManager.java:531) ~[spring-tx-6.1.6.jar:6.1.6]
-	at org.springframework.transaction.support.AbstractPlatformTransactionManager.getTransaction(AbstractPlatformTransactionManager.java:405) ~[spring-tx-6.1.6.jar:6.1.6]
-	at org.springframework.transaction.interceptor.TransactionAspectSupport.createTransactionIfNecessary(TransactionAspectSupport.java:617) ~[spring-tx-6.1.6.jar:6.1.6]
-	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:386) ~[spring-tx-6.1.6.jar:6.1.6]
-	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119) ~[spring-tx-6.1.6.jar:6.1.6]
-	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184) ~[spring-aop-6.1.6.jar:6.1.6]
-	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:768) ~[spring-aop-6.1.6.jar:6.1.6]
-	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:720) ~[spring-aop-6.1.6.jar:6.1.6]
-	at com.autonoma.erp.service.ChecklistSchedulerService$$SpringCGLIB$$0.generateRecurringAssignments(<generated>) ~[classes/:na]
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
-	at org.springframework.scheduling.support.ScheduledMethodRunnable.runInternal(ScheduledMethodRunnable.java:130) ~[spring-context-6.1.6.jar:6.1.6]
-	at org.springframework.scheduling.support.ScheduledMethodRunnable.lambda$run$2(ScheduledMethodRunnable.java:124) ~[spring-context-6.1.6.jar:6.1.6]
-	at io.micrometer.observation.Observation.observe(Observation.java:499) ~[micrometer-observation-1.12.5.jar:1.12.5]
-	at org.springframework.scheduling.support.ScheduledMethodRunnable.run(ScheduledMethodRunnable.java:124) ~[spring-context-6.1.6.jar:6.1.6]
-	at org.springframework.scheduling.support.DelegatingErrorHandlingRunnable.run(DelegatingErrorHandlingRunnable.java:54) ~[spring-context-6.1.6.jar:6.1.6]
-	at org.springframework.scheduling.concurrent.ReschedulingRunnable.run(ReschedulingRunnable.java:96) ~[spring-context-6.1.6.jar:6.1.6]
-	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572) ~[na:na]
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317) ~[na:na]
-	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304) ~[na:na]
-	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144) ~[na:na]
-	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642) ~[na:na]
-	at java.base/java.lang.Thread.run(Thread.java:1575) ~[na:na]
-Caused by: org.hibernate.exception.JDBCConnectionException: Unable to acquire JDBC Connection [HikariPool-1 - Connection is not available, request timed out after 30005ms.] [n/a]
-	at org.hibernate.exception.internal.SQLExceptionTypeDelegate.convert(SQLExceptionTypeDelegate.java:51) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.hibernate.exception.internal.StandardSQLExceptionConverter.convert(StandardSQLExceptionConverter.java:58) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:108) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.hibernate.engine.jdbc.spi.SqlExceptionHelper.convert(SqlExceptionHelper.java:94) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.hibernate.resource.jdbc.internal.LogicalConnectionManagedImpl.acquireConnectionIfNeeded(LogicalConnectionManagedImpl.java:116) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.hibernate.resource.jdbc.internal.LogicalConnectionManagedImpl.getPhysicalConnection(LogicalConnectionManagedImpl.java:143) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.hibernate.resource.jdbc.internal.LogicalConnectionManagedImpl.getConnectionForTransactionManagement(LogicalConnectionManagedImpl.java:273) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.hibernate.resource.jdbc.internal.LogicalConnectionManagedImpl.begin(LogicalConnectionManagedImpl.java:281) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.hibernate.resource.transaction.backend.jdbc.internal.JdbcResourceLocalTransactionCoordinatorImpl$TransactionDriverControlImpl.begin(JdbcResourceLocalTransactionCoordinatorImpl.java:232) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.hibernate.engine.transaction.internal.TransactionImpl.begin(TransactionImpl.java:83) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.springframework.orm.jpa.vendor.HibernateJpaDialect.beginTransaction(HibernateJpaDialect.java:176) ~[spring-orm-6.1.6.jar:6.1.6]
-	at org.springframework.orm.jpa.JpaTransactionManager.doBegin(JpaTransactionManager.java:420) ~[spring-orm-6.1.6.jar:6.1.6]
-	... 23 common frames omitted
-Caused by: java.sql.SQLTransientConnectionException: HikariPool-1 - Connection is not available, request timed out after 30005ms.
-	at com.zaxxer.hikari.pool.HikariPool.createTimeoutException(HikariPool.java:696) ~[HikariCP-5.0.1.jar:na]
-	at com.zaxxer.hikari.pool.HikariPool.getConnection(HikariPool.java:181) ~[HikariCP-5.0.1.jar:na]
-	at com.zaxxer.hikari.pool.HikariPool.getConnection(HikariPool.java:146) ~[HikariCP-5.0.1.jar:na]
-	at com.zaxxer.hikari.HikariDataSource.getConnection(HikariDataSource.java:128) ~[HikariCP-5.0.1.jar:na]
-	at org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource.getConnection(AbstractRoutingDataSource.java:213) ~[spring-jdbc-6.1.6.jar:6.1.6]
-	at org.hibernate.engine.jdbc.connections.internal.DatasourceConnectionProviderImpl.getConnection(DatasourceConnectionProviderImpl.java:122) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.hibernate.internal.NonContextualJdbcConnectionAccess.obtainConnection(NonContextualJdbcConnectionAccess.java:46) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	at org.hibernate.resource.jdbc.internal.LogicalConnectionManagedImpl.acquireConnectionIfNeeded(LogicalConnectionManagedImpl.java:113) ~[hibernate-core-6.4.4.Final.jar:6.4.4.Final]
-	... 30 common frames omitted
-Caused by: com.microsoft.sqlserver.jdbc.SQLServerException: The TCP/IP connection to the host localhost, port 1433 has failed. Error: "Connection refused. Verify the connection properties. Make sure that an instance of SQL Server is running on the host and accepting TCP/IP connections at the port. Make sure that TCP connections to the port are not blocked by a firewall.".
-	at com.microsoft.sqlserver.jdbc.SQLServerException.makeFromDriverError(SQLServerException.java:231) ~[mssql-jdbc-12.4.2.jre11.jar:na]
-	at com.microsoft.sqlserver.jdbc.SQLServerException.convertConnectExceptionToSQLServerException(SQLServerException.java:282) ~[mssql-jdbc-12.4.2.jre11.jar:na]
-	at com.microsoft.sqlserver.jdbc.SocketFinder.findSocket(IOBuffer.java:2578) ~[mssql-jdbc-12.4.2.jre11.jar:na]
-	at com.microsoft.sqlserver.jdbc.TDSChannel.open(IOBuffer.java:719) ~[mssql-jdbc-12.4.2.jre11.jar:na]
-	at com.microsoft.sqlserver.jdbc.SQLServerConnection.connectHelper(SQLServerConnection.java:3523) ~[mssql-jdbc-12.4.2.jre11.jar:na]
-	at com.microsoft.sqlserver.jdbc.SQLServerConnection.login(SQLServerConnection.java:3172) ~[mssql-jdbc-12.4.2.jre11.jar:na]
-	at com.microsoft.sqlserver.jdbc.SQLServerConnection.connectInternal(SQLServerConnection.java:3014) ~[mssql-jdbc-12.4.2.jre11.jar:na]
-	at com.microsoft.sqlserver.jdbc.SQLServerConnection.connect(SQLServerConnection.java:1836) ~[mssql-jdbc-12.4.2.jre11.jar:na]
-	at com.microsoft.sqlserver.jdbc.SQLServerDriver.connect(SQLServerDriver.java:1246) ~[mssql-jdbc-12.4.2.jre11.jar:na]
-	at com.zaxxer.hikari.util.DriverDataSource.getConnection(DriverDataSource.java:138) ~[HikariCP-5.0.1.jar:na]
-	at com.zaxxer.hikari.pool.PoolBase.newConnection(PoolBase.java:359) ~[HikariCP-5.0.1.jar:na]
-	at com.zaxxer.hikari.pool.PoolBase.newPoolEntry(PoolBase.java:201) ~[HikariCP-5.0.1.jar:na]
-	at com.zaxxer.hikari.pool.HikariPool.createPoolEntry(HikariPool.java:470) ~[HikariCP-5.0.1.jar:na]
-	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:733) ~[HikariCP-5.0.1.jar:na]
-	at com.zaxxer.hikari.pool.HikariPool$PoolEntryCreator.call(HikariPool.java:712) ~[HikariCP-5.0.1.jar:na]
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317) ~[na:na]
-	... 3 common frames omitted
+Description:
 
-[2m2026-05-14T15:59:34.801+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[onnection adder][0;39m [2m[0;39m[36mc.m.s.j.internals.SQLServerConnection   [0;39m [2m:[0;39m ConnectionID:400 ClientConnectionId: 37ddc22c-0af7-4469-8ed5-565d6ea5434d Prelogin error: host localhost port 1433 Unexpected end of prelogin response after 0 bytes read
-[2m2026-05-14T15:59:35.804+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[onnection adder][0;39m [2m[0;39m[36mc.m.s.j.internals.SQLServerConnection   [0;39m [2m:[0;39m ConnectionID:400 ClientConnectionId: a30cc4c2-03c0-4db5-a981-c1e5378f91bd Prelogin error: host localhost port 1433 Unexpected end of prelogin response after 0 bytes read
-[2m2026-05-14T15:59:36.811+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[onnection adder][0;39m [2m[0;39m[36mc.m.s.j.internals.SQLServerConnection   [0;39m [2m:[0;39m ConnectionID:400 ClientConnectionId: cda1a6d0-ecda-43e8-8648-47514140c148 Prelogin error: host localhost port 1433 Unexpected end of prelogin response after 0 bytes read
-[2m2026-05-14T15:59:37.816+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[onnection adder][0;39m [2m[0;39m[36mc.m.s.j.internals.SQLServerConnection   [0;39m [2m:[0;39m ConnectionID:400 ClientConnectionId: 6b91a59a-cf18-47d5-89ea-4dd568f0eb5a Prelogin error: host localhost port 1433 Unexpected end of prelogin response after 0 bytes read
-[2m2026-05-14T15:59:38.826+05:30[0;39m [33m WARN[0;39m [35m63503[0;39m [2m---[0;39m [2m[onnection adder][0;39m [2m[0;39m[36mc.m.s.j.internals.SQLServerConnection   [0;39m [2m:[0;39m ConnectionID:400 ClientConnectionId: 20fc6bb5-74f8-4591-9cd0-2cc131706064 Prelogin error: host localhost port 1433 Unexpected end of prelogin response after 0 bytes read
+Web server failed to start. Port 8081 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8081 or configure this application to listen on another port.
+
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
-[[1;34mINFO[m] [1;31mBUILD FAILURE[m
+[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
-[[1;34mINFO[m] Total time:  15:46 h
-[[1;34mINFO[m] Finished at: 2026-05-14T16:00:06+05:30
+[[1;34mINFO[m] Total time:  6.840 s
+[[1;34mINFO[m] Finished at: 2026-05-15T18:01:03+05:30
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
-[[1;31mERROR[m] Failed to execute goal [32morg.springframework.boot:spring-boot-maven-plugin:3.2.5:run[m [1m(default-cli)[m on project [36merp-backend[m: [1;31mProcess terminated with exit code: 137[m -> [1m[Help 1][m
-[[1;31mERROR[m] 
-[[1;31mERROR[m] To see the full stack trace of the errors, re-run Maven with the [1m-e[m switch.
-[[1;31mERROR[m] Re-run Maven using the [1m-X[m switch to enable full debug logging.
-[[1;31mERROR[m] 
-[[1;31mERROR[m] For more information about the errors and possible solutions, please read the following articles:
-[[1;31mERROR[m] [1m[Help 1][m http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException

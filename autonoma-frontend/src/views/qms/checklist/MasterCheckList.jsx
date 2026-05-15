@@ -34,11 +34,34 @@ import AddCheckListDialog from './AddCheckListDialog';
 import { IconUserPlus, IconEdit, IconPlus, IconFileDots, IconAdjustmentsHorizontal, IconChevronDown, IconChevronUp, IconX } from '@tabler/icons-react';
 
 const columns = [
-  '#','Seq No','Checking Point','Category','Frequency','Department',
-  'Effective from','Days','Expire Date','Reminder Date','Stock Link',
-  'Assign To','Assign Date','Item Code','Qty','Photo Required',
-  'Created Date','Created By','Modified By','Status','Task Status',
-  'Verify Status','Verified By','Verified Date','Rej Reason'
+  { id: 'index', label: '#', minWidth: 50 },
+  { id: 'seqNo', label: 'Seq No', minWidth: 80, bold: true },
+  { id: 'checkingPoint', label: 'Checking Point', minWidth: 200 },
+  { id: 'category', label: 'Category', minWidth: 120 },
+  { id: 'frequency', label: 'Frequency', minWidth: 120 },
+  { id: 'level', label: 'Level', minWidth: 150 },
+  { id: 'department', label: 'Department', minWidth: 150 },
+  { id: 'effectiveFrom', label: 'Effective from', minWidth: 120 },
+  { id: 'reminderDays', label: 'Days', minWidth: 80 },
+  { id: 'expiryDate', label: 'Expire Date', minWidth: 120 },
+  { id: 'reminderDate', label: 'Reminder Date', minWidth: 120 },
+  { id: 'stockLink', label: 'Stock Link', minWidth: 100 },
+  { id: 'assignTo', label: 'Assign To', minWidth: 120 },
+  { id: 'assignDate', label: 'Assign Date', minWidth: 120 },
+  { id: 'itemCode', label: 'Item Code', minWidth: 120 },
+  { id: 'qty', label: 'Qty', minWidth: 80 },
+  { id: 'photoRequired', label: 'Photo Required', minWidth: 100 },
+  { id: 'createdBy', label: 'Created By', minWidth: 120 },
+  { id: 'createdDate', label: 'Created Date', minWidth: 120 },
+  { id: 'updatedBy', label: 'Updated By', minWidth: 120 },
+  { id: 'updatedDate', label: 'Updated Date', minWidth: 120 },
+  { id: 'status', label: 'Status', minWidth: 100 },
+  { id: 'taskStatus', label: 'Task Status', minWidth: 120 },
+  { id: 'verifyStatus', label: 'Verify Status', minWidth: 150 },
+  { id: 'verifiedBy', label: 'Verified By', minWidth: 120 },
+  { id: 'verifiedDate', label: 'Verified Date', minWidth: 120 },
+  { id: 'rejReason', label: 'Rej Reason', minWidth: 200 },
+  { id: 'attachments', label: 'Docs', minWidth: 80, align: 'center' }
 ];
 
 const DEPARTMENTS = [
@@ -210,7 +233,7 @@ export default function MasterCheckList() {
 
       <TableContainer component={Paper} sx={{ maxHeight:'calc(100vh - 380px)', borderTop:'1px solid', borderColor:'divider', borderRadius: 0, '&::-webkit-scrollbar':{width:10,height:10}, '&::-webkit-scrollbar-track':{backgroundColor:'background.paper'}, '&::-webkit-scrollbar-thumb':{backgroundColor:'grey.400',borderRadius:2} }}>
         <Table stickyHeader sx={{ minWidth: 4000 }} aria-label="checklist table">
-          <TableHead><TableRow>{columns.map((col,i) => <TableCell key={i} sx={{ minWidth: 200, bgcolor:'primary.dark', color:'white', fontWeight:'bold', whiteSpace:'nowrap', borderRight:'1px solid rgba(255,255,255,0.2)' }}>{col}</TableCell>)}</TableRow></TableHead>
+          <TableHead><TableRow>{columns.map((col,i) => <TableCell key={i} sx={{ minWidth: col.minWidth || 200, bgcolor:'primary.dark', color:'white', fontWeight:'bold', whiteSpace:'nowrap', borderRight:'1px solid rgba(255,255,255,0.2)' }}>{col.label}</TableCell>)}</TableRow></TableHead>
           <TableBody>
             {loading ? (
               <TableRow><TableCell colSpan={columns.length} align="center" sx={{ py:6 }}><Typography variant="body1" color="textSecondary">Loading...</Typography></TableCell></TableRow>

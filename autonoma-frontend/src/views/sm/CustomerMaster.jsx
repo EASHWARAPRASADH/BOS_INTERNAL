@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Grid, Box, Button, Typography, Stack, MenuItem, useTheme, Tooltip, Autocomplete, TextField as MuiTextField } from '@mui/material';
+import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
+import { Grid, Box, Button, Typography, Stack, MenuItem, useTheme, Tooltip, Autocomplete, TextField as MuiTextField, alpha } from '@mui/material';
 import { IconUserPlus, IconDeviceFloppy, IconArrowLeft, IconTrash, IconEraser, IconUser, IconMapPin, IconBusinessplan, IconTruckDelivery } from '@tabler/icons-react';
 import { useColorScheme } from '@mui/material/styles';
 import MainCard from 'ui-component/cards/MainCard';
@@ -29,6 +29,7 @@ const INITIAL = {
   customerCode: '',
   gstin: '',
   customerName: '',
+  customerPrintName: '',
   accountsLedger: '',
   groupName: '',
   shortName: '',
@@ -57,8 +58,14 @@ const INITIAL = {
   location: '',
   ldApplicable: 'No',
   negotiateCustomer: 'No',
+  dailyDispatchMail: 'No',
   status: 'Active',
-  fileUpload: ''
+  fileUpload: '',
+  panFileInfo: '',
+  createdBy: '',
+  createdDate: '',
+  updatedBy: '',
+  updatedDate: ''
 };
 
 const RULES = [
@@ -74,7 +81,8 @@ export default function CustomerMaster() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
-  const customerId = searchParams.get('id');
+  const { id: pathId } = useParams();
+  const customerId = pathId || searchParams.get('id');
   const { errors, validate, clearErrors } = useBOSValidation();
   const [form, setForm] = useState(INITIAL);
   const [loading, setLoading] = useState(false);
@@ -82,6 +90,7 @@ export default function CustomerMaster() {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewData, setPreviewData] = useState({ url: '', name: '', type: 'pdf' });
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [panFile, setPanFile] = useState([]);
 
   // Master Data
   const [deliveryTerms, setDeliveryTerms] = useState([]);
@@ -122,6 +131,7 @@ export default function CustomerMaster() {
       if (d.isoExpiry && typeof d.isoExpiry === 'string') d.isoExpiry = d.isoExpiry.split('T')[0];
       setForm(d);
       setUploadedFiles(formatBOSFiles(data.fileUpload));
+      setPanFile(formatBOSFiles(data.panFileInfo));
     } catch (e) { console.error(e); }
   }, [customerId]);
 
@@ -134,6 +144,13 @@ export default function CustomerMaster() {
       console.error(e);
       const year = new Date().getFullYear().toString().slice(-2);
       setForm(p => ({ ...p, customerCode: `C-${year}-00001` }));
+    }
+  }, [customerId]);
+
+  useEffect(() => {
+    if (!customerId) {
+      setPanFile([]);
+      setUploadedFiles([]);
     }
   }, [customerId]);
 
@@ -171,11 +188,30 @@ export default function CustomerMaster() {
 
   const handleSave = async () => {
     if (!validate(form, RULES)) return;
+
+    if (form.ndaRequired === 'Yes' && uploadedFiles.length === 0) {
+      dispatch(openSnackbar({ 
+        open: true, 
+        message: 'NDA document is required when "NDA Required" is set to Yes. Please upload the document in the Standard Attachments section.', 
+        variant: 'alert', 
+        alert: { variant: 'filled' }, 
+        severity: 'error', 
+        close: false 
+      }));
+      return;
+    }
+
     setLoading(true);
     try {
       const uploadFile = async (f) => f.isServer ? f.name : await autoUploadFile(f.file, 'SALES_CUSTOMER');
       const finalFiles = await Promise.all(uploadedFiles.map(uploadFile));
-      const updatedForm = { ...form, fileUpload: finalFiles.join(',') };
+      const panFilesResult = await Promise.all(panFile.map(uploadFile));
+      
+      const updatedForm = { 
+        ...form, 
+        fileUpload: finalFiles.join(','),
+        panFileInfo: panFilesResult.join(',')
+      };
 
       if (customerId) {
         await axios.put(`/api/sm/customers/${customerId}`, updatedForm);
@@ -248,6 +284,7 @@ export default function CustomerMaster() {
             <R><BOSTextField name="customerCode" label="Customer Code" value={form.customerCode} onChange={h} disabled inputProps={{ readOnly: true }} sx={{ '& .MuiInputBase-input': { fontWeight: 700, color: 'primary.main' } }} /></R>
             <R><BOSTextField name="gstin" label="GSTIN No" value={form.gstin} onChange={h} /></R>
             <R><BOSTextField name="customerName" label="Customer Name" value={form.customerName} onChange={h} required error={!!errors.customerName} helperText={errors.customerName} /></R>
+            <R><BOSTextField name="customerPrintName" label="Customer Print Name" value={form.customerPrintName} onChange={h} /></R>
             <R><BOSTextField name="accountsLedger" label="Accounts Ledger" value={form.accountsLedger} onChange={h} /></R>
             <R><BOSTextField name="groupName" label="Group Name" value={form.groupName} onChange={h} /></R>
             <R><BOSTextField name="shortName" label="Short Name" value={form.shortName} onChange={h} /></R>
@@ -283,7 +320,12 @@ export default function CustomerMaster() {
                 <MenuItem value="No">No</MenuItem>
               </BOSTextField>
             </R>
-            <R><BOSTextField name="panNo" label="PAN No" value={form.panNo} onChange={h} /></R>
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <BOSTextField name="panNo" label="PAN No" value={form.panNo} onChange={h} fullWidth />
+                <BOSFileUpload files={panFile} onChange={setPanFile} module="SALES_CUSTOMER" label="PAN" compact multiple={false} />
+              </Stack>
+            </Grid>
             <R><BOSTextField name="registerNo" label="Register No" value={form.registerNo} onChange={h} /></R>
             <R><BOSTextField name="cinNo" label="CIN No" value={form.cinNo} onChange={h} /></R>
             <R><BOSTextField name="isoNumber" label="ISO No" value={form.isoNumber} onChange={h} /></R>
@@ -294,6 +336,20 @@ export default function CustomerMaster() {
                 <MenuItem value="No">No</MenuItem>
               </BOSTextField>
             </R>
+            <Grid item xs={12} lg={6}>
+              <Box sx={{ border: '1px dashed', borderColor: form.ndaRequired === 'Yes' ? 'primary.main' : 'divider', borderRadius: 2, bgcolor: alpha(theme.palette.primary.main, 0.02) }}>
+                <BOSFileUpload
+                  files={uploadedFiles}
+                  onChange={setUploadedFiles}
+                  module="SALES_CUSTOMER"
+                  label="Upload NDA Document"
+                  compact
+                  multiple={true}
+                  disabled={form.ndaRequired === 'No'}
+                  helperText="Upload signed NDA agreement."
+                />
+              </Box>
+            </Grid>
           </Grid>
         </BOSFormSection>
 
@@ -311,9 +367,21 @@ export default function CustomerMaster() {
             
             <R lg={4} md={6}><BOSTextField fullWidth name="ldApplicable" label="LD Applicable" value={form.ldApplicable} onChange={h} select>{YES_NO_OPTIONS.map(o => <MenuItem key={o} value={o}>{o}</MenuItem>)}</BOSTextField></R>
             <R lg={4} md={6}><BOSTextField fullWidth name="negotiateCustomer" label="Is Negotiate Customer" value={form.negotiateCustomer} onChange={h} select>{YES_NO_OPTIONS.map(o => <MenuItem key={o} value={o}>{o}</MenuItem>)}</BOSTextField></R>
+            <R lg={4} md={6}><BOSTextField fullWidth name="dailyDispatchMail" label="Daily Dispatch Mail Req?" value={form.dailyDispatchMail} onChange={h} select>{YES_NO_OPTIONS.map(o => <MenuItem key={o} value={o}>{o}</MenuItem>)}</BOSTextField></R>
             <R lg={4} md={6}><BOSTextField fullWidth name="status" label="Status" value={form.status} onChange={h} select>{STATUS_OPTIONS.map(o => <MenuItem key={o} value={o}>{o}</MenuItem>)}</BOSTextField></R>
           </Grid>
         </BOSFormSection>
+
+        {customerId && (
+          <BOSFormSection icon={<IconFiles size={20} color={theme.palette.primary.main} />} title="Audit Information">
+            <Grid container spacing={2.5}>
+              <R><BOSTextField label="Created By" value={form.createdBy} disabled /></R>
+              <R><BOSTextField label="Created Date" value={form.createdDate} disabled /></R>
+              <R><BOSTextField label="Updated By" value={form.updatedBy} disabled /></R>
+              <R><BOSTextField label="Updated Date" value={form.updatedDate} disabled /></R>
+            </Grid>
+          </BOSFormSection>
+        )}
 
         <BOSFormSection icon={<IconFiles size={22} color={theme.palette.primary.main} />} title="Standard Attachments">
           <BOSFileUpload

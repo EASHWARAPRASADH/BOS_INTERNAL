@@ -12,7 +12,11 @@ import axios from 'axios';
 const columns = [
   { id: 'index', label: '#', minWidth: 50 },
   { id: 'country', label: 'Country', minWidth: 300, bold: true },
-  { id: 'status', label: 'Status', minWidth: 100 }
+  { id: 'status', label: 'Status', minWidth: 100 },
+  { id: 'createdBy', label: 'Created By', minWidth: 120 },
+  { id: 'createdDate', label: 'Created Date', minWidth: 150 },
+  { id: 'updatedBy', label: 'Updated By', minWidth: 120 },
+  { id: 'updatedDate', label: 'Updated Date', minWidth: 150 }
 ];
 
 export default function CountryMaster() {

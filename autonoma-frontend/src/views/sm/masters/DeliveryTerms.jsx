@@ -13,7 +13,11 @@ const columns = [
   { id: 'index', label: '#', minWidth: 50 },
   { id: 'termName', label: 'Delivery Term', minWidth: 200, bold: true },
   { id: 'description', label: 'Delivery Term Description', minWidth: 300 },
-  { id: 'status', label: 'Status', minWidth: 100 }
+  { id: 'status', label: 'Status', minWidth: 100 },
+  { id: 'createdBy', label: 'Created By', minWidth: 120 },
+  { id: 'createdDate', label: 'Created Date', minWidth: 150 },
+  { id: 'updatedBy', label: 'Updated By', minWidth: 120 },
+  { id: 'updatedDate', label: 'Updated Date', minWidth: 150 }
 ];
 
 export default function DeliveryTerms() {

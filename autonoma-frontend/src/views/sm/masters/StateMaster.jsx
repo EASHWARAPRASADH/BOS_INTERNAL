@@ -14,7 +14,11 @@ const columns = [
   { id: 'countryName', label: 'Country Name', minWidth: 200, bold: true },
   { id: 'stateName', label: 'State Name', minWidth: 200 },
   { id: 'stateCode', label: 'State Code', minWidth: 120 },
-  { id: 'status', label: 'Status', minWidth: 100 }
+  { id: 'status', label: 'Status', minWidth: 100 },
+  { id: 'createdBy', label: 'Created By', minWidth: 120 },
+  { id: 'createdDate', label: 'Created Date', minWidth: 150 },
+  { id: 'updatedBy', label: 'Updated By', minWidth: 120 },
+  { id: 'updatedDate', label: 'Updated Date', minWidth: 150 }
 ];
 
 export default function StateMaster() {

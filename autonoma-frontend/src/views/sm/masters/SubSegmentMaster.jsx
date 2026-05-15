@@ -11,7 +11,11 @@ const columns = [
   { id: 'index', label: '#', minWidth: 50 },
   { id: 'subSegmentCode', label: 'Sub Segment Code', minWidth: 120, bold: true },
   { id: 'subSegmentName', label: 'Sub Segment Name', minWidth: 200 },
-  { id: 'status', label: 'Status', minWidth: 100 }
+  { id: 'status', label: 'Status', minWidth: 100 },
+  { id: 'createdBy', label: 'Created By', minWidth: 120 },
+  { id: 'createdDate', label: 'Created Date', minWidth: 150 },
+  { id: 'updatedBy', label: 'Updated By', minWidth: 120 },
+  { id: 'updatedDate', label: 'Updated Date', minWidth: 150 }
 ];
 
 const INITIAL = { subSegmentCode: '', subSegmentName: '', status: 'Active' };
