@@ -12,8 +12,11 @@ import { useMemo, useEffect } from 'react';
 import { setTableConfig } from 'store/slices/search';
 import {
   tableContainerSx, tableHeadCellSx, getTableRowSx,
-  tableActionEditSx, tableActionDeleteSx, getStatusChipSx
+  tableActionEditSx, tableActionDeleteSx, getStatusChipSx,
+  getPhotoUrl
 } from './BOSStyles';
+import { IconUser } from '@tabler/icons-react';
+import { Avatar } from '@mui/material';
 
 /**
  * BOS DataTable — SOP #2, #7, #8, #12, #15, #16
@@ -114,25 +117,60 @@ export default function BOSDataTable({
 
   const formatDate = (d) => {
     if (!d) return '-';
-    try { return format(new Date(d), 'dd-MM-yyyy HH:mm'); } catch { return '-'; }
+    try { 
+      // Handle cases where d might be a string with +00:00 or other offsets
+      const dateObj = new Date(d);
+      if (isNaN(dateObj.getTime())) return String(d);
+      return format(dateObj, 'dd-MM-yyyy HH:mm'); 
+    } catch { 
+      return '-'; 
+    }
   };
 
   const defaultRenderCell = (col, row, idx) => {
     if (col.render) return col.render(row, idx);
-    // ── DATA RESOLUTION (Supports camelCase and snake_case) ──
+    
+    // ── DATA RESOLUTION (Supports camelCase, snake_case, and common audit fallbacks) ──
     let val = row[col.id];
+    
     if (val === undefined || val === null) {
-      // Fallback: If 'updatedBy' is not found, try 'updated_by'
+      // 1. Standard camelCase to snake_case (e.g. updatedBy -> updated_by)
       const snakeCaseId = col.id.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
       val = row[snakeCaseId];
+      
+      // 2. Audit-Specific Fallbacks (The "Big 4")
+      if (val === undefined || val === null) {
+        if (col.id === 'createdDate') val = row['createdAt'] || row['created_at'];
+        if (col.id === 'updatedDate') val = row['updatedAt'] || row['updated_at'];
+        if (col.id === 'createdBy') val = row['created_by'];
+        if (col.id === 'updatedBy') val = row['updated_by'];
+      }
     }
 
     if (col.id === 'index') return (page * size) + (filteredRows.indexOf(row) + 1);
+
+    // Standard Photo Rendering (SOP Compliance)
+    if (col.id === 'photo' || col.id === 'employeePhotoUpload' || col.id === 'avatar') {
+      return (
+        <Avatar
+          src={getPhotoUrl(val)}
+          variant="rounded"
+          sx={{ width: 32, height: 40, bgcolor: 'grey.100', border: '1px solid', borderColor: 'divider' }}
+        >
+          <IconUser size={18} color="#ccc" />
+        </Avatar>
+      );
+    }
+
     if (col.id === 'status' || col.id === 'accountStatus') {
-      const statusText = val === 1 || val === 'Active' ? 'Active' : 'Suspended';
+      const statusText = val === 1 || val === 'Active' || val === 'ACTIVE' ? 'Active' : 'Suspended';
       return <Chip label={statusText} size="small" sx={getStatusChipSx(statusText)} />;
     }
-    if (col.id.toLowerCase().includes('date')) return formatDate(val);
+
+    // Date Formatting (SOP Compliance - Removes +00:00 via formatDate)
+    if (col.id.toLowerCase().includes('date') || col.id.toLowerCase().includes('at')) {
+      return formatDate(val);
+    }
     
     // Handle Boolean values (Yes/No)
     if (typeof val === 'boolean') return val ? 'Yes' : 'No';

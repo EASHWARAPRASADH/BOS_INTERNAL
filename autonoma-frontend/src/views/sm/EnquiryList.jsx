@@ -25,7 +25,11 @@ const columns = [
   { id: 'subject', label: 'Subject', minWidth: 200 },
   { id: 'source', label: 'Source', minWidth: 100 },
   { id: 'priority', label: 'Priority', minWidth: 90 },
-  { id: 'status', label: 'Status', minWidth: 100 }
+  { id: 'status', label: 'Status', minWidth: 100 },
+  { id: 'createdBy', label: 'Created By', minWidth: 120 },
+  { id: 'createdDate', label: 'Created Date', minWidth: 150 },
+  { id: 'updatedBy', label: 'Updated By', minWidth: 120 },
+  { id: 'updatedDate', label: 'Updated Date', minWidth: 150 }
 ];
 
 export default function EnquiryList() {
@@ -47,7 +51,6 @@ export default function EnquiryList() {
     if (!Array.isArray(rows)) return [];
     return rows.map(row => ({
       ...row,
-      enquiryDate: row.enquiryDate ? format(new Date(row.enquiryDate), 'dd-MM-yyyy') : '-',
       status: row.status || 'Open'
     }));
   }, [rows]);

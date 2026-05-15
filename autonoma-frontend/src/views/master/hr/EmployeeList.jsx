@@ -67,19 +67,6 @@ export default function EmployeeList() {
     return String(u ? u.userId : id);
   };
 
-  const safeDateFormat = (dateStr) => {
-    if (!dateStr) return '-';
-    // If it's a string, try to show at least the date part
-    if (typeof dateStr === 'string') {
-      return dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
-    }
-    try {
-      const d = new Date(dateStr);
-      return isNaN(d.getTime()) ? String(dateStr) : format(d, 'dd-MM-yyyy HH:mm');
-    } catch (e) {
-      return String(dateStr);
-    }
-  };
 
   // SOP #16 — Global filter config handled automatically by Rule 1 & Rule 2
   useEffect(() => {
@@ -148,10 +135,6 @@ export default function EmployeeList() {
       empLevelId: getLevelName(row.empLevelId),
       unitId: getUnitName(row.unitId),
       supplierName: row.supplierName || row.vendorName || '-',
-      createdBy: getUserName(row.createdBy || row.created_by),
-      createdAt: safeDateFormat(row.createdAt || row.created_at),
-      updatedBy: getUserName(row.updatedBy || row.updated_by),
-      updatedAt: safeDateFormat(row.updatedAt || row.updated_at),
       status: row.status || 'Active'
     }));
   }, [rows, departments, designations, levels, users]);
@@ -176,21 +159,6 @@ export default function EmployeeList() {
     exportToExcel(exportData, 'Employee_Master');
   };
 
-  const renderCell = (col, row) => {
-    if (col.id === 'index') return row.index;
-    if (col.id === 'photo') {
-      return (
-        <Avatar
-          src={getPhotoUrl(row.photo)}
-          variant="rounded"
-          sx={{ width: 32, height: 40, bgcolor: 'grey.100', border: '1px solid', borderColor: 'divider' }}
-        >
-          <IconUser size={18} color="#ccc" />
-        </Avatar>
-      );
-    }
-    return String(row[col.id] || '-');
-  };
 
   return (
     <MainCard
@@ -239,7 +207,7 @@ export default function EmployeeList() {
         onDoubleClickRow={handleOpenEdit}
         onEditRow={handleOpenEdit}
         onDeleteRow={handleDeleteClick}
-        renderCell={renderCell}
+        renderCell={null}
       />
 
       <ConfirmDeleteDialog
