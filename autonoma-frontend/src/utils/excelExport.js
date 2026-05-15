@@ -47,5 +47,5 @@ export const exportToExcel = (data, fileName, headerInfo = {}) => {
   // 6. Finalize and Save
   const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
   const dataBlob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-  saveAs(dataBlob, `${fileName}_${new Date().getTime()}.xlsx`);
+  saveAs(dataBlob, `${fileName}.xlsx`);
 };
