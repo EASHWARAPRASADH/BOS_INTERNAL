@@ -9,7 +9,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
-@Table(name = "QMS_MASTER_CHECKLIST")
+@Table(name = "qms_checklist_master")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -71,18 +71,33 @@ public class MasterChecklist {
     @Column(name = "CREATED_BY")
     private String createdBy;
 
-    @Column(name = "CREATED_DATE")
+    @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date createdDate;
+    private Date createdAt;
 
     @Column(name = "UPDATED_BY")
     private String updatedBy;
 
-    @Column(name = "UPDATED_DATE")
+    @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date updatedDate;
+    private Date updatedAt;
+
+    @Column(name = "DUAL_CHECK")
+    private String dualCheck;
+
+    @Column(name = "AMENDMENT_REASON", columnDefinition = "TEXT")
+    private String amendmentReason;
+
+    @Column(name = "LEVEL_IDS")
+    private String levelIds;
+
+    @Column(name = "UPLOADED_FILES", columnDefinition = "TEXT")
+    private String uploadedFiles;
+
+    @Column(name = "SCANNED_FILES", columnDefinition = "TEXT")
+    private String scannedFiles;
 
     @Column(name = "STATUS")
     private String status;
@@ -117,10 +132,11 @@ public class MasterChecklist {
 
     @Column(name = "QTY")
     private String qty;
+
     @OneToMany(mappedBy = "checklist", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChecklistDepartment> departments;
 
-    // Getters and Setters (manually added for compatibility if Lombok has issues)
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getStatus() { return status; }
@@ -155,12 +171,26 @@ public class MasterChecklist {
     public void setNextDueDate(Date nextDueDate) { this.nextDueDate = nextDueDate; }
     public String getCreatedBy() { return createdBy; }
     public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }
-    public Date getCreatedDate() { return createdDate; }
-    public void setCreatedDate(Date createdDate) { this.createdDate = createdDate; }
+    public Date getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
+    public Date getCreatedDate() { return createdAt; }
+    public void setCreatedDate(Date createdDate) { this.createdAt = createdDate; }
     public String getUpdatedBy() { return updatedBy; }
     public void setUpdatedBy(String updatedBy) { this.updatedBy = updatedBy; }
-    public Date getUpdatedDate() { return updatedDate; }
-    public void setUpdatedDate(Date updatedDate) { this.updatedDate = updatedDate; }
+    public Date getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
+    public Date getUpdatedDate() { return updatedAt; }
+    public void setUpdatedDate(Date updatedDate) { this.updatedAt = updatedDate; }
+    public String getDualCheck() { return dualCheck; }
+    public void setDualCheck(String dualCheck) { this.dualCheck = dualCheck; }
+    public String getAmendmentReason() { return amendmentReason; }
+    public void setAmendmentReason(String amendmentReason) { this.amendmentReason = amendmentReason; }
+    public String getLevelIds() { return levelIds; }
+    public void setLevelIds(String levelIds) { this.levelIds = levelIds; }
+    public String getUploadedFiles() { return uploadedFiles; }
+    public void setUploadedFiles(String uploadedFiles) { this.uploadedFiles = uploadedFiles; }
+    public String getScannedFiles() { return scannedFiles; }
+    public void setScannedFiles(String scannedFiles) { this.scannedFiles = scannedFiles; }
     public String getTaskStatus() { return taskStatus; }
     public void setTaskStatus(String taskStatus) { this.taskStatus = taskStatus; }
     public String getVerifyStatus() { return verifyStatus; }

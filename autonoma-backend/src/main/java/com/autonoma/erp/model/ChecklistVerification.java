@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 @Entity
-@Table(name = "QMS_CHECKLIST_VERIFICATION")
+@Table(name = "qms_checklist_verification")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

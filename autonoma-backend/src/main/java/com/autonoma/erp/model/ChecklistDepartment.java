@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "QMS_CHECKLIST_DEPARTMENT")
+@Table(name = "qms_checklist_department")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
