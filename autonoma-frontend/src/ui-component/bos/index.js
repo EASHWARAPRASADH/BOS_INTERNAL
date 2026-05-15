@@ -31,7 +31,8 @@ export {
   errorStyle,
   shakeAnimation
 } from './BOSStyles';
-export { default as BOSPersonnelCard, getPhotoUrl } from './BOSPersonnelCard';
+export { default as BOSPersonnelCard } from './BOSPersonnelCard';
+export { getPhotoUrl } from './BOSUtils';
 export { default as BOSActionSection } from './BOSActionSection';
 export { default as useBOSForm } from 'hooks/useBOSForm';
 export * from './BOSUtils';

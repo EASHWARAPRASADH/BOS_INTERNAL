@@ -31,6 +31,20 @@ export const parseBOSFiles = (files) => {
 };
 
 /**
+ * Resolves the employee photo URL from the uploaded file path.
+ */
+export const getPhotoUrl = (photoPath) => {
+  if (!photoPath) return null;
+  if (photoPath.startsWith('http') || photoPath.startsWith('blob:')) return photoPath;
+  
+  const API_BASE = window.location.origin.includes('localhost') 
+    ? 'http://localhost:8080/api/files/view' 
+    : '/api/files/view';
+  
+  return `${API_BASE}?path=${encodeURIComponent(photoPath)}`;
+};
+
+/**
  * Maps a list of filenames to the internal BOS file object format
  * @param {Array<string>} fileNames - List of filenames from server
  * @returns {Array<Object>} - Formatted file objects for BOSFileGallery

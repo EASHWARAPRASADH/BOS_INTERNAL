@@ -12,9 +12,9 @@ import { useMemo, useEffect } from 'react';
 import { setTableConfig } from 'store/slices/search';
 import {
   tableContainerSx, tableHeadCellSx, getTableRowSx,
-  tableActionEditSx, tableActionDeleteSx, getStatusChipSx,
-  getPhotoUrl
+  tableActionEditSx, tableActionDeleteSx, getStatusChipSx
 } from './BOSStyles';
+import { getPhotoUrl } from './BOSUtils';
 import { IconUser } from '@tabler/icons-react';
 import { Avatar } from '@mui/material';
 
