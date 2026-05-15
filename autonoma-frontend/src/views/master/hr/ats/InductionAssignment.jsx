@@ -174,8 +174,8 @@ const InductionAssignment = () => {
       cleanData.empName = row.empName || row.employeeName || '';
       cleanData.empCode = row.empCode || '';
       cleanData.oldEmpCode = row.oldEmpCode || '';
-      cleanData.department = row.department || (typeof row.department === 'object' ? row.department?.departmentName : row.department) || '';
-      cleanData.designation = row.designation || (typeof row.designation === 'object' ? row.designation?.designationName : row.designation) || '';
+      cleanData.department = typeof row.department === 'object' ? row.department?.departmentName : (row.department || '');
+      cleanData.designation = typeof row.designation === 'object' ? row.designation?.designationName : (row.designation || '');
 
       setFormData(cleanData);
       setErrors({});
@@ -248,7 +248,15 @@ const InductionAssignment = () => {
       const finalRows = [];
       assignments.forEach(a => {
         const emp = allActiveEmployees.find(e => e.empCode === a.empCode);
-        finalRows.push({ ...a, ...emp, isVirtual: false });
+        const empDept = emp && typeof emp.department === 'object' ? emp.department?.departmentName : (emp?.department || a.department);
+        const empDesig = emp && typeof emp.designation === 'object' ? emp.designation?.designationName : (emp?.designation || a.designation);
+        finalRows.push({ 
+          ...a, 
+          ...emp, 
+          department: empDept,
+          designation: empDesig,
+          isVirtual: false 
+        });
       });
 
       allActiveEmployees.forEach(emp => {
