@@ -26,11 +26,11 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Optional<UserCredential> existingAdmin = userRepository.findByUserId("admin");
+        Optional<UserCredential> existingAdmin = userRepository.findByUserId("Admin");
         UserCredential admin;
         if (existingAdmin.isEmpty()) {
             admin = new UserCredential();
-            admin.setUserId("admin");
+            admin.setUserId("Admin");
             admin.setEmpId(1L);
             admin.setCreatedBy("SYSTEM");
             admin.setCreatedAt(new Date());

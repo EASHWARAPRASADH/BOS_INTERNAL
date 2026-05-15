@@ -5,9 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.Date;
+import java.util.List;
 
 @Entity
-@Table(name = "QMS_CHECKLIST_ASSIGNMENT")
+@Table(name = "qms_checklist_assignment")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -44,6 +45,14 @@ public class ChecklistAssignment {
     @Column(name = "CARRY_FORWARD")
     private String carryForward;
 
+    @Column(name = "ASSIGN_TYPE")
+    private String assignType;
+
+    @ElementCollection
+    @CollectionTable(name = "QMS_CHECKLIST_ASSIGNMENT_FILES", joinColumns = @JoinColumn(name = "ASSIGNMENT_ID"))
+    @Column(name = "FILE_PATH")
+    private List<String> actualFiles;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public MasterChecklist getChecklist() { return checklist; }
@@ -62,4 +71,8 @@ public class ChecklistAssignment {
     public void setChecklistDate(Date checklistDate) { this.checklistDate = checklistDate; }
     public String getCarryForward() { return carryForward; }
     public void setCarryForward(String carryForward) { this.carryForward = carryForward; }
+    public String getAssignType() { return assignType; }
+    public void setAssignType(String assignType) { this.assignType = assignType; }
+    public List<String> getActualFiles() { return actualFiles; }
+    public void setActualFiles(List<String> actualFiles) { this.actualFiles = actualFiles; }
 }

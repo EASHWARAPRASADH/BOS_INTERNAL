@@ -191,7 +191,7 @@ export default function BOSExportButton({
                   <IconFunction size={16} color="#aaa" />
                   <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
                   <Typography variant="body2" sx={{ color: 'text.primary', fontSize: '13px' }}>
-                    {previewRows[0] ? previewRows[0][previewColumns[0].id] : ''}
+                    {previewRows[0] ? previewRows[0][previewColumns[0]?.id] : ''}
                   </Typography>
                 </Box>
               </Paper>
