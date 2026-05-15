@@ -3,21 +3,7 @@ import PropTypes from 'prop-types';
 import { Stack, Typography, Avatar, Box, Chip } from '@mui/material';
 import { IconUser, IconCrown, IconMicrophone, IconShield, IconUsers } from '@tabler/icons-react';
 
-import { getFileViewUrl } from 'utils/upload-helper';
-
-/**
- * Resolves the employee photo URL from the uploaded file path.
- * The path is stored as a relative path (e.g., "QMS/uuid_photo.jpg") and
- * must be served through the backend file API.
- */
-export const getPhotoUrl = (photoPath) => {
-  if (!photoPath) return null;
-  // If it's already a full URL, return as-is
-  if (photoPath.startsWith('http') || photoPath.startsWith('blob:')) return photoPath;
-  
-  // Use the centralized helper which handles spaces and Tomcat restrictions correctly
-  return getFileViewUrl(photoPath);
-};
+import { getPhotoUrl } from './BOSUtils';
 
 /**
  * Role icon mapping for featured card titles
