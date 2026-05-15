@@ -135,9 +135,9 @@ const InductionAssignment = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
 
+  const { departments = [] } = useLookups(['DEPARTMENTS']);
   const [rows, setRows] = useState([]);
   const [employees, setEmployees] = useState([]);
-  const [inductionRounds, setInductionRounds] = useState([]);
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState('ALL');
@@ -155,7 +155,6 @@ const InductionAssignment = () => {
       setHistory(data || []);
       
       const cleanData = { ...INITIAL_STATE };
-      const source = row.isVirtual ? row : row; // Both are rows from the table
       
       Object.keys(cleanData).forEach(key => {
         if (row[key] !== undefined && row[key] !== null) {
@@ -164,7 +163,7 @@ const InductionAssignment = () => {
       });
 
       // Special handling for dates
-      if (row.inductionDate) {
+      if (row.inductionDate && row.inductionDate !== '-') {
         cleanData.inductionDate = new Date(row.inductionDate).toISOString().split('T')[0];
       } else {
         cleanData.inductionDate = new Date().toISOString().split('T')[0];
@@ -196,7 +195,7 @@ const InductionAssignment = () => {
     } finally {
       setLoading(false);
     }
-  }, [setErrors, dispatch]);
+  }, [setErrors]);
 
   const columns = useMemo(() => [
     { id: 'index', label: 'No', minWidth: 50 },
@@ -238,10 +237,9 @@ const InductionAssignment = () => {
   const fetchRows = useCallback(async () => {
     setLoading(true);
     try {
-      const [assignRes, empRes, roundsRes] = await Promise.all([
+      const [assignRes, empRes] = await Promise.all([
         axios.get('/api/hr/induction-assignment'),
-        axios.get('/api/master/employee/filter/active'),
-        axios.get('/api/hr/induction-master')
+        axios.get('/api/master/employee/filter/active')
       ]);
 
       const assignments = assignRes.data;
@@ -270,7 +268,6 @@ const InductionAssignment = () => {
 
       setRows(finalRows);
       setEmployees(allActiveEmployees);
-      setInductionRounds(roundsRes.data.map(r => r.inductionRound));
     } catch (error) {
       console.error('Fetch error:', error);
     } finally {
@@ -427,8 +424,8 @@ const InductionAssignment = () => {
                 sx={errorStyle(!!errors.inductionRound)}
               >
                 <MenuItem value="">-SELECT-</MenuItem>
-                {inductionRounds.map(r => (
-                  <MenuItem key={r} value={r}>{r}</MenuItem>
+                {departments.map(d => (
+                  <MenuItem key={d.id} value={d.departmentName}>{d.departmentName}</MenuItem>
                 ))}
               </BOSTextField>
             </Box>
