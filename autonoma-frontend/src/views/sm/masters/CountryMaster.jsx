@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { 
   Typography, Stack, Button, Dialog, DialogTitle, DialogContent, 
-  DialogActions, TextField, MenuItem, IconButton, Tooltip 
+  DialogActions, TextField, MenuItem
 } from '@mui/material';
-import { IconWorld, IconPlus, IconEdit, IconTrash } from '@tabler/icons-react';
+import { IconWorld, IconPlus } from '@tabler/icons-react';
 import MainCard from 'ui-component/cards/MainCard';
-import { BOSDataTable } from 'ui-component/bos';
+import { BOSDataTable, BOSExportButton } from 'ui-component/bos';
 import ConfirmDeleteDialog from 'ui-component/ConfirmDeleteDialog';
 import axios from 'axios';
 
@@ -96,11 +96,21 @@ export default function CountryMaster() {
   return (
     <MainCard
       title={
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Stack direction="row" alignItems="center" spacing={1.5}>
-            <IconWorld size={24} />
-            <Typography variant="h3">Country Master</Typography>
-          </Stack>
+        <Stack direction="row" alignItems="center" spacing={1.5}>
+          <IconWorld size={24} />
+          <Typography variant="h3">Country Master</Typography>
+        </Stack>
+      }
+      secondary={
+        <Stack direction="row" spacing={1.5} alignItems="center">
+          <BOSExportButton
+            data={rows}
+            filename="Country_Master"
+            columns={[
+              { header: 'Country', key: 'country' },
+              { header: 'Status', key: 'status' }
+            ]}
+          />
           <Button variant="contained" startIcon={<IconPlus size={18} />} onClick={() => handleOpen()}>
             New Country
           </Button>

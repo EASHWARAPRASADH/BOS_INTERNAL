@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Typography, Button, Stack, Tooltip, IconButton } from '@mui/material';
-import { IconFileDownload, IconRefresh, IconLayoutColumns } from '@tabler/icons-react';
+import { IconRefresh, IconLayoutColumns } from '@tabler/icons-react';
 import axios from 'utils/axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setFilterConfig } from 'store/slices/search';
@@ -11,7 +11,7 @@ import AddDivisionDialog from './AddDivisionDialog';
 import { exportToExcel } from 'utils/excelExport';
 import ConfirmDeleteDialog from 'ui-component/ConfirmDeleteDialog';
 import useKeyboardShortcuts, { shortcutTooltip } from 'hooks/useKeyboardShortcuts';
-import { BOSDataTable, BOSDocumentPreviewDialog, btnExport, btnNew } from 'ui-component/bos';
+import { BOSDataTable, BOSExportButton, btnNew } from 'ui-component/bos';
 
 // ==============================|| DIVISION MASTER (BOS SOP COMPLIANT) ||============================== //
 
@@ -46,7 +46,7 @@ export default function DivisionMaster() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState(null);
   const [deleteTargetName, setDeleteTargetName] = useState('');
-  const [exportPreviewData, setExportPreviewData] = useState(null);
+
 
   // ── Load company list for filter dropdown ─────────────────────────────────
   useEffect(() => {
@@ -140,29 +140,8 @@ export default function DivisionMaster() {
     'escape': () => { if (dialogOpen) handleCloseDialog(); }
   });
 
-  // ── Export ────────────────────────────────────────────────────────────────
-  const handleExport = () => {
-    const exportData = filteredRows.map((r, i) => ({
-      '#': i + 1,
-      'Division Name': r.divisionName || '',
-      'Company': r.companyName || '',
-      'Address': r.address || '',
-      'City': r.city || '',
-      'State': r.state || '',
-      'State Code': r.stateCode || '',
-      'Country': r.country || '',
-      'Pincode': r.pincode || '',
-      'GSTIN': r.gstIn || '',
-      'Description': r.description || '',
-      'Seq No': r.sequenceNo,
-      'Created User': r.createdBy,
-      'Created Date': r.createdDate ? format(new Date(r.createdDate), 'dd/MM/yyyy HH:mm') : '',
-      'Updated User': r.updatedBy,
-      'Updated Date': r.updatedDate ? format(new Date(r.updatedDate), 'dd/MM/yyyy HH:mm') : '',
-      'Status': r.status ? 'Active' : 'Inactive'
-    }));
-    setExportPreviewData(exportData);
-  };
+
+
 
   // ── Filter / Paginate ─────────────────────────────────────────────────────
   const filteredRows = useMemo(() => {
@@ -217,14 +196,19 @@ export default function DivisionMaster() {
               <IconRefresh size={20} />
             </IconButton>
           </Tooltip>
-          <Button
-            variant="outlined" color="primary" size="medium"
-            startIcon={<IconFileDownload size={18} />}
-            onClick={handleExport}
-            sx={btnExport}
-          >
-            Export
-          </Button>
+          <BOSExportButton
+            data={filteredRows}
+            filename="Division_Master"
+            columns={[
+              { header: 'Division Name', key: 'divisionName' },
+              { header: 'Company', key: 'companyName' },
+              { header: 'City', key: 'city' },
+              { header: 'State', key: 'state' },
+              { header: 'Description', key: 'description' },
+              { header: 'Seq No', key: 'sequenceNo' },
+              { header: 'Status', key: 'statusLabel' }
+            ]}
+          />
           <Tooltip title={shortcutTooltip('Create New Division', 'Ctrl + N')}>
             <Button variant="contained" color="primary" size="medium" onClick={handleOpenAdd} sx={btnNew}>
               + New
@@ -254,14 +238,7 @@ export default function DivisionMaster() {
         readOnly={isReadOnly}
       />
 
-      <BOSDocumentPreviewDialog
-        open={!!exportPreviewData}
-        onClose={() => setExportPreviewData(null)}
-        onDownload={() => exportToExcel(exportPreviewData, 'Division_Master')}
-        type="excel"
-        data={exportPreviewData}
-        fileName="Division_Master"
-      />
+
 
       <ConfirmDeleteDialog
         open={deleteDialogOpen}

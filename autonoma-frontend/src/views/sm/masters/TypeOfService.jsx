@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react';
 import { 
   Typography, Stack, Button, Dialog, DialogTitle, DialogContent, 
-  DialogActions, TextField, MenuItem, IconButton, Tooltip 
+  DialogActions, TextField, MenuItem
 } from '@mui/material';
-import { IconSettings, IconPlus, IconEdit, IconTrash } from '@tabler/icons-react';
+import { IconSettings, IconPlus } from '@tabler/icons-react';
 import MainCard from 'ui-component/cards/MainCard';
-import { BOSDataTable } from 'ui-component/bos';
+import { BOSDataTable, BOSExportButton } from 'ui-component/bos';
+import ConfirmDeleteDialog from 'ui-component/ConfirmDeleteDialog';
 import axios from 'axios';
 
 const columns = [
   { id: 'index', label: '#', minWidth: 50 },
   { id: 'serviceCode', label: 'Service Code', minWidth: 120, bold: true },
   { id: 'serviceName', label: 'Service Name', minWidth: 250 },
-  { id: 'status', label: 'Status', minWidth: 100 },
-  { id: 'actions', label: 'Actions', minWidth: 100, align: 'right' }
+  { id: 'status', label: 'Status', minWidth: 100 }
 ];
 
 export default function TypeOfService() {
@@ -22,6 +22,9 @@ export default function TypeOfService() {
   const [size, setSize] = useState(10);
   const [open, setOpen] = useState(false);
   const [editId, setEditId] = useState(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  const [deleteName, setDeleteName] = useState('');
   const [formData, setFormData] = useState({
     serviceCode: '',
     serviceName: '',
@@ -79,44 +82,48 @@ export default function TypeOfService() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this service type?')) {
-      try {
-        await axios.delete(`/api/type-of-service/${id}`);
-        fetchRows();
-      } catch (err) {
-        console.error(err);
-      }
+  const handleDeleteClick = (row) => {
+    setDeleteId(row.id);
+    setDeleteName(row.serviceName);
+    setDeleteOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await axios.delete(`/api/type-of-service/${deleteId}`);
+      setDeleteOpen(false);
+      setDeleteId(null);
+      setDeleteName('');
+      fetchRows();
+    } catch (err) {
+      console.error(err);
     }
   };
 
   const formattedRows = rows.map((row, index) => ({
     ...row,
-    index: index + 1,
-    actions: (
-      <Stack direction="row" spacing={1} justifyContent="flex-end">
-        <Tooltip title="Edit">
-          <IconButton size="small" color="primary" onClick={() => handleOpen(row)}>
-            <IconEdit size={18} />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Delete">
-          <IconButton size="small" color="error" onClick={() => handleDelete(row.id)}>
-            <IconTrash size={18} />
-          </IconButton>
-        </Tooltip>
-      </Stack>
-    )
+    index: index + 1
   }));
 
   return (
     <MainCard
       title={
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Stack direction="row" alignItems="center" spacing={1.5}>
-            <IconSettings size={24} />
-            <Typography variant="h3">Type of Service</Typography>
-          </Stack>
+        <Stack direction="row" alignItems="center" spacing={1.5}>
+          <IconSettings size={24} />
+          <Typography variant="h3">Type of Service</Typography>
+        </Stack>
+      }
+      secondary={
+        <Stack direction="row" spacing={1.5} alignItems="center">
+          <BOSExportButton
+            data={formattedRows}
+            filename="Type_Of_Service"
+            columns={[
+              { header: 'Service Code', key: 'serviceCode' },
+              { header: 'Service Name', key: 'serviceName' },
+              { header: 'Status', key: 'status' }
+            ]}
+          />
           <Button variant="contained" startIcon={<IconPlus size={18} />} onClick={() => handleOpen()}>
             New Service Type
           </Button>
@@ -131,6 +138,8 @@ export default function TypeOfService() {
         totalCount={rows.length}
         onPageChange={(p) => setPage(p)}
         onSizeChange={(s) => { setSize(s); setPage(0); }}
+        onEditRow={(row) => handleOpen(row)}
+        onDeleteRow={handleDeleteClick}
       />
 
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
@@ -176,6 +185,15 @@ export default function TypeOfService() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <ConfirmDeleteDialog 
+        open={deleteOpen} 
+        onClose={() => setDeleteOpen(false)} 
+        onConfirm={handleDeleteConfirm} 
+        title="Delete Service Type" 
+        message="Are you sure you want to delete this service type?" 
+        itemName={deleteName} 
+      />
     </MainCard>
   );
 }

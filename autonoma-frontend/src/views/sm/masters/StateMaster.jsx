@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { 
   Typography, Stack, Button, Dialog, DialogTitle, DialogContent, 
-  DialogActions, TextField, MenuItem, IconButton, Tooltip 
+  DialogActions, TextField, MenuItem
 } from '@mui/material';
-import { IconMapPin, IconPlus, IconEdit, IconTrash } from '@tabler/icons-react';
+import { IconMapPin, IconPlus } from '@tabler/icons-react';
 import MainCard from 'ui-component/cards/MainCard';
-import { BOSDataTable } from 'ui-component/bos';
+import { BOSDataTable, BOSExportButton } from 'ui-component/bos';
 import ConfirmDeleteDialog from 'ui-component/ConfirmDeleteDialog';
 import axios from 'axios';
 
@@ -115,11 +115,23 @@ export default function StateMaster() {
   return (
     <MainCard
       title={
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Stack direction="row" alignItems="center" spacing={1.5}>
-            <IconMapPin size={24} />
-            <Typography variant="h3">State Master</Typography>
-          </Stack>
+        <Stack direction="row" alignItems="center" spacing={1.5}>
+          <IconMapPin size={24} />
+          <Typography variant="h3">State Master</Typography>
+        </Stack>
+      }
+      secondary={
+        <Stack direction="row" spacing={1.5} alignItems="center">
+          <BOSExportButton
+            data={rows}
+            filename="State_Master"
+            columns={[
+              { header: 'Country Name', key: 'countryName' },
+              { header: 'State Name', key: 'stateName' },
+              { header: 'State Code', key: 'stateCode' },
+              { header: 'Status', key: 'status' }
+            ]}
+          />
           <Button variant="contained" startIcon={<IconPlus size={18} />} onClick={() => handleOpen()}>
             New State
           </Button>

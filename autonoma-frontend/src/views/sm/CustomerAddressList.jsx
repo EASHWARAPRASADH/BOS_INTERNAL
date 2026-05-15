@@ -1,15 +1,14 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Typography, Button, Stack, Tooltip, IconButton, useTheme } from '@mui/material';
-import { IconFileDownload, IconRefresh, IconPlus, IconMapPin } from '@tabler/icons-react';
+import { IconRefresh, IconPlus, IconMapPin } from '@tabler/icons-react';
 import axios from 'utils/axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { setFilterConfig } from 'store/slices/search';
 import { openSnackbar } from 'store/slices/snackbar';
 import MainCard from 'ui-component/cards/MainCard';
-import { exportToExcel } from 'utils/excelExport';
 import ConfirmDeleteDialog from 'ui-component/ConfirmDeleteDialog';
 import useKeyboardShortcuts, { shortcutTooltip } from 'hooks/useKeyboardShortcuts';
-import { BOSDataTable, btnExport, btnNew } from 'ui-component/bos';
+import { BOSDataTable, BOSExportButton, btnNew } from 'ui-component/bos';
 import AddCustomerDetailsDialog from './AddCustomerDetailsDialog';
 
 // ==============================|| SM - CUSTOMER ADDRESS LIST ||============================== //
@@ -99,23 +98,7 @@ export default function CustomerAddressList() {
     'escape': () => { if (dialogOpen) handleCloseDialog(); }
   });
 
-  const handleExport = () => {
-    const exportData = filteredRows.map((r, i) => ({
-      '#': i + 1,
-      'Customer Name (I)': r.invoiceName,
-      'Shipment': r.shipment,
-      'Address': r.address,
-      'City': r.city,
-      'District': r.district,
-      'State': r.state,
-      'Country': r.country,
-      'Pincode': r.pincode,
-      'Contact Name': r.contactName,
-      'Contact No': r.contactNo,
-      'Status': r.status
-    }));
-    exportToExcel(exportData, 'Customer_Addresses');
-  };
+
 
   const filteredRows = useMemo(() => {
     return rows.filter((row) => {
@@ -158,9 +141,23 @@ export default function CustomerAddressList() {
               <IconRefresh size={20} />
             </IconButton>
           </Tooltip>
-          <Button variant="outlined" color="primary" size="medium" startIcon={<IconFileDownload size={18} />} onClick={handleExport} sx={btnExport}>
-            Export Excel
-          </Button>
+          <BOSExportButton
+            data={filteredRows}
+            filename="Customer_Addresses"
+            columns={[
+              { header: 'Customer Name (I)', key: 'invoiceName' },
+              { header: 'Shipment', key: 'shipment' },
+              { header: 'Address', key: 'address' },
+              { header: 'City', key: 'city' },
+              { header: 'District', key: 'district' },
+              { header: 'State', key: 'state' },
+              { header: 'Country', key: 'country' },
+              { header: 'Pincode', key: 'pincode' },
+              { header: 'Contact Name', key: 'contactName' },
+              { header: 'Contact No', key: 'contactNo' },
+              { header: 'Status', key: 'status' }
+            ]}
+          />
           <Tooltip title={shortcutTooltip('Add New Address', 'Ctrl + N')}>
             <Button variant="contained" color="primary" size="medium" onClick={handleOpenAdd} sx={btnNew}>
               + New

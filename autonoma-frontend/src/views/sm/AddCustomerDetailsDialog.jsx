@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Grid,
   useTheme,
@@ -6,7 +6,9 @@ import {
   Button,
   Box,
   Stack,
-  Typography
+  Typography,
+  Autocomplete,
+  TextField as MuiTextField
 } from '@mui/material';
 import {
   IconClearAll,
@@ -45,8 +47,9 @@ export default function AddCustomerDetailsDialog({ open, handleClose, initialDat
     pincode: '',
     city: '',
     district: '',
-    state: 'N/A',
-    country: 'Select',
+    state: '',
+    stateCode: '',
+    country: '',
     distance: 0,
     contactName: '',
     contactNo: '',
@@ -55,6 +58,32 @@ export default function AddCustomerDetailsDialog({ open, handleClose, initialDat
 
   const [records, setRecords] = useState([]);
   const [editingId, setEditingId] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  // ── Master data states ────────────────────────────────────────────────────
+  const [countries, setCountries] = useState([]);
+  const [allStates, setAllStates] = useState([]);
+
+  // ── Fetch master data ─────────────────────────────────────────────────────
+  const fetchMasterData = useCallback(async () => {
+    try {
+      const [countriesRes, statesRes] = await Promise.allSettled([
+        axios.get('/api/master/countries'),
+        axios.get('/api/master/states')
+      ]);
+      if (countriesRes.status === 'fulfilled') setCountries(countriesRes.value.data.filter(c => c.status === 'Active'));
+      if (statesRes.status === 'fulfilled') setAllStates(statesRes.value.data.filter(s => s.status === 'Active'));
+    } catch (e) {
+      console.error('Failed to fetch master data:', e);
+    }
+  }, []);
+
+  useEffect(() => { fetchMasterData(); }, [fetchMasterData]);
+
+  // ── Filtered states based on selected country ─────────────────────────────
+  const filteredStates = formData.country
+    ? allStates.filter(s => s.countryName === formData.country)
+    : allStates;
 
   useEffect(() => {
     if (open && initialData) {
@@ -66,8 +95,9 @@ export default function AddCustomerDetailsDialog({ open, handleClose, initialDat
         pincode: '',
         city: '',
         district: '',
-        state: 'N/A',
-        country: 'Select',
+        state: '',
+        stateCode: '',
+        country: '',
         distance: 0,
         contactName: '',
         contactNo: '',
@@ -106,8 +136,9 @@ export default function AddCustomerDetailsDialog({ open, handleClose, initialDat
       pincode: '',
       city: '',
       district: '',
-      state: 'N/A',
-      country: 'Select',
+      state: '',
+      stateCode: '',
+      country: '',
       distance: 0,
       contactName: '',
       contactNo: '',
@@ -270,38 +301,71 @@ export default function AddCustomerDetailsDialog({ open, handleClose, initialDat
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <BOSTextField
-              name="state"
-              label="State"
-              value={formData.state}
-              onChange={handleChange}
-              select
-              required
-              error={!!errors.state}
-              helperText={errors.state}
-            >
-              <MenuItem value="N/A">N/A</MenuItem>
-              <MenuItem value="Karnataka">Karnataka</MenuItem>
-              <MenuItem value="Maharashtra">Maharashtra</MenuItem>
-              <MenuItem value="Tamil Nadu">Tamil Nadu</MenuItem>
-            </BOSTextField>
+            <Autocomplete
+              value={formData.country || null}
+              onChange={(event, newValue) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  country: newValue || '',
+                  state: '',
+                  stateCode: ''
+                }));
+              }}
+              options={countries.map(c => c.country)}
+              freeSolo={false}
+              renderInput={(params) => (
+                <MuiTextField
+                  {...params}
+                  label="Country"
+                  variant="outlined"
+                  size="small"
+                  required
+                  error={!!errors.country}
+                  helperText={errors.country}
+                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: '10px' } }}
+                />
+              )}
+              isOptionEqualToValue={(option, value) => option === value}
+              noOptionsText="No countries found"
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <BOSTextField
-              name="country"
-              label="Country"
-              value={formData.country}
-              onChange={handleChange}
-              select
-              required
-              error={!!errors.country}
-              helperText={errors.country}
-            >
-              <MenuItem value="Select">-Select-</MenuItem>
-              <MenuItem value="India">India</MenuItem>
-              <MenuItem value="USA">USA</MenuItem>
-              <MenuItem value="UK">UK</MenuItem>
-            </BOSTextField>
+            <Autocomplete
+              value={formData.state || null}
+              onChange={(event, newValue) => {
+                if (newValue) {
+                  const stateRecord = allStates.find(s => s.stateName === newValue);
+                  setFormData((prev) => ({
+                    ...prev,
+                    state: newValue,
+                    stateCode: stateRecord?.stateCode || '',
+                    country: stateRecord?.countryName || prev.country
+                  }));
+                } else {
+                  setFormData((prev) => ({
+                    ...prev,
+                    state: '',
+                    stateCode: ''
+                  }));
+                }
+              }}
+              options={filteredStates.map(s => s.stateName)}
+              freeSolo={false}
+              renderInput={(params) => (
+                <MuiTextField
+                  {...params}
+                  label="State Name"
+                  variant="outlined"
+                  size="small"
+                  required
+                  error={!!errors.state}
+                  helperText={errors.state}
+                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: '10px' } }}
+                />
+              )}
+              isOptionEqualToValue={(option, value) => option === value}
+              noOptionsText={formData.country ? 'No states for this country' : 'Select a country first'}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
             <BOSTextField
