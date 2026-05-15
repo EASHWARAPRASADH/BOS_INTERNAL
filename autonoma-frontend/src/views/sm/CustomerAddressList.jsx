@@ -25,7 +25,11 @@ const columns = [
   { id: 'pincode', label: 'Pincode', minWidth: 100 },
   { id: 'contactName', label: 'Contact Name', minWidth: 120 },
   { id: 'contactNo', label: 'Contact No', minWidth: 120 },
-  { id: 'status', label: 'Status', minWidth: 100 }
+  { id: 'status', label: 'Status', minWidth: 100 },
+  { id: 'createdBy', label: 'Created By', minWidth: 120 },
+  { id: 'createdDate', label: 'Created Date', minWidth: 150 },
+  { id: 'updatedBy', label: 'Updated By', minWidth: 120 },
+  { id: 'updatedDate', label: 'Updated Date', minWidth: 150 }
 ];
 
 export default function CustomerAddressList() {

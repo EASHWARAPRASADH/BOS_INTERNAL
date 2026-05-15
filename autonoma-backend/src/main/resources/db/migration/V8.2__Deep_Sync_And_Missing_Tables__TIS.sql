@@ -97,44 +97,62 @@ END
 
 -- 4. Fix hrm_designation_master discrepancies
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('hrm_designation_master') AND name = 'designationcode')
+   AND NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('hrm_designation_master') AND name = 'designation_code')
     EXEC sp_rename 'hrm_designation_master.designationcode', 'designation_code', 'COLUMN';
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('hrm_designation_master') AND name = 'designationname')
+   AND NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('hrm_designation_master') AND name = 'designation_name')
     EXEC sp_rename 'hrm_designation_master.designationname', 'designation_name', 'COLUMN';
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('hrm_designation_master') AND name = 'subcategorylevel')
+   AND NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('hrm_designation_master') AND name = 'sub_category_level')
     EXEC sp_rename 'hrm_designation_master.subcategorylevel', 'sub_category_level', 'COLUMN';
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('hrm_designation_master') AND name = 'appearincompetency')
+   AND NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('hrm_designation_master') AND name = 'appear_in_competency')
     EXEC sp_rename 'hrm_designation_master.appearincompetency', 'appear_in_competency', 'COLUMN';
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('hrm_designation_master') AND name = 'displayslno')
+   AND NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('hrm_designation_master') AND name = 'display_sl_no')
     EXEC sp_rename 'hrm_designation_master.displayslno', 'display_sl_no', 'COLUMN';
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('hrm_designation_master') AND name = 'jobdescription')
+   AND NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('hrm_designation_master') AND name = 'job_description')
     EXEC sp_rename 'hrm_designation_master.jobdescription', 'job_description', 'COLUMN';
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('hrm_designation_master') AND name = 'orgseqno')
+   AND NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('hrm_designation_master') AND name = 'org_seq_no')
     EXEC sp_rename 'hrm_designation_master.orgseqno', 'org_seq_no', 'COLUMN';
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('hrm_designation_master') AND name = 'budgetedpositions')
+   AND NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('hrm_designation_master') AND name = 'budgeted_positions')
     EXEC sp_rename 'hrm_designation_master.budgetedpositions', 'budgeted_positions', 'COLUMN';
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('hrm_designation_master') AND name = 'createdat')
+   AND NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('hrm_designation_master') AND name = 'created_at')
     EXEC sp_rename 'hrm_designation_master.createdat', 'created_at', 'COLUMN';
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('hrm_designation_master') AND name = 'updatedat')
+   AND NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('hrm_designation_master') AND name = 'updated_at')
     EXEC sp_rename 'hrm_designation_master.updatedat', 'updated_at', 'COLUMN';
 
 -- 5. Fix sm_supplier_master discrepancies
-IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('sm_supplier_master') AND name = 'GSTIN')
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('sm_supplier_master') AND name = 'GSTIN') 
+   AND NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('sm_supplier_master') AND name = 'GST_NO')
     EXEC sp_rename 'sm_supplier_master.GSTIN', 'GST_NO', 'COLUMN';
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('sm_supplier_master') AND name = 'ISO_NUMBER')
+   AND NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('sm_supplier_master') AND name = 'ISO_NO')
     EXEC sp_rename 'sm_supplier_master.ISO_NUMBER', 'ISO_NO', 'COLUMN';
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('sm_supplier_master') AND name = 'ISO_EXPIRY')
+   AND NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('sm_supplier_master') AND name = 'ISO_EXPIRY_DATE')
     EXEC sp_rename 'sm_supplier_master.ISO_EXPIRY', 'ISO_EXPIRY_DATE', 'COLUMN';
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('sm_supplier_master') AND name = 'FILE_UPLOAD')
+   AND NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('sm_supplier_master') AND name = 'UPLOAD_FILES')
     EXEC sp_rename 'sm_supplier_master.FILE_UPLOAD', 'UPLOAD_FILES', 'COLUMN';
 
 -- 6. Fix sm_subcontractor_master discrepancies
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('sm_subcontractor_master') AND name = 'GSTIN')
+   AND NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('sm_subcontractor_master') AND name = 'GST_NO')
     EXEC sp_rename 'sm_subcontractor_master.GSTIN', 'GST_NO', 'COLUMN';
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('sm_subcontractor_master') AND name = 'ISO_NUMBER')
+   AND NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('sm_subcontractor_master') AND name = 'ISO_NO')
     EXEC sp_rename 'sm_subcontractor_master.ISO_NUMBER', 'ISO_NO', 'COLUMN';
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('sm_subcontractor_master') AND name = 'ISO_EXPIRY')
+   AND NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('sm_subcontractor_master') AND name = 'ISO_EXPIRY_DATE')
     EXEC sp_rename 'sm_subcontractor_master.ISO_EXPIRY', 'ISO_EXPIRY_DATE', 'COLUMN';
 IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('sm_subcontractor_master') AND name = 'FILE_UPLOAD')
+   AND NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('sm_subcontractor_master') AND name = 'UPLOAD_FILES')
     EXEC sp_rename 'sm_subcontractor_master.FILE_UPLOAD', 'UPLOAD_FILES', 'COLUMN';
 
 -- 7. Add missing columns for Supplier/Subcontractor Master

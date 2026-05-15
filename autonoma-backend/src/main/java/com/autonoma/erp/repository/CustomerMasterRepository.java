@@ -12,4 +12,6 @@ public interface CustomerMasterRepository extends JpaRepository<CustomerMaster, 
     Optional<CustomerMaster> findByCustomerCode(String customerCode);
     
     Optional<CustomerMaster> findTopByCustomerCodeStartingWithOrderByCustomerCodeDesc(String prefix);
+    boolean existsByCustomerNameIgnoreCase(String name);
+    boolean existsByCustomerNameIgnoreCaseAndIdNot(String name, Long id);
 }

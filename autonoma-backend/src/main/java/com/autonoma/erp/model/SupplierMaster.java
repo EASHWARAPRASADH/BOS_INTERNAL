@@ -60,11 +60,20 @@ public class SupplierMaster {
     @Column(name = "PAN_NO", length = 50)
     private String panNo;
 
+    @Column(name = "pan_file_info", length = 1000)
+    private String panFileInfo;
+
     @Column(name = "MSME_NO", length = 50)
     private String msmeNo;
 
+    @Column(name = "msme_file_info", length = 1000)
+    private String msmeFileInfo;
+
     @Column(name = "ISO_NO", length = 50)
     private String isoNo;
+
+    @Column(name = "iso_file_info", length = 1000)
+    private String isoFileInfo;
 
     @Column(name = "ISO_EXPIRY_DATE")
     private String isoExpiryDate;

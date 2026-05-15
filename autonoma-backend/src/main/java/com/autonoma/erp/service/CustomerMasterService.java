@@ -25,6 +25,18 @@ public class CustomerMasterService {
 
     @Transactional
     public CustomerMaster saveCustomer(CustomerMaster customer) {
+        if (customer.getId() == null) {
+            if (repository.existsByCustomerNameIgnoreCase(customer.getCustomerName())) {
+                throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "Duplicate value! Please check.");
+            }
+        } else {
+            if (repository.existsByCustomerNameIgnoreCaseAndIdNot(customer.getCustomerName(), customer.getId())) {
+                throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "Duplicate value! Please check.");
+            }
+        }
+
         if (customer.getCustomerCode() == null || customer.getCustomerCode().isEmpty()) {
             customer.setCustomerCode(generateNextCode());
         }

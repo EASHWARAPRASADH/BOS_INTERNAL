@@ -25,6 +25,9 @@ public class CustomerMaster {
     @Column(name = "customer_name", nullable = false, length = 200)
     private String customerName;
 
+    @Column(name = "customer_print_name", length = 200)
+    private String customerPrintName;
+
     @Column(name = "accounts_ledger", length = 200)
     private String accountsLedger;
 
@@ -69,6 +72,9 @@ public class CustomerMaster {
 
     @Column(name = "pan_no", length = 50)
     private String panNo;
+
+    @Column(name = "pan_file_info", length = 1000)
+    private String panFileInfo;
 
     @Column(name = "website", length = 150)
     private String website;

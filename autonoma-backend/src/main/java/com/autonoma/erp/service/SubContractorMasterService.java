@@ -22,6 +22,18 @@ public class SubContractorMasterService {
     }
 
     public SubContractorMaster saveSubContractor(SubContractorMaster subcontractor) {
+        if (subcontractor.getId() == null) {
+            if (repository.existsBySubcontractorNameIgnoreCase(subcontractor.getSubcontractorName())) {
+                throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "Duplicate value! Please check.");
+            }
+        } else {
+            if (repository.existsBySubcontractorNameIgnoreCaseAndIdNot(subcontractor.getSubcontractorName(), subcontractor.getId())) {
+                throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.BAD_REQUEST, "Duplicate value! Please check.");
+            }
+        }
+
         if (subcontractor.getSubcontractorCode() == null || subcontractor.getSubcontractorCode().isEmpty()) {
             subcontractor.setSubcontractorCode(generateSubContractorCode());
         }

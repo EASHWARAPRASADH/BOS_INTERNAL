@@ -162,12 +162,23 @@ export default function BOSDataTable({
     }
 
     if (col.id === 'status' || col.id === 'accountStatus') {
-      const statusText = val === 1 || val === 'Active' || val === 'ACTIVE' ? 'Active' : 'Suspended';
+      let statusText = 'Inactive';
+      if (val === 1 || val === 'Active' || val === 'ACTIVE') statusText = 'Active';
+      else if (val === 0 || val === 'Inactive' || val === 'INACTIVE' || val === 'InActive') statusText = 'Inactive';
       return <Chip label={statusText} size="small" sx={getStatusChipSx(statusText)} />;
     }
 
     // Date Formatting (SOP Compliance - Removes +00:00 via formatDate)
-    if (col.id.toLowerCase().includes('date') || col.id.toLowerCase().includes('at')) {
+    const isDateField = col.id.toLowerCase().includes('date') || 
+                       col.id.endsWith('At') || 
+                       col.id.endsWith('_at') || 
+                       col.id === 'entryDate' ||
+                       col.id === 'invoiceDate';
+    
+    // Explicitly exclude false positives like 'state' or 'category'
+    const isFalsePositive = col.id.toLowerCase().includes('state') || col.id.toLowerCase().includes('category');
+
+    if (isDateField && !isFalsePositive) {
       return formatDate(val);
     }
     
@@ -230,13 +241,13 @@ export default function BOSDataTable({
                 };
 
                 return (
-                  <TableRow 
-                    key={row.id ?? idx} 
-                    hover 
-                    sx={rowSx} 
-                    onClick={() => onClickRow?.(row)}
-                    onDoubleClick={() => onDoubleClickRow ? onDoubleClickRow(row) : (onEditRow ? onEditRow(row) : null)}
-                  >
+                  <Tooltip key={row.id ?? idx} title="Double-tap" placement="top" followCursor>
+                    <TableRow 
+                      hover 
+                      sx={rowSx} 
+                      onClick={() => onClickRow?.(row)}
+                      onDoubleClick={() => onDoubleClickRow ? onDoubleClickRow(row) : (onEditRow ? onEditRow(row) : null)}
+                    >
                     {columns.map((col) => (
                       <TableCell
                         key={col.id}
@@ -275,6 +286,7 @@ export default function BOSDataTable({
                       </TableCell>
                     )}
                   </TableRow>
+                  </Tooltip>
                 );
               })
             )}

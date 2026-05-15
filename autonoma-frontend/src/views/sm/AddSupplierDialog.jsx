@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { Grid, useTheme, MenuItem, Button, Box, Typography, Autocomplete, TextField as MuiTextField } from '@mui/material';
+import { Grid, useTheme, MenuItem, Button, Box, Typography, Autocomplete, TextField as MuiTextField, alpha } from '@mui/material';
 import { IconUser, IconMail, IconPhone, IconMapPin, IconFileTypography, IconPlus } from '@tabler/icons-react';
 import axios from 'utils/axios';
 import { useDispatch } from 'react-redux';
 import { openSnackbar } from 'store/slices/snackbar';
 import useBOSValidation from 'hooks/useBOSValidation';
-import { BOSFormDialog, BOSFormSection, BOSTextField, BOSFileGallery } from 'ui-component/bos';
+import { BOSFormDialog, BOSFormSection, BOSTextField, BOSFileGallery, BOSFileUpload } from 'ui-component/bos';
 import { API_PATHS } from 'utils/api-constants';
 
 const fieldConfigs = [
@@ -25,10 +25,15 @@ export default function AddSupplierDialog({ open, handleClose, initialData, read
   const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
-    gstin: '', supplierName: '', invoiceName: '', shortName: '', address: '', pincode: '', city: '', state: '', country: '', dispatchMode: 'Select', supplierCode: '', isoNumber: '', isoExpiry: '', ndaRequired: 'No', currency: '', paymentTerms: '', segment: '', subSegment: '', deliveryTerms: '', domainName: '', stateCode: '', status: 'Active', distance: '', negotiateSupplier: 'No', dailyMailReq: 'No', fileUpload: ''
+    gstin: '', supplierName: '', invoiceName: '', shortName: '', address: '', pincode: '', city: '', state: '', country: '', dispatchMode: 'Select', supplierCode: '', isoNo: '', isoExpiry: '', ndaRequired: 'No', currency: '', paymentTerms: '', segment: '', subSegment: '', deliveryTerms: '', domainName: '', stateCode: '', status: 'Active', distance: '', negotiateSupplier: 'No', dailyMailReq: 'No', fileUpload: '',
+    panNo: '', msmeNo: '',
+    panFileInfo: '', msmeFileInfo: '', isoFileInfo: ''
   });
 
   const [attachments, setAttachments] = useState([]);
+  const [panFile, setPanFile] = useState([]);
+  const [msmeFile, setMsmeFile] = useState([]);
+  const [isoFile, setIsoFile] = useState([]);
   const [countries, setCountries] = useState([]);
   const [allStates, setAllStates] = useState([]);
   const [currencies, setCurrencies] = useState([]);
@@ -63,9 +68,18 @@ export default function AddSupplierDialog({ open, handleClose, initialData, read
           const files = initialData.fileUpload.split(',').filter(f => f).map(f => ({ id: `server-${f}`, fileName: f.split('_').slice(1).join('_') || f, serverFileName: f, isLoaded: true }));
           setAttachments(files);
         } else { setAttachments([]); }
+        
+        if (initialData.panFileInfo) setPanFile([{ id: 'server-pan', fileName: initialData.panFileInfo.split('_').slice(1).join('_') || initialData.panFileInfo, serverFileName: initialData.panFileInfo, isLoaded: true }]);
+        else setPanFile([]);
+        
+        if (initialData.msmeFileInfo) setMsmeFile([{ id: 'server-msme', fileName: initialData.msmeFileInfo.split('_').slice(1).join('_') || initialData.msmeFileInfo, serverFileName: initialData.msmeFileInfo, isLoaded: true }]);
+        else setMsmeFile([]);
+        
+        if (initialData.isoFileInfo) setIsoFile([{ id: 'server-iso', fileName: initialData.isoFileInfo.split('_').slice(1).join('_') || initialData.isoFileInfo, serverFileName: initialData.isoFileInfo, isLoaded: true }]);
+        else setIsoFile([]);
       } else {
-        setFormData({ gstin: '', supplierName: '', invoiceName: '', shortName: '', address: '', pincode: '', city: '', state: '', country: '', dispatchMode: 'Select', supplierCode: '', isoNumber: '', isoExpiry: '', ndaRequired: 'No', currency: '', paymentTerms: '', segment: '', subSegment: '', deliveryTerms: '', domainName: '', stateCode: '', status: 'Active', distance: '', negotiateSupplier: 'No', dailyMailReq: 'No' });
-        setAttachments([]);
+        setFormData({ gstin: '', supplierName: '', invoiceName: '', shortName: '', address: '', pincode: '', city: '', state: '', country: '', dispatchMode: 'Select', supplierCode: '', isoNo: '', isoExpiry: '', ndaRequired: 'No', currency: '', paymentTerms: '', segment: '', subSegment: '', deliveryTerms: '', domainName: '', stateCode: '', status: 'Active', distance: '', negotiateSupplier: 'No', dailyMailReq: 'No', panNo: '', msmeNo: '' });
+        setAttachments([]); setPanFile([]); setMsmeFile([]); setIsoFile([]);
       }
     }
   }, [open, initialData, clearErrors]);
@@ -82,6 +96,18 @@ export default function AddSupplierDialog({ open, handleClose, initialData, read
 
   const handleSubmit = async () => {
     if (!validate(formData, fieldConfigs)) return;
+
+    if (formData.ndaRequired === 'Yes' && attachments.length === 0) {
+      dispatch(openSnackbar({ 
+        open: true, 
+        message: 'NDA document is required when "NDA Required" is set to Yes. Please upload the document in the Documents section.', 
+        variant: 'alert', 
+        alert: { variant: 'filled' }, 
+        severity: 'error', 
+        close: false 
+      }));
+      return;
+    }
     try {
       const updatedAttachments = [...attachments];
       for (let i = 0; i < updatedAttachments.length; i++) {
@@ -92,7 +118,25 @@ export default function AddSupplierDialog({ open, handleClose, initialData, read
           updatedAttachments[i] = { ...att, serverFileName: uploadRes.data, isLoaded: true };
         }
       }
-      const finalFormData = { ...formData, fileUpload: updatedAttachments.map(att => att.serverFileName).join(',') };
+
+      const uploadOne = async (fList) => {
+        if (fList.length > 0 && !fList[0].isLoaded) {
+          const fd = new FormData(); fd.append('file', fList[0].file);
+          const res = await axios.post(`${API_PATHS.FILES}/upload`, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+          return res.data;
+        }
+        return fList.length > 0 ? fList[0].serverFileName : '';
+      };
+
+      const [p, m, s] = await Promise.all([uploadOne(panFile), uploadOne(msmeFile), uploadOne(isoFile)]);
+
+      const finalFormData = { 
+        ...formData, 
+        fileUpload: updatedAttachments.map(att => att.serverFileName).join(','),
+        panFileInfo: p,
+        msmeFileInfo: m,
+        isoFileInfo: s
+      };
       if (isEdit) await axios.put(`/api/sm/suppliers/${initialData.id}`, finalFormData);
       else await axios.post('/api/sm/suppliers', finalFormData);
       dispatch(openSnackbar({ open: true, message: `Supplier ${isEdit ? 'updated' : 'created'} successfully!`, variant: 'alert', alert: { variant: 'filled' }, severity: 'success', close: false }));
@@ -155,9 +199,42 @@ export default function AddSupplierDialog({ open, handleClose, initialData, read
         <Grid container spacing={2}>
           <R><BOSTextField name="gstin" label="GSTIN Number" value={formData.gstin} onChange={handleChange} disabled={readOnly} /></R>
           <R><BOSTextField name="supplierCode" label="Supplier Code" value={formData.supplierCode} onChange={handleChange} disabled={readOnly} /></R>
-          <R><BOSTextField name="isoNumber" label="ISO Number" value={formData.isoNumber} onChange={handleChange} disabled={readOnly} /></R>
+          
+          <R lg={4}>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <BOSTextField name="panNo" label="PAN No" value={formData.panNo} onChange={handleChange} disabled={readOnly} fullWidth />
+              <BOSFileUpload files={panFile} onChange={setPanFile} module="SALES_SUPPLIER" label="PAN" compact multiple={false} disabled={readOnly} />
+            </Stack>
+          </R>
+          <R lg={4}>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <BOSTextField name="msmeNo" label="MSME No" value={formData.msmeNo} onChange={handleChange} disabled={readOnly} fullWidth />
+              <BOSFileUpload files={msmeFile} onChange={setMsmeFile} module="SALES_SUPPLIER" label="MSME" compact multiple={false} disabled={readOnly} />
+            </Stack>
+          </R>
+          <R lg={4}>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <BOSTextField name="isoNo" label="ISO Number" value={formData.isoNo} onChange={handleChange} disabled={readOnly} fullWidth />
+              <BOSFileUpload files={isoFile} onChange={setIsoFile} module="SALES_SUPPLIER" label="ISO" compact multiple={false} disabled={readOnly} />
+            </Stack>
+          </R>
+
           <R><BOSTextField name="isoExpiry" label="ISO Expiry Date" value={formData.isoExpiry} onChange={handleChange} disabled={readOnly} type="date" InputLabelProps={{ shrink: true }} /></R>
           <R><BOSTextField name="ndaRequired" label="NDA Required" value={formData.ndaRequired} onChange={handleChange} disabled={readOnly} select><MenuItem value="Yes">Yes</MenuItem><MenuItem value="No">No</MenuItem></BOSTextField></R>
+          <Grid item xs={12} lg={6}>
+            <Box sx={{ border: '1px dashed', borderColor: formData.ndaRequired === 'Yes' ? 'primary.main' : 'divider', borderRadius: 2, bgcolor: alpha(theme.palette.primary.main, 0.02) }}>
+              <BOSFileUpload
+                files={attachments}
+                onChange={setAttachments}
+                module="SALES_SUPPLIER"
+                label="Upload NDA Document"
+                compact
+                multiple={true}
+                disabled={readOnly || formData.ndaRequired === 'No'}
+                helperText="Upload signed NDA agreement."
+              />
+            </Box>
+          </Grid>
         </Grid>
       </BOSFormSection>
 

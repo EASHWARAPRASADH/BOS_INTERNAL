@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Grid, Box, Button, Typography, Stack, MenuItem, useTheme, Tooltip, Autocomplete, TextField as MuiTextField } from '@mui/material';
+import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
+import { Grid, Box, Button, Typography, Stack, MenuItem, useTheme, Tooltip, Autocomplete, TextField as MuiTextField, alpha } from '@mui/material';
 import { 
   IconUserPlus, IconDeviceFloppy, IconArrowLeft, IconTrash, IconEraser, 
   IconUser, IconMapPin, IconBusinessplan, IconBuildingBank, IconTruckDelivery, 
@@ -64,9 +64,15 @@ const INITIAL = {
   branchName: '',
   ifscCode: '',
   swiftCode: '',
-  accountType: '',
   status: 'Active',
-  uploadFiles: ''
+  uploadFiles: '',
+  panFileInfo: '',
+  msmeFileInfo: '',
+  isoFileInfo: '',
+  createdBy: '',
+  createdDate: '',
+  updatedBy: '',
+  updatedDate: ''
 };
 
 const RULES = [
@@ -80,7 +86,8 @@ export default function SupplierMaster() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
-  const supplierId = searchParams.get('id');
+  const { id: pathId } = useParams();
+  const supplierId = pathId || searchParams.get('id');
   const { errors, validate, clearErrors } = useBOSValidation();
   const [form, setForm] = useState(INITIAL);
   const [loading, setLoading] = useState(false);
@@ -88,6 +95,9 @@ export default function SupplierMaster() {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewData, setPreviewData] = useState({ url: '', name: '', type: 'pdf' });
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [panFile, setPanFile] = useState([]);
+  const [msmeFile, setMsmeFile] = useState([]);
+  const [isoFile, setIsoFile] = useState([]);
 
   // Master Data
   const [deliveryTerms, setDeliveryTerms] = useState([]);
@@ -125,6 +135,9 @@ export default function SupplierMaster() {
       if (d.isoExpiryDate && typeof d.isoExpiryDate === 'string') d.isoExpiryDate = d.isoExpiryDate.split('T')[0];
       setForm(d);
       setUploadedFiles(formatBOSFiles(data.uploadFiles));
+      setPanFile(formatBOSFiles(data.panFileInfo));
+      setMsmeFile(formatBOSFiles(data.msmeFileInfo));
+      setIsoFile(formatBOSFiles(data.isoFileInfo));
     } catch (e) { console.error(e); }
   }, [supplierId]);
 
@@ -137,6 +150,15 @@ export default function SupplierMaster() {
       console.error(e);
       const year = new Date().getFullYear().toString().slice(-2);
       setForm(p => ({ ...p, supplierCode: `S-${year}-00001` }));
+    }
+  }, [supplierId]);
+
+  useEffect(() => { 
+    if (!supplierId) {
+      setPanFile([]);
+      setMsmeFile([]);
+      setIsoFile([]);
+      setUploadedFiles([]);
     }
   }, [supplierId]);
 
@@ -173,11 +195,35 @@ export default function SupplierMaster() {
 
   const handleSave = async () => {
     if (!validate(form, RULES)) return;
+
+    if (form.ndaRequired === 'Yes' && uploadedFiles.length === 0) {
+      dispatch(openSnackbar({ 
+        open: true, 
+        message: 'NDA document is required when "NDA Required" is set to Yes. Please upload the document in the Attachments section.', 
+        variant: 'alert', 
+        alert: { variant: 'filled' }, 
+        severity: 'error', 
+        close: false 
+      }));
+      return;
+    }
+
     setLoading(true);
     try {
       const uploadFile = async (f) => f.isServer ? f.name : await autoUploadFile(f.file, 'SALES_SUPPLIER');
       const finalFiles = await Promise.all(uploadedFiles.map(uploadFile));
-      const updatedForm = { ...form, uploadFiles: finalFiles.join(',') };
+      
+      const pFiles = await Promise.all(panFile.map(uploadFile));
+      const mFiles = await Promise.all(msmeFile.map(uploadFile));
+      const sFiles = await Promise.all(isoFile.map(uploadFile));
+
+      const updatedForm = { 
+        ...form, 
+        uploadFiles: finalFiles.join(','),
+        panFileInfo: pFiles.join(','),
+        msmeFileInfo: mFiles.join(','),
+        isoFileInfo: sFiles.join(',')
+      };
 
       if (supplierId) {
         await axios.put(`/api/sm/suppliers/${supplierId}`, updatedForm);
@@ -271,9 +317,24 @@ export default function SupplierMaster() {
 
         <BOSFormSection icon={<IconBusinessplan size={20} color={theme.palette.primary.main} />} title="Business & Compliance">
           <Grid container spacing={2.5}>
-            <R><BOSTextField name="panNo" label="PAN No" value={form.panNo} onChange={h} /></R>
-            <R><BOSTextField name="msmeNo" label="MSME No" value={form.msmeNo} onChange={h} /></R>
-            <R><BOSTextField name="isoNo" label="ISO No" value={form.isoNo} onChange={h} /></R>
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <BOSTextField name="panNo" label="PAN No" value={form.panNo} onChange={h} fullWidth />
+                <BOSFileUpload files={panFile} onChange={setPanFile} module="SALES_SUPPLIER" label="PAN" compact multiple={false} />
+              </Stack>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <BOSTextField name="msmeNo" label="MSME No" value={form.msmeNo} onChange={h} fullWidth />
+                <BOSFileUpload files={msmeFile} onChange={setMsmeFile} module="SALES_SUPPLIER" label="MSME" compact multiple={false} />
+              </Stack>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4} lg={3}>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <BOSTextField name="isoNo" label="ISO No" value={form.isoNo} onChange={h} fullWidth />
+                <BOSFileUpload files={isoFile} onChange={setIsoFile} module="SALES_SUPPLIER" label="ISO" compact multiple={false} />
+              </Stack>
+            </Grid>
             <R><BOSTextField name="isoExpiryDate" label="ISO Expiry Date" value={form.isoExpiryDate} onChange={h} type="date" InputLabelProps={{ shrink: true }} /></R>
             <R>
               <BOSTextField name="approvedSupplier" label="Approved Supplier" value={form.approvedSupplier} onChange={h} select>
@@ -285,6 +346,20 @@ export default function SupplierMaster() {
                 {YES_NO_OPTIONS.map(o => <MenuItem key={o} value={o}>{o}</MenuItem>)}
               </BOSTextField>
             </R>
+            <Grid item xs={12} lg={6}>
+              <Box sx={{ border: '1px dashed', borderColor: form.ndaRequired === 'Yes' ? 'primary.main' : 'divider', borderRadius: 2, bgcolor: alpha(theme.palette.primary.main, 0.02) }}>
+                <BOSFileUpload
+                  files={uploadedFiles}
+                  onChange={setUploadedFiles}
+                  module="SALES_SUPPLIER"
+                  label="Upload NDA Document"
+                  compact
+                  multiple={true}
+                  disabled={form.ndaRequired === 'No'}
+                  helperText="Upload signed NDA agreement."
+                />
+              </Box>
+            </Grid>
             <R>
               <BOSTextField name="primeSupplier" label="Prime Supplier" value={form.primeSupplier} onChange={h} select>
                 {YES_NO_OPTIONS.map(o => <MenuItem key={o} value={o}>{o}</MenuItem>)}
@@ -323,6 +398,17 @@ export default function SupplierMaster() {
             <R lg={12} md={12}><BOSTextField fullWidth name="status" label="Status" value={form.status} onChange={h} select><MenuItem value="Active">Active</MenuItem><MenuItem value="Inactive">Inactive</MenuItem></BOSTextField></R>
           </Grid>
         </BOSFormSection>
+
+        {supplierId && (
+          <BOSFormSection icon={<IconFiles size={20} color={theme.palette.primary.main} />} title="Audit Information">
+            <Grid container spacing={2.5}>
+              <R><BOSTextField label="Created By" value={form.createdBy} disabled /></R>
+              <R><BOSTextField label="Created Date" value={form.createdDate} disabled /></R>
+              <R><BOSTextField label="Updated By" value={form.updatedBy} disabled /></R>
+              <R><BOSTextField label="Updated Date" value={form.updatedDate} disabled /></R>
+            </Grid>
+          </BOSFormSection>
+        )}
 
         <BOSFormSection icon={<IconFiles size={22} color={theme.palette.primary.main} />} title="Standard Attachments">
           <BOSFileUpload 
