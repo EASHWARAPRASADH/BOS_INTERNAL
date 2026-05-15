@@ -83,15 +83,23 @@ export default function BOSExportButton({
     });
   };
 
+  const getFormattedFilename = () => {
+    const ts = format(new Date(), 'dd-MM-yyyy_HHmm');
+    return `${filename}_${ts}`;
+  };
+
   const handleExportExcel = () => {
     if (!data || data.length === 0) return;
-    exportToExcel(prepareData(), filename, { userName: user?.name });
+    exportToExcel(prepareData(), getFormattedFilename(), { userName: user?.name });
     handleClosePreview();
   };
 
   const handleExportPDF = () => {
     if (!data || data.length === 0) return;
+    const originalTitle = document.title;
+    document.title = getFormattedFilename();
     window.print();
+    document.title = originalTitle;
     handleClosePreview();
   };
 
