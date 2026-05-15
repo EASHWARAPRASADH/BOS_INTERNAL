@@ -1,4 +1,4 @@
--- V6.0 Standardize Audit Infrastructure and Add Masters
+-- V8.1 Standardize Audit Infrastructure and Add Masters
 -- Created: 2026-05-15
 USE [AUTONOMA];
 
@@ -29,7 +29,6 @@ BEGIN
 END;
 
 -- 3. Standardize Audit Columns across core tables
--- This ensures that tables have created_at, created_by, updated_at, updated_by
 DECLARE @TableName NVARCHAR(255);
 DECLARE @TableCursor CURSOR;
 
@@ -40,7 +39,7 @@ SELECT name FROM sys.tables WHERE name IN (
     'hrm_designation_master', 
     'hrm_employee_master', 
     'ad_user_credential',
-    'sm_quotation_master',
+    'sm_quotation',
     'sm_supplier_master'
 );
 
@@ -49,30 +48,10 @@ FETCH NEXT FROM @TableCursor INTO @TableName;
 
 WHILE @@FETCH_STATUS = 0
 BEGIN
-    -- Add created_by if missing
-    IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(@TableName) AND name = 'created_by')
-    BEGIN
-        EXEC('ALTER TABLE ' + @TableName + ' ADD created_by NVARCHAR(100)');
-    END
-
-    -- Add created_at if missing
-    IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(@TableName) AND name = 'created_at')
-    BEGIN
-        EXEC('ALTER TABLE ' + @TableName + ' ADD created_at DATETIME');
-    END
-
-    -- Add updated_by if missing
-    IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(@TableName) AND name = 'updated_by')
-    BEGIN
-        EXEC('ALTER TABLE ' + @TableName + ' ADD updated_by NVARCHAR(100)');
-    END
-
-    -- Add updated_at if missing
-    IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(@TableName) AND name = 'updated_at')
-    BEGIN
-        EXEC('ALTER TABLE ' + @TableName + ' ADD updated_at DATETIME');
-    END
-
+    IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(@TableName) AND name = 'created_by') EXEC('ALTER TABLE ' + @TableName + ' ADD created_by NVARCHAR(100)');
+    IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(@TableName) AND name = 'created_at') EXEC('ALTER TABLE ' + @TableName + ' ADD created_at DATETIME');
+    IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(@TableName) AND name = 'updated_by') EXEC('ALTER TABLE ' + @TableName + ' ADD updated_by NVARCHAR(100)');
+    IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(@TableName) AND name = 'updated_at') EXEC('ALTER TABLE ' + @TableName + ' ADD updated_at DATETIME');
     FETCH NEXT FROM @TableCursor INTO @TableName;
 END;
 
