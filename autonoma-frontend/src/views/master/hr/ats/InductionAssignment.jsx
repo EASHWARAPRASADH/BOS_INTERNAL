@@ -176,6 +176,7 @@ const InductionAssignment = () => {
       cleanData.oldEmpCode = row.oldEmpCode || '';
       cleanData.department = typeof row.department === 'object' ? row.department?.departmentName : (row.department || '');
       cleanData.designation = typeof row.designation === 'object' ? row.designation?.designationName : (row.designation || '');
+      cleanData.inductionStatus = 'ACTIVE'; // Force ACTIVE so it's not overridden by EmployeeMaster's PENDING status
 
       setFormData(cleanData);
       setErrors({});
