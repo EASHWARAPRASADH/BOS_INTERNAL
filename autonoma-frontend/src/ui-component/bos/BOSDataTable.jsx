@@ -7,6 +7,9 @@ import {
 import { useColorScheme } from '@mui/material/styles';
 import { IconEdit, IconTrash } from '@tabler/icons-react';
 import { format } from 'date-fns';
+import { useSelector, useDispatch } from 'react-redux';
+import { useMemo, useEffect } from 'react';
+import { setTableConfig } from 'store/slices/search';
 import {
   tableContainerSx, tableHeadCellSx, getTableRowSx,
   tableActionEditSx, tableActionDeleteSx, getStatusChipSx
@@ -41,10 +44,73 @@ export default function BOSDataTable({
 }) {
   const rows = data || rowsProp || [];
   console.log('[BOSDataTable] Rendering with rows:', rows.length);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (columns && rows) {
+      // Rule 1 extension: Extract unique values from rows for each column to provide dropdown options
+      const columnsWithData = columns.map(col => {
+        if (col.id === 'index' || col.id === 'photo' || col.id === 'actions') return col;
+        
+        const uniqueValues = [...new Set(rows.map(r => r[col.id]))]
+          .filter(v => v !== undefined && v !== null && v !== '')
+          .map(v => ({ value: v, label: String(v) }));
+
+        return { ...col, options: uniqueValues };
+      });
+      dispatch(setTableConfig(columnsWithData));
+    }
+    return () => {
+      dispatch(setTableConfig(null));
+    };
+  }, [columns, rows, dispatch]);
   const theme = useTheme();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
   const baseRowSx = getTableRowSx(isDark);
+
+  const searchQuery = useSelector((state) => state.search?.query || '');
+  const globalFilters = useSelector((state) => state.search?.filters || {});
+
+  const filteredRows = useMemo(() => {
+    if (!rows || rows.length === 0) return [];
+
+    return rows.filter((row) => {
+      // 1. Dynamic Filters from Search Popover (Only apply filters relevant to this table's columns)
+      if (globalFilters) {
+        for (const [key, fVal] of Object.entries(globalFilters)) {
+          if (fVal === undefined || fVal === null || fVal === '' || fVal === 'All') continue;
+          
+          // Check if this filter key exists in our columns
+          const isRelevant = columns.some(col => col.id === key);
+          if (!isRelevant && key !== 'status') continue; 
+
+          const filterVal = String(fVal).toLowerCase().trim();
+          const rowVal = String(row[key] || '').toLowerCase().trim();
+          
+          if (filterVal && !rowVal.includes(filterVal)) {
+            return false;
+          }
+        }
+      }
+
+      // 2. Global Query (Main text box)
+      if (searchQuery) {
+        const queryLower = searchQuery.toLowerCase();
+        return columns.some((col) => {
+          if (col.id === 'index' || col.id === 'photo' || col.id === 'actions') return false;
+          const val = row[col.id];
+          if (val == null) return false;
+          if (typeof val === 'object') {
+            return String(val.name || val.label || val.id || '').toLowerCase().includes(queryLower);
+          }
+          return String(val).toLowerCase().includes(queryLower);
+        });
+      }
+
+      return true;
+    });
+  }, [rows, searchQuery, globalFilters, columns]);
 
   const formatDate = (d) => {
     if (!d) return '-';
@@ -53,17 +119,28 @@ export default function BOSDataTable({
 
   const defaultRenderCell = (col, row, idx) => {
     if (col.render) return col.render(row, idx);
-    const val = row[col.id];
-    if (col.id === 'index') return page * size + idx + 1;
+    // ── DATA RESOLUTION (Supports camelCase and snake_case) ──
+    let val = row[col.id];
+    if (val === undefined || val === null) {
+      // Fallback: If 'updatedBy' is not found, try 'updated_by'
+      const snakeCaseId = col.id.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+      val = row[snakeCaseId];
+    }
+
+    if (col.id === 'index') return (page * size) + (filteredRows.indexOf(row) + 1);
     if (col.id === 'status' || col.id === 'accountStatus') {
       const statusText = val === 1 || val === 'Active' ? 'Active' : 'Suspended';
       return <Chip label={statusText} size="small" sx={getStatusChipSx(statusText)} />;
     }
     if (col.id.toLowerCase().includes('date')) return formatDate(val);
+    
+    // Handle Boolean values (Yes/No)
+    if (typeof val === 'boolean') return val ? 'Yes' : 'No';
+    
     if (typeof val === 'object' && val !== null) {
       return val.name || val.label || val.id || '-';
     }
-    return val ?? '-';
+    return (val !== null && val !== undefined && val !== '') ? String(val) : '-';
   };
 
   return (
@@ -98,14 +175,14 @@ export default function BOSDataTable({
                   <Typography variant="body2" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>Loading data...</Typography>
                 </TableCell>
               </TableRow>
-            ) : (rows?.length || 0) === 0 ? (
+            ) : (filteredRows?.length || 0) === 0 ? (
               <TableRow>
                 <TableCell colSpan={columns.length + (showActions ? 1 : 0)} align="center" sx={{ py: 3 }}>
                   <Typography variant="body2" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>No records found.</Typography>
                 </TableCell>
               </TableRow>
             ) : (
-              rows?.map((row, idx) => {
+              filteredRows?.slice(page * size, page * size + size).map((row, idx) => {
                 const isSelected = selectedRowId === row.id;
                 const rowSx = {
                   ...baseRowSx,
@@ -130,8 +207,8 @@ export default function BOSDataTable({
                           cursor: (onDoubleClickRow || onClickRow) ? 'pointer' : 'default',
                           ...(col.id === 'index' ? { color: isSelected ? 'primary.dark' : 'primary.main', fontWeight: 600 } : {}),
                           ...(col.bold ? { fontWeight: 600, color: '#37474f' } : {}),
-                          // SOP: 15-char wrap rule
-                          whiteSpace: (String(row[col.id] || '').length > 15) ? 'normal' : 'nowrap',
+                          // SOP: 30-char wrap rule (Increased from 15 to prevent excessive splitting)
+                          whiteSpace: (String(row[col.id] || '').length > 30) ? 'normal' : 'nowrap',
                           ...(col.maxWidth ? { maxWidth: col.maxWidth, overflow: 'hidden', textOverflow: 'ellipsis' } : {}),
                           minWidth: col.minWidth || 80
                         }}
@@ -140,8 +217,8 @@ export default function BOSDataTable({
                       </TableCell>
                     ))}
                     {showActions && (
-                      <TableCell align="center">
-                        <Stack direction="row" justifyContent="center" spacing={1}>
+                      <TableCell align="center" sx={{ minWidth: 100 }}>
+                        <Stack direction="row" justifyContent="center" spacing={1} sx={{ flexWrap: 'nowrap' }}>
                           {onEditRow && (
                             <Tooltip title="Edit">
                               <IconButton onClick={(e) => { e.stopPropagation(); onEditRow(row); }} size="small" sx={tableActionEditSx}>

@@ -1,15 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-// Load preferences from localStorage
-const savedPrefs = JSON.parse(localStorage.getItem('bos_search_prefs') || '{}');
-
 const initialState = {
   query: '',
   filters: {},
   // Configuration for dynamic filters in the search bar
   config: null,
+  // Columns from the active BOSDataTable
+  tableConfig: null,
   // Page-specific visibility preferences { [path]: [visibleId1, visibleId2] }
-  preferences: savedPrefs
+  preferences: {}
 };
 
 const search = createSlice({
@@ -28,14 +27,16 @@ const search = createSlice({
     resetFilters(state) {
       state.filters = {};
     },
+    setTableConfig(state, action) {
+      state.tableConfig = action.payload;
+    },
     setFilterPreferences(state, action) {
       const { path, visibleIds } = action.payload;
       state.preferences[path] = visibleIds;
-      localStorage.setItem('bos_search_prefs', JSON.stringify(state.preferences));
     }
   }
 });
 
 export default search.reducer;
 
-export const { setQuery, setFilters, setFilterConfig, resetFilters, setFilterPreferences } = search.actions;
+export const { setQuery, setFilters, setFilterConfig, resetFilters, setFilterPreferences, setTableConfig } = search.actions;
