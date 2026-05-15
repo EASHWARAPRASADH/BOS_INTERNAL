@@ -37,11 +37,8 @@ export const getPhotoUrl = (photoPath) => {
   if (!photoPath) return null;
   if (photoPath.startsWith('http') || photoPath.startsWith('blob:')) return photoPath;
   
-  const API_BASE = window.location.origin.includes('localhost') 
-    ? 'http://localhost:8080/api/files/view' 
-    : '/api/files/view';
-  
-  return `${API_BASE}?path=${encodeURIComponent(photoPath)}`;
+  // Use relative path to let Vite proxy handle it correctly (usually to 8081)
+  return `/api/files/view?path=${encodeURIComponent(photoPath)}`;
 };
 
 /**
