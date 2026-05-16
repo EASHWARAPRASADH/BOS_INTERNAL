@@ -6,6 +6,7 @@ import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Box from '@mui/material/Box';
+import FormHelperText from '@mui/material/FormHelperText';
 
 import Alert from '@mui/material/Alert';
 import Grid from '@mui/material/Grid';
@@ -61,7 +62,7 @@ export default function JWTLogin({ ...others }) {
         password: Yup.string()
           .required('Password is required')
           .test('no-leading-trailing-whitespace', 'Password can not start or end with spaces', (value) => value === value.trim())
-          .max(10, 'Password must be less than 10 characters')
+          .max(50, 'Password must be less than 50 characters')
       })}
       onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
         try {
