@@ -34,10 +34,27 @@ public class PrefixCredentialService {
     public PrefixCredential updatePrefixCredential(String accountYear, PrefixCredential credentialDetails) {
         return repository.findById(accountYear).map(credential -> {
             credential.setStatus(credentialDetails.getStatus());
+            
             credential.setSalesOrderPrefix(credentialDetails.getSalesOrderPrefix());
+            credential.setSalesOrderSuffix(credentialDetails.getSalesOrderSuffix());
+            credential.setSalesOrderDigit(credentialDetails.getSalesOrderDigit());
+            
             credential.setMatPoPrefix(credentialDetails.getMatPoPrefix());
+            credential.setMatPoSuffix(credentialDetails.getMatPoSuffix());
+            credential.setMatPoDigit(credentialDetails.getMatPoDigit());
+            
             credential.setGateEntryPrefix(credentialDetails.getGateEntryPrefix());
+            credential.setGateEntrySuffix(credentialDetails.getGateEntrySuffix());
+            credential.setGateEntryDigit(credentialDetails.getGateEntryDigit());
+            
+            credential.setGrnPrefix(credentialDetails.getGrnPrefix());
+            credential.setGrnSuffix(credentialDetails.getGrnSuffix());
+            credential.setGrnDigit(credentialDetails.getGrnDigit());
+            
             credential.setInvoicePrefix(credentialDetails.getInvoicePrefix());
+            credential.setInvoiceSuffix(credentialDetails.getInvoiceSuffix());
+            credential.setInvoiceDigit(credentialDetails.getInvoiceDigit());
+            
             credential.setUpdatedBy(credentialDetails.getUpdatedBy());
             credential.setUpdatedDate(new Date());
             return repository.save(credential);
