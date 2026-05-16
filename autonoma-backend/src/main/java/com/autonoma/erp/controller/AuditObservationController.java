@@ -102,7 +102,7 @@ public class AuditObservationController {
     @PostMapping
     @Operation(summary = "Create Observation", description = "Saves a new audit observation with findings details")
     public AuditObservation create(@RequestBody AuditObservation observation) {
-        if (observation.getCreatedBy() == null) observation.setCreatedBy("Admin");
+        if (observation.getCreatedBy() == null) observation.setCreatedBy(com.autonoma.erp.util.SecurityUtils.getCurrentUserId());
         
         // Sync bi-directional relationship
         if (observation.getDetails() != null) {
@@ -131,7 +131,7 @@ public class AuditObservationController {
                     observation.setOfiCount(details.getOfiCount());
                     observation.setComplianceCount(details.getComplianceCount());
                     observation.setNcrCount(details.getNcrCount());
-                    observation.setUpdatedBy("Admin");
+                    observation.setUpdatedBy(com.autonoma.erp.util.SecurityUtils.getCurrentUserId());
 
                     // Handle details update (clear and re-add for simplicity in this standard)
                     observation.getDetails().clear();
@@ -214,3 +214,4 @@ public class AuditObservationController {
         }
     }
 }
+

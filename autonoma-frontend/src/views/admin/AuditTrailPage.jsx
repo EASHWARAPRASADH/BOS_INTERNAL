@@ -160,7 +160,7 @@ const AuditTrailPage = () => {
 
   const handleRestore = async () => {
     if (!logToRestore) return;
-    
+
     try {
       setRestoring(true);
       const res = await axios.post(`/api/audit-trail/restore/${logToRestore.id}`);
@@ -186,7 +186,7 @@ const AuditTrailPage = () => {
   const isRestorable = (log) => {
     if (log.actionType !== 'DELETE' || log.restored || log.isRestored) return false;
     if (restoreDays <= 0) return true; // 0 might mean infinite or disabled? User said grace period, so 0 might be off.
-    
+
     const logDate = new Date(log.createdAt);
     const diff = new Date().getTime() - logDate.getTime();
     const diffDays = diff / (24 * 60 * 60 * 1000);
@@ -533,9 +533,9 @@ const AuditTrailPage = () => {
             <Box sx={{ p: 2, display: 'flex', justifyContent: 'flex-end', gap: 1.5 }}>
               <Button onClick={() => setSelectedLog(null)} sx={{ color: 'text.secondary' }}>Close</Button>
               {isRestorable(selectedLog) && (
-                <Button 
-                  onClick={() => openConfirmDialog(selectedLog)} 
-                  variant="contained" 
+                <Button
+                  onClick={() => openConfirmDialog(selectedLog)}
+                  variant="contained"
                   color="success"
                   disabled={restoring}
                   startIcon={<SettingsBackupRestoreIcon />}
@@ -578,17 +578,17 @@ const AuditTrailPage = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{ p: 2, pt: 1 }}>
-          <Button 
-            onClick={() => setConfirmOpen(false)} 
+          <Button
+            onClick={() => setConfirmOpen(false)}
             disabled={restoring}
             sx={{ color: 'text.secondary', fontWeight: 700 }}
           >
             Cancel
           </Button>
-          <Button 
-            onClick={handleRestore} 
-            variant="contained" 
-            color="success" 
+          <Button
+            onClick={handleRestore}
+            variant="contained"
+            color="success"
             disabled={restoring}
             autoFocus
             sx={{ borderRadius: '8px', px: 3, fontWeight: 700 }}
@@ -599,9 +599,9 @@ const AuditTrailPage = () => {
       </Dialog>
 
       {/* ── NOTIFICATION SNACKBAR ── */}
-      <Snackbar 
-        open={snackbar.open} 
-        autoHideDuration={6000} 
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >

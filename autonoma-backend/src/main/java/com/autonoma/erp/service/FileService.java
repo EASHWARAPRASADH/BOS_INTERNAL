@@ -1,9 +1,10 @@
 package com.autonoma.erp.service;
 
-import com.autonoma.erp.model.AppPreference;
-import com.autonoma.erp.model.CompanyCredential;
-import com.autonoma.erp.repository.AppPreferenceRepository;
-import com.autonoma.erp.repository.CompanyCredentialRepository;
+import com.autonoma.erp.model.admin.AppPreference;
+import com.autonoma.erp.model.admin.CompanyCredential;
+import com.autonoma.erp.repository.admin.AppPreferenceRepository;
+import com.autonoma.erp.repository.admin.CompanyCredentialRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -57,7 +58,8 @@ public class FileService {
         if (resolvedPath == null) {
             try {
                 Optional<AppPreference> pref = prefRepo.findByPrefName("FILE_LOCATION");
-                if (pref.isPresent() && pref.get().getPrefValue() != null && !pref.get().getPrefValue().trim().isEmpty()) {
+                if (pref.isPresent() && pref.get().getPrefValue() != null
+                        && !pref.get().getPrefValue().trim().isEmpty()) {
                     resolvedPath = Paths.get(pref.get().getPrefValue().trim());
                 }
             } catch (Exception e) {
@@ -90,7 +92,8 @@ public class FileService {
 
     /**
      * Saves a file into a module-specific subdirectory.
-     * @param file - The multipart file
+     * 
+     * @param file   - The multipart file
      * @param module - The module name (mapped via BosDocConstants)
      * @returns The relative path (e.g. "QMS/uuid_name.pdf")
      */
@@ -113,6 +116,7 @@ public class FileService {
 
     /**
      * Resolves a file for viewing/downloading.
+     * 
      * @param relativePath - The path including module (e.g. "QMS/uuid_name.pdf")
      */
     public Resource loadFile(String relativePath) throws MalformedURLException {
@@ -130,7 +134,8 @@ public class FileService {
      * Deletes a file based on its relative path.
      */
     public boolean deleteFile(String relativePath) {
-        if (relativePath == null || relativePath.isEmpty()) return false;
+        if (relativePath == null || relativePath.isEmpty())
+            return false;
         try {
             Path file = getRootPath().resolve(relativePath).normalize();
             return Files.deleteIfExists(file);
@@ -144,44 +149,72 @@ public class FileService {
      * Supports both top-level modules and sub-module granularity.
      */
     private String resolveSubDir(String module) {
-        if (module == null) return BosDocConstants.DEFAULT_DOC_PATH;
-        
+        if (module == null)
+            return BosDocConstants.DEFAULT_DOC_PATH;
+
         switch (module.toUpperCase()) {
             // ─── Top-level module paths ─────────────────────────
-            case "QMS": return BosDocConstants.QMS_DOC_PATH;
-            case "HRA": return BosDocConstants.HRA_DOC_PATH;
-            case "FINANCE": return BosDocConstants.FINANCE_DOC_PATH;
-            case "PRODUCTION": return BosDocConstants.PRODUCTION_DOC_PATH;
-            case "PURCHASE": return BosDocConstants.PURCHASE_DOC_PATH;
-            case "SALES": return BosDocConstants.SALES_DOC_PATH;
-            case "MAINTENANCE": return BosDocConstants.MAINTENANCE_DOC_PATH;
-            case "QUALITY": return BosDocConstants.QUALITY_DOC_PATH;
-            case "ASSETS": return BosDocConstants.ASSETS_DOC_PATH;
-            case "NPD": return BosDocConstants.NPD_DOC_PATH;
-            case "STORES": return BosDocConstants.STORES_DOC_PATH;
-            case "OCR": return BosDocConstants.OCR_DOC_PATH;
-            case "USER_PROFILE": return BosDocConstants.USER_PROFILE_DOC_PATH;
-            case "COMPANY_PROFILE": return BosDocConstants.COMPANY_PROFILE_PATH;
+            case "QMS":
+                return BosDocConstants.QMS_DOC_PATH;
+            case "HRA":
+                return BosDocConstants.HRA_DOC_PATH;
+            case "FINANCE":
+                return BosDocConstants.FINANCE_DOC_PATH;
+            case "PRODUCTION":
+                return BosDocConstants.PRODUCTION_DOC_PATH;
+            case "PURCHASE":
+                return BosDocConstants.PURCHASE_DOC_PATH;
+            case "SALES":
+                return BosDocConstants.SALES_DOC_PATH;
+            case "MAINTENANCE":
+                return BosDocConstants.MAINTENANCE_DOC_PATH;
+            case "QUALITY":
+                return BosDocConstants.QUALITY_DOC_PATH;
+            case "ASSETS":
+                return BosDocConstants.ASSETS_DOC_PATH;
+            case "NPD":
+                return BosDocConstants.NPD_DOC_PATH;
+            case "STORES":
+                return BosDocConstants.STORES_DOC_PATH;
+            case "OCR":
+                return BosDocConstants.OCR_DOC_PATH;
+            case "USER_PROFILE":
+                return BosDocConstants.USER_PROFILE_DOC_PATH;
+            case "COMPANY_PROFILE":
+                return BosDocConstants.COMPANY_PROFILE_PATH;
 
             // ─── HRA sub-module paths ───────────────────────────
-            case "HRA_PROFILE": return BosDocConstants.HRA_EMPLOYEE_PROFILE_PATH;
-            case "HRA_KYC": return BosDocConstants.HRA_EMPLOYEE_KYC_PATH;
-            case "HRA_EDUCATION": return BosDocConstants.HRA_EMPLOYEE_EDUCATION_PATH;
-            case "HRA_FITNESS": return BosDocConstants.HRA_EMPLOYEE_FITNESS_PATH;
-            case "HRA_NDA": return BosDocConstants.HRA_EMPLOYEE_NDA_PATH;
-            case "HRA_SIGNATURE": return BosDocConstants.HRA_EMPLOYEE_SIGNATURE_PATH;
+            case "HRA_PROFILE":
+                return BosDocConstants.HRA_EMPLOYEE_PROFILE_PATH;
+            case "HRA_KYC":
+                return BosDocConstants.HRA_EMPLOYEE_KYC_PATH;
+            case "HRA_EDUCATION":
+                return BosDocConstants.HRA_EMPLOYEE_EDUCATION_PATH;
+            case "HRA_FITNESS":
+                return BosDocConstants.HRA_EMPLOYEE_FITNESS_PATH;
+            case "HRA_NDA":
+                return BosDocConstants.HRA_EMPLOYEE_NDA_PATH;
+            case "HRA_SIGNATURE":
+                return BosDocConstants.HRA_EMPLOYEE_SIGNATURE_PATH;
 
             // ─── QMS sub-module paths ───────────────────────────
-            case "QMS_CHECKLIST": return BosDocConstants.QMS_CHECKLIST_PATH;
-            case "QMS_AUDIT": return BosDocConstants.QMS_AUDIT_PATH;
-            case "QMS_NCR": return BosDocConstants.QMS_NCR_PATH;
+            case "QMS_CHECKLIST":
+                return BosDocConstants.QMS_CHECKLIST_PATH;
+            case "QMS_AUDIT":
+                return BosDocConstants.QMS_AUDIT_PATH;
+            case "QMS_NCR":
+                return BosDocConstants.QMS_NCR_PATH;
 
             // ─── Sales sub-module paths ─────────────────────────
-            case "SALES_CUSTOMER": return BosDocConstants.SALES_CUSTOMER_PATH;
-            case "SALES_ENQUIRY": return BosDocConstants.SALES_ENQUIRY_PATH;
-            case "SALES_QUOTATION": return BosDocConstants.SALES_QUOTATION_PATH;
+            case "SALES_CUSTOMER":
+                return BosDocConstants.SALES_CUSTOMER_PATH;
+            case "SALES_ENQUIRY":
+                return BosDocConstants.SALES_ENQUIRY_PATH;
+            case "SALES_QUOTATION":
+                return BosDocConstants.SALES_QUOTATION_PATH;
 
-            default: return BosDocConstants.DEFAULT_DOC_PATH;
+            default:
+                return BosDocConstants.DEFAULT_DOC_PATH;
         }
     }
 }

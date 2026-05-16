@@ -38,7 +38,7 @@ public class AuditAttendanceController {
                     attendance.setInTime(details.getInTime());
                     attendance.setOutTime(details.getOutTime());
                     attendance.setAttendanceStatus(details.getAttendanceStatus());
-                    attendance.setUpdatedBy("Admin");
+                    attendance.setUpdatedBy(com.autonoma.erp.util.SecurityUtils.getCurrentUserId());
                     return ResponseEntity.ok(auditAttendanceRepository.save(attendance));
                 }).orElse(ResponseEntity.notFound().build());
     }
@@ -95,3 +95,4 @@ public class AuditAttendanceController {
                 });
     }
 }
+

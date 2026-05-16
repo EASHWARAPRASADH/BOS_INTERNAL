@@ -65,7 +65,7 @@ public class SmEnquiryController {
                     enquiry.setOcrConfidence(enquiryDetails.getOcrConfidence());
                     enquiry.setStatus(enquiryDetails.getStatus());
                     enquiry.setRemarks(enquiryDetails.getRemarks());
-                    enquiry.setUpdatedBy("admin");
+                    enquiry.setUpdatedBy(com.autonoma.erp.util.SecurityUtils.getCurrentUserId());
                     return ResponseEntity.ok(enquiryRepository.save(enquiry));
                 }).orElse(ResponseEntity.notFound().build());
     }
@@ -88,3 +88,4 @@ public class SmEnquiryController {
         return ResponseEntity.ok(stats);
     }
 }
+

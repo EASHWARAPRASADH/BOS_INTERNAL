@@ -1,9 +1,10 @@
 package com.autonoma.erp.util;
 
 import com.autonoma.erp.model.EmployeeMaster;
-import com.autonoma.erp.model.UserCredential;
+import com.autonoma.erp.model.admin.UserCredential;
 import com.autonoma.erp.repository.EmployeeMasterRepository;
-import com.autonoma.erp.repository.UserRepository;
+import com.autonoma.erp.repository.admin.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,11 +27,13 @@ public class AuthHelper {
      * Get the full EmployeeMaster for the currently logged-in user.
      */
     public EmployeeMaster getEmployee(Principal principal) {
-        if (principal == null) return null;
+        if (principal == null)
+            return null;
         String userId = principal.getName();
         UserCredential user = userRepo.findByUserId(userId)
                 .orElse(null);
-        if (user == null || user.getEmpId() == null) return null;
+        if (user == null || user.getEmpId() == null)
+            return null;
         return empRepo.findById(user.getEmpId()).orElse(null);
     }
 
@@ -46,7 +49,8 @@ public class AuthHelper {
      * Check if the current user is an admin (isBosAdmin = 1).
      */
     public boolean isAdmin(Principal principal) {
-        if (principal == null) return false;
+        if (principal == null)
+            return false;
         String userId = principal.getName();
         return userRepo.findByUserId(userId)
                 .map(u -> u.getIsBosAdmin() != null && u.getIsBosAdmin() == 1)

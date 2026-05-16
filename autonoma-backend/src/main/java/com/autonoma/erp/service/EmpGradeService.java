@@ -28,7 +28,7 @@ public class EmpGradeService {
             gradeDetail.setCreatedDate(new Date());
         }
         if (gradeDetail.getCreatedBy() == null) {
-            gradeDetail.setCreatedBy("Admin");
+            gradeDetail.setCreatedBy(com.autonoma.erp.util.SecurityUtils.getCurrentUserId());
         }
         if (gradeDetail.getStatus() == null) {
             gradeDetail.setStatus("Active");
@@ -58,3 +58,4 @@ public class EmpGradeService {
         repository.deleteById(id);
     }
 }
+
