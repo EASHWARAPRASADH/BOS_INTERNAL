@@ -185,6 +185,7 @@ const SamplePage = Loadable(lazy(() => import('views/sample-page')));
 // admin routing
 const AdminUserOverview = Loadable(lazy(() => import('views/admin/UserOverview')));
 const AdminPreferenceMaster = Loadable(lazy(() => import('views/admin/PreferenceMaster')));
+const AdminPrefixCredentials = Loadable(lazy(() => import('views/admin/PrefixCredentials')));
 const AdminCompanyProfile = Loadable(lazy(() => import('views/admin/CompanyProfile')));
 const AdminUserAccess = Loadable(lazy(() => import('views/admin/UserAccess')));
 const AdminBusinessAuthorization = Loadable(lazy(() => import('views/admin/BusinessAuthorization')));
@@ -269,6 +270,10 @@ const MainRoutes = {
     {
       path: '/admin/preference-master',
       element: <AdminPreferenceMaster />
+    },
+    {
+      path: '/admin/prefix-credentials',
+      element: <AdminPrefixCredentials />
     },
     {
       path: '/admin/user-credentials',
