@@ -1,9 +1,10 @@
 package com.autonoma.erp.config;
 
-import com.autonoma.erp.model.UserCredential;
 import com.autonoma.erp.model.CustomerMaster;
-import com.autonoma.erp.repository.UserRepository;
+import com.autonoma.erp.model.admin.UserCredential;
 import com.autonoma.erp.repository.CustomerMasterRepository;
+import com.autonoma.erp.repository.admin.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,13 +34,13 @@ public class DataInitializer implements CommandLineRunner {
             admin.setUserId("Admin");
             admin.setEmpId(1L);
             admin.setCreatedBy("SYSTEM");
-            admin.setCreatedAt(new Date());
+            admin.setCreatedDate(new Date());
             System.out.println("Creating new admin user...");
         } else {
             admin = existingAdmin.get();
             System.out.println("Updating existing admin user...");
         }
-        
+
         // Use the new reversible encoder
         admin.setPassword(passwordEncoder.encode("admin123"));
         admin.setStatus(1);

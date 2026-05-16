@@ -53,7 +53,7 @@ public class AuditAttendanceService {
                 attendance.getAuditScheduleNo() + ".");
         }
 
-        if (attendance.getCreatedBy() == null) attendance.setCreatedBy("Admin");
+        if (attendance.getCreatedBy() == null) attendance.setCreatedBy(com.autonoma.erp.util.SecurityUtils.getCurrentUserId());
         org.slf4j.LoggerFactory.getLogger(AuditAttendanceService.class).info("[AttendanceSave] Attempting save for {}: {}", attendance.getName(), attendance.getAuditScheduleNo());
         try {
             return attendanceRepository.save(attendance);
@@ -92,3 +92,4 @@ public class AuditAttendanceService {
         }
     }
 }
+
