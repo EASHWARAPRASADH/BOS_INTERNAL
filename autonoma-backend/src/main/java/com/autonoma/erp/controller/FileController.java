@@ -8,7 +8,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import jakarta.servlet.http.HttpServletRequest;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -59,28 +58,39 @@ public class FileController {
             if (filename != null && filename.startsWith("/")) {
                 filename = filename.substring(1);
             }
-            
-            String decodedFilename = java.net.URLDecoder.decode(filename, java.nio.charset.StandardCharsets.UTF_8.name());
+
+            String decodedFilename = java.net.URLDecoder.decode(filename,
+                    java.nio.charset.StandardCharsets.UTF_8.name());
             Resource resource = fileService.loadFile(decodedFilename);
-            
+
             Path filePath = resource.getFile().toPath();
             String contentType = Files.probeContentType(filePath);
             if (contentType == null) {
                 String name = filePath.getFileName().toString().toLowerCase();
-                if (name.endsWith(".pdf")) contentType = "application/pdf";
-                else if (name.endsWith(".png")) contentType = "image/png";
-                else if (name.endsWith(".jpg") || name.endsWith(".jpeg")) contentType = "image/jpeg";
-                else if (name.endsWith(".gif")) contentType = "image/gif";
-                else if (name.endsWith(".xlsx")) contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                else if (name.endsWith(".xls")) contentType = "application/vnd.ms-excel";
-                else if (name.endsWith(".docx")) contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-                else if (name.endsWith(".doc")) contentType = "application/msword";
-                else contentType = "application/octet-stream";
+                if (name.endsWith(".pdf"))
+                    contentType = "application/pdf";
+                else if (name.endsWith(".png"))
+                    contentType = "image/png";
+                else if (name.endsWith(".jpg") || name.endsWith(".jpeg"))
+                    contentType = "image/jpeg";
+                else if (name.endsWith(".gif"))
+                    contentType = "image/gif";
+                else if (name.endsWith(".xlsx"))
+                    contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                else if (name.endsWith(".xls"))
+                    contentType = "application/vnd.ms-excel";
+                else if (name.endsWith(".docx"))
+                    contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                else if (name.endsWith(".doc"))
+                    contentType = "application/msword";
+                else
+                    contentType = "application/octet-stream";
             }
 
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(contentType))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, (inline ? "inline" : "attachment") + "; filename=\"" + resource.getFilename() + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            (inline ? "inline" : "attachment") + "; filename=\"" + resource.getFilename() + "\"")
                     .body(resource);
         } catch (Exception e) {
             return ResponseEntity.status(404).build();

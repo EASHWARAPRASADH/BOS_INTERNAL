@@ -185,11 +185,14 @@ const SamplePage = Loadable(lazy(() => import('views/sample-page')));
 // admin routing
 const AdminUserOverview = Loadable(lazy(() => import('views/admin/UserOverview')));
 const AdminPreferenceMaster = Loadable(lazy(() => import('views/admin/PreferenceMaster')));
+const AdminPrefixCredentials = Loadable(lazy(() => import('views/admin/PrefixCredentials')));
 const AdminCompanyProfile = Loadable(lazy(() => import('views/admin/CompanyProfile')));
 const AdminUserAccess = Loadable(lazy(() => import('views/admin/UserAccess')));
 const AdminBusinessAuthorization = Loadable(lazy(() => import('views/admin/BusinessAuthorization')));
 const AdminSessionMonitoring = Loadable(lazy(() => import('views/admin/SessionMonitoring')));
 const DivisionMaster = Loadable(lazy(() => import('views/admin/DivisionMaster')));
+const AuditTrailPage = Loadable(lazy(() => import('views/admin/AuditTrailPage')));
+const UserSessionAnalytics = Loadable(lazy(() => import('views/admin/UserSessionAnalytics')));
 
 // qms checklist routing
 const QmsMasterCheckList = Loadable(lazy(() => import('views/qms/checklist/MasterCheckList')));
@@ -269,6 +272,10 @@ const MainRoutes = {
       element: <AdminPreferenceMaster />
     },
     {
+      path: '/admin/prefix-credentials',
+      element: <AdminPrefixCredentials />
+    },
+    {
       path: '/admin/user-credentials',
       element: <AdminUserOverview />
     },
@@ -287,6 +294,14 @@ const MainRoutes = {
     {
       path: '/admin/session-monitoring',
       element: <AdminSessionMonitoring />
+    },
+    {
+      path: '/admin/audit-trail',
+      element: <AuditTrailPage />
+    },
+    {
+      path: '/admin/session-analytics',
+      element: <UserSessionAnalytics />
     },
     {
       path: '/admin/division',

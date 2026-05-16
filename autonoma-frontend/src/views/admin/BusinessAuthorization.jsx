@@ -143,8 +143,10 @@ const BusinessAuthorization = () => {
   };
 
   const filteredData = useMemo(() => {
+    if (!Array.isArray(pageData)) return [];
+
     return pageData.filter(item => {
-      const query = searchQuery.toLowerCase();
+      const query = (searchQuery || '').toLowerCase();
 
       // Global keyword search
       const matchesKeyword = (
@@ -158,9 +160,10 @@ const BusinessAuthorization = () => {
       );
 
       // Advanced field filters
-      const moduleFilter = searchFilters.module?.toLowerCase() || '';
-      const subModuleFilter = searchFilters.subModule?.toLowerCase() || '';
-      const pageNameFilter = searchFilters.pageName?.toLowerCase() || '';
+      const safeFilters = searchFilters || {};
+      const moduleFilter = safeFilters.module?.toLowerCase() || '';
+      const subModuleFilter = safeFilters.subModule?.toLowerCase() || '';
+      const pageNameFilter = safeFilters.pageName?.toLowerCase() || '';
 
       const matchesModule = !moduleFilter || item.module?.modName?.toLowerCase().includes(moduleFilter);
       const matchesSubModule = !subModuleFilter || item.subModule?.subModName?.toLowerCase().includes(subModuleFilter);
@@ -186,10 +189,10 @@ const BusinessAuthorization = () => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 145px)', gap: 1, overflow: 'hidden' }}>
       {/* ── HEADER SECTION ── */}
-      <Box sx={{ 
-        bgcolor: 'white', 
-        p: '10px 24px', 
-        borderRadius: '12px', 
+      <Box sx={{
+        bgcolor: 'white',
+        p: '10px 24px',
+        borderRadius: '12px',
         border: '1px solid #eef2f6',
         display: 'flex',
         alignItems: 'center',
@@ -197,10 +200,10 @@ const BusinessAuthorization = () => {
         flexShrink: 0
       }}>
         <Stack direction="row" spacing={2.5} alignItems="center">
-          <Avatar 
-            sx={{ 
-              width: 50, 
-              height: 50, 
+          <Avatar
+            sx={{
+              width: 50,
+              height: 50,
               bgcolor: alpha(theme.palette.secondary.main, 0.08),
               color: theme.palette.secondary.main,
               border: `1px solid ${alpha(theme.palette.secondary.main, 0.1)}`
@@ -220,12 +223,12 @@ const BusinessAuthorization = () => {
           startIcon={<IconDeviceFloppy size={18} />}
           onClick={handleSaveAll}
           disabled={pageData.length === 0}
-          sx={{ 
-            height: 40, 
-            borderRadius: '8px', 
-            bgcolor: theme.palette.secondary.main, 
+          sx={{
+            height: 40,
+            borderRadius: '8px',
+            bgcolor: theme.palette.secondary.main,
             '&:hover': { bgcolor: theme.palette.secondary.dark },
-            px: 3, 
+            px: 3,
             fontWeight: 700,
             boxShadow: 'none'
           }}
@@ -235,13 +238,13 @@ const BusinessAuthorization = () => {
       </Box>
 
       {/* ── TABLE SECTION ── */}
-      <Box sx={{ 
-        flexGrow: 1, 
-        display: 'flex', 
-        flexDirection: 'column', 
-        borderRadius: '12px', 
-        overflow: 'hidden', 
-        border: '1px solid #eef2f6', 
+      <Box sx={{
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        borderRadius: '12px',
+        overflow: 'hidden',
+        border: '1px solid #eef2f6',
         bgcolor: 'white',
         minHeight: 0
       }}>
@@ -250,13 +253,13 @@ const BusinessAuthorization = () => {
             <TableHead>
               <TableRow>
                 <TableCell sx={{ fontWeight: 800, bgcolor: '#f8fafc', color: '#ccc', fontSize: '0.7rem', py: 2.5, width: 50 }}>#</TableCell>
-                <TableCell sx={{ fontWeight: 800, bgcolor: '#f8fafc', color: '#1a223f', fontSize: '0.7rem', py: 2.5 }}>MODULE & SUBMODULE</TableCell>
-                <TableCell sx={{ fontWeight: 800, bgcolor: '#f8fafc', color: '#1a223f', fontSize: '0.7rem', py: 2.5 }}>PAGE IDENTITY</TableCell>
-                <TableCell align="center" sx={{ 
-                  fontWeight: 800, 
-                  bgcolor: alpha(theme.palette.info.main, 0.04), 
-                  color: theme.palette.info.main, 
-                  fontSize: '0.7rem', 
+                <TableCell sx={{ fontWeight: 800, bgcolor: '#f8fafc', color: '#1a223f', fontSize: '0.7rem', py: 2.5 }}>Module & Sub Module</TableCell>
+                <TableCell sx={{ fontWeight: 800, bgcolor: '#f8fafc', color: '#1a223f', fontSize: '0.7rem', py: 2.5 }}>Page Identity</TableCell>
+                <TableCell align="center" sx={{
+                  fontWeight: 800,
+                  bgcolor: alpha(theme.palette.info.main, 0.04),
+                  color: theme.palette.info.main,
+                  fontSize: '0.7rem',
                   py: 1,
                   borderBottom: `2px solid ${theme.palette.info.main}`
                 }}>
@@ -268,10 +271,10 @@ const BusinessAuthorization = () => {
                       onChange={(e) => handleEnableAll(e.target.checked)}
                       sx={{ color: theme.palette.info.main, p: 0 }}
                     />
-                    <Typography variant="caption" sx={{ fontWeight: 900, fontSize: '0.65rem' }}>ENABLE ALL</Typography>
+                    <Typography variant="caption" sx={{ fontWeight: 900, fontSize: '0.65rem' }}>Enable All</Typography>
                   </Stack>
                 </TableCell>
-                <TableCell align="center" sx={{ fontWeight: 800, bgcolor: '#f8fafc', color: '#1a223f', fontSize: '0.7rem', py: 2.5, width: 100 }}>ACTION</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 800, bgcolor: '#f8fafc', color: '#1a223f', fontSize: '0.7rem', py: 2.5, width: 100 }}>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -293,10 +296,10 @@ const BusinessAuthorization = () => {
                   const globalIdx = pageData.findIndex(item => item.pageId === row.pageId);
                   const displayIdx = page * rowsPerPage + idx + 1;
                   return (
-                    <TableRow 
-                      key={row.pageId} 
-                      sx={{ 
-                        '& td': { py: 1.5, borderBottom: '1px solid #f8fafc' }, 
+                    <TableRow
+                      key={row.pageId}
+                      sx={{
+                        '& td': { py: 1.5, borderBottom: '1px solid #f8fafc' },
                         '&:hover': { bgcolor: '#f1f5f9 !important' },
                         bgcolor: idx % 2 === 0 ? 'white' : '#f9fbff'
                       }}
@@ -380,10 +383,10 @@ const BusinessAuthorization = () => {
             borderTop: '1px solid #eef2f6',
             bgcolor: '#f8fafc',
             '& .MuiTablePagination-toolbar': { minHeight: 45 },
-            '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': { 
-              fontWeight: 700, 
+            '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
+              fontWeight: 700,
               color: '#94a3b8',
-              fontSize: '0.75rem' 
+              fontSize: '0.75rem'
             }
           }}
         />

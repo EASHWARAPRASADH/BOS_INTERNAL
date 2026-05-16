@@ -146,24 +146,28 @@ const UserAccess = () => {
   });
 
   const filteredData = useMemo(() => {
+    if (!Array.isArray(authData)) return [];
+
     return authData.filter(item => {
       const query = (searchQuery || '').toLowerCase();
-      return item.page?.pageName?.toLowerCase().includes(query) || item.page?.module?.modName?.toLowerCase().includes(query);
+      const pageNameMatch = item.page?.pageName?.toLowerCase()?.includes(query) || false;
+      const moduleNameMatch = item.page?.module?.modName?.toLowerCase()?.includes(query) || false;
+      return pageNameMatch || moduleNameMatch;
     });
   }, [authData, searchQuery]);
 
   const paginatedData = useMemo(() => filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage), [filteredData, page, rowsPerPage]);
 
   const permissionHeaders = [
-    { id: 'enable', label: 'ENABLE', color: '#2196f3' },
-    { id: 'readAcs', label: 'READ', color: '#4caf50' },
-    { id: 'write', label: 'WRITE', color: '#ffc107' },
-    { id: 'deleteAcs', label: 'DELETE', color: '#f44336' },
-    { id: 'export', label: 'EXPORT', color: '#673ab7' },
-    { id: 'approval', label: 'APPROVAL', color: '#00bcd4' },
-    { id: 'manager', label: 'MANAGER', color: '#78909c' },
-    { id: 'additional1', label: 'ADD 1', color: '#b0bec5' },
-    { id: 'additional2', label: 'ADD 2', color: '#b0bec5' }
+    { id: 'enable', label: 'Enable', color: '#2196f3' },
+    { id: 'readAcs', label: 'Read', color: '#4caf50' },
+    { id: 'write', label: 'Write', color: '#ffc107' },
+    { id: 'deleteAcs', label: 'Delete', color: '#f44336' },
+    { id: 'export', label: 'Export', color: '#673ab7' },
+    { id: 'approval', label: 'Approval', color: '#00bcd4' },
+    { id: 'manager', label: 'Manager', color: '#78909c' },
+    { id: 'additional1', label: 'Add 1', color: '#b0bec5' },
+    { id: 'additional2', label: 'Add 2', color: '#b0bec5' }
   ];
 
   const PermissionHeaderCell = ({ header }) => (
@@ -347,62 +351,75 @@ const UserAccess = () => {
               <TableHead>
                 <TableRow>
                   <TableCell sx={{ fontWeight: 800, bgcolor: '#f8fafc', color: '#999', fontSize: '0.65rem', py: 2, width: 40 }}>#</TableCell>
-                  <TableCell sx={{ fontWeight: 800, bgcolor: '#f8fafc', color: '#1a223f', fontSize: '0.65rem', py: 2 }}>MODULE / SUBMODULE</TableCell>
-                  <TableCell sx={{ fontWeight: 800, bgcolor: '#f8fafc', color: '#1a223f', fontSize: '0.65rem', py: 2 }}>PAGE NAME</TableCell>
+                  <TableCell sx={{ fontWeight: 800, bgcolor: '#f8fafc', color: '#1a223f', fontSize: '0.65rem', py: 2 }}>Module / Submodule</TableCell>
+                  <TableCell sx={{ fontWeight: 800, bgcolor: '#f8fafc', color: '#1a223f', fontSize: '0.65rem', py: 2 }}>Page Name</TableCell>
                   {permissionHeaders.map(h => <PermissionHeaderCell key={h.id} header={h} />)}
-                  <TableCell sx={{ fontWeight: 800, bgcolor: '#f8fafc', color: '#1a223f', fontSize: '0.65rem', py: 2 }}>UPDATED BY</TableCell>
-                  <TableCell sx={{ fontWeight: 800, bgcolor: '#f8fafc', color: '#1a223f', fontSize: '0.65rem', py: 2 }}>UPDATED DATE</TableCell>
-                  <TableCell align="center" sx={{ fontWeight: 800, bgcolor: '#f8fafc', color: '#1a223f', fontSize: '0.65rem', py: 2 }}>ACTION</TableCell>
+                  <TableCell sx={{ fontWeight: 800, bgcolor: '#f8fafc', color: '#1a223f', fontSize: '0.65rem', py: 2 }}>Updated By</TableCell>
+                  <TableCell sx={{ fontWeight: 800, bgcolor: '#f8fafc', color: '#1a223f', fontSize: '0.65rem', py: 2 }}>Updated Date</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 800, bgcolor: '#f8fafc', color: '#1a223f', fontSize: '0.65rem', py: 2 }}>Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {paginatedData.map((row, idx) => {
-                  const globalIdx = authData.findIndex(item => item.pageId === row.pageId);
-                  return (
-                    <TableRow 
-                      key={row.pageId} 
-                      sx={{ 
-                        '& td': { py: 1.2, borderBottom: '1px solid #f8fafc' }, 
-                        '&:hover': { bgcolor: '#f1f5f9 !important' },
-                        bgcolor: idx % 2 === 0 ? 'white' : '#f9fbff'
-                      }}
-                    >
-                      <TableCell sx={{ fontWeight: 700, color: '#d1d5db', fontSize: '0.7rem' }}>{page * rowsPerPage + idx + 1}</TableCell>
-                      <TableCell>
-                        <Typography variant="body2" sx={{ fontWeight: 800, color: '#1a223f', fontSize: '0.75rem', lineHeight: 1.2 }}>{row.page?.module?.modName}</Typography>
-                        <Typography variant="caption" sx={{ fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', fontSize: '0.6rem' }}>{row.page?.subModule?.subModName}</Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" sx={{ fontWeight: 800, color: '#2196f3', textTransform: 'uppercase', fontSize: '0.75rem', lineHeight: 1.2 }}>{row.page?.pageName}</Typography>
-                        <Typography variant="caption" sx={{ fontWeight: 700, color: '#d1d5db', fontSize: '0.6rem' }}>ID: {row.pageId} | {row.page?.pageCode}</Typography>
-                      </TableCell>
-                      {permissionHeaders.map(h => (
-                        <TableCell key={h.id} align="center" sx={{ borderLeft: '1px solid #f1f5f9' }}>
-                          <Checkbox
-                            checked={row[h.id] === 1}
-                            onChange={() => handleCheckboxChange(globalIdx, h.id)}
-                            icon={<IconX size={16} color="#e5e7eb" />}
-                            checkedIcon={<IconCheck size={16} color="#4caf50" stroke={3} />}
-                            sx={{ p: 0.2 }}
-                          />
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={12} align="center" sx={{ py: 10 }}>
+                      <Typography variant="body2" sx={{ mt: 2, color: 'text.secondary', fontWeight: 600 }}>Retrieving Authorization Matrix...</Typography>
+                    </TableCell>
+                  </TableRow>
+                ) : paginatedData.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={12} align="center" sx={{ py: 10 }}>
+                      <Typography variant="h5" color="textSecondary">No access rules found for this user</Typography>
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  paginatedData.map((row, idx) => {
+                    const globalIdx = authData.findIndex(item => item.pageId === row.pageId);
+                    return (
+                      <TableRow
+                        key={row.pageId}
+                        sx={{
+                          '& td': { py: 1.2, borderBottom: '1px solid #f8fafc' },
+                          '&:hover': { bgcolor: '#f1f5f9 !important' },
+                          bgcolor: idx % 2 === 0 ? 'white' : '#f9fbff'
+                        }}
+                      >
+                        <TableCell sx={{ fontWeight: 700, color: '#d1d5db', fontSize: '0.7rem' }}>{page * rowsPerPage + idx + 1}</TableCell>
+                        <TableCell>
+                          <Typography variant="body2" sx={{ fontWeight: 800, color: '#1a223f', fontSize: '0.75rem', lineHeight: 1.2 }}>{row.page?.module?.modName}</Typography>
+                          <Typography variant="caption" sx={{ fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', fontSize: '0.6rem' }}>{row.page?.subModule?.subModName}</Typography>
                         </TableCell>
-                      ))}
-                      <TableCell sx={{ borderLeft: '1px solid #f1f5f9', fontWeight: 700, color: '#475569', fontSize: '0.7rem' }}>
-                        {row.updatedBy || '-'}
-                      </TableCell>
-                      <TableCell sx={{ borderLeft: '1px solid #f1f5f9', color: '#64748b', fontSize: '0.65rem', whiteSpace: 'nowrap' }}>
-                        {row.updatedDate ? new Date(row.updatedDate).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}
-                      </TableCell>
-                      <TableCell align="center" sx={{ borderLeft: '1px solid #f1f5f9' }}>
-                        <Tooltip title="Save Permissions" arrow>
-                          <IconButton onClick={() => handleSaveRow(row)} sx={{ bgcolor: alpha('#2196f3', 0.1), color: '#2196f3', borderRadius: '4px', p: 0.4, '&:hover': { bgcolor: '#2196f3', color: 'white' } }}>
-                            <IconDeviceFloppy size={18} />
-                          </IconButton>
-                        </Tooltip>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                        <TableCell>
+                          <Typography variant="body2" sx={{ fontWeight: 800, color: '#2196f3', textTransform: 'uppercase', fontSize: '0.75rem', lineHeight: 1.2 }}>{row.page?.pageName}</Typography>
+                          <Typography variant="caption" sx={{ fontWeight: 700, color: '#d1d5db', fontSize: '0.6rem' }}>ID: {row.pageId} | {row.page?.pageCode}</Typography>
+                        </TableCell>
+                        {permissionHeaders.map(h => (
+                          <TableCell key={h.id} align="center" sx={{ borderLeft: '1px solid #f1f5f9' }}>
+                            <Checkbox
+                              checked={row[h.id] === 1}
+                              onChange={() => handleCheckboxChange(globalIdx, h.id)}
+                              icon={<IconX size={16} color="#e5e7eb" />}
+                              checkedIcon={<IconCheck size={16} color="#4caf50" stroke={3} />}
+                              sx={{ p: 0.2 }}
+                            />
+                          </TableCell>
+                        ))}
+                        <TableCell sx={{ borderLeft: '1px solid #f1f5f9', fontWeight: 700, color: '#475569', fontSize: '0.7rem' }}>
+                          {row.updatedBy || '-'}
+                        </TableCell>
+                        <TableCell sx={{ borderLeft: '1px solid #f1f5f9', color: '#64748b', fontSize: '0.65rem', whiteSpace: 'nowrap' }}>
+                          {row.updatedDate ? new Date(row.updatedDate).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}
+                        </TableCell>
+                        <TableCell align="center" sx={{ borderLeft: '1px solid #f1f5f9' }}>
+                          <Tooltip title="Save Permissions" arrow>
+                            <IconButton onClick={() => handleSaveRow(row)} sx={{ bgcolor: alpha('#2196f3', 0.1), color: '#2196f3', borderRadius: '4px', p: 0.4, '&:hover': { bgcolor: '#2196f3', color: 'white' } }}>
+                              <IconDeviceFloppy size={18} />
+                            </IconButton>
+                          </Tooltip>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  }))}
               </TableBody>
             </Table>
           </TableContainer>

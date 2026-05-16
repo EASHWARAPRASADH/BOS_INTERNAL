@@ -1,9 +1,10 @@
 package com.autonoma.erp.service;
 
-import com.autonoma.erp.model.CompanyCredential;
 import com.autonoma.erp.model.Division;
-import com.autonoma.erp.repository.CompanyCredentialRepository;
+import com.autonoma.erp.model.admin.CompanyCredential;
 import com.autonoma.erp.repository.DivisionRepository;
+import com.autonoma.erp.repository.admin.CompanyCredentialRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,7 +40,7 @@ public class DivisionService {
                 .collect(Collectors.toMap(
                         c -> (long) c.getId(),
                         CompanyCredential::getCompanyName,
-                        (a, b) -> a  // keep first on duplicate key
+                        (a, b) -> a // keep first on duplicate key
                 ));
     }
 
@@ -116,7 +117,8 @@ public class DivisionService {
             existing.setGstIn(details.getGstIn());
             existing.setStateCode(details.getStateCode());
             existing.setSequenceNo(details.getSequenceNo());
-            if (details.getStatus() != null) existing.setStatus(details.getStatus());
+            if (details.getStatus() != null)
+                existing.setStatus(details.getStatus());
 
             // Stamp updated user and timestamp automatically
             existing.setUpdatedBy(getCurrentUser());

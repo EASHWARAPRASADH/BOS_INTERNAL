@@ -135,9 +135,9 @@ const InductionAssignment = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
 
+  const { departments = [] } = useLookups(['DEPARTMENTS']);
   const [rows, setRows] = useState([]);
   const [employees, setEmployees] = useState([]);
-  const [inductionRounds, setInductionRounds] = useState([]);
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState('ALL');
@@ -155,7 +155,6 @@ const InductionAssignment = () => {
       setHistory(data || []);
       
       const cleanData = { ...INITIAL_STATE };
-      const source = row.isVirtual ? row : row; // Both are rows from the table
       
       Object.keys(cleanData).forEach(key => {
         if (row[key] !== undefined && row[key] !== null) {
@@ -164,7 +163,7 @@ const InductionAssignment = () => {
       });
 
       // Special handling for dates
-      if (row.inductionDate) {
+      if (row.inductionDate && row.inductionDate !== '-') {
         cleanData.inductionDate = new Date(row.inductionDate).toISOString().split('T')[0];
       } else {
         cleanData.inductionDate = new Date().toISOString().split('T')[0];
@@ -175,8 +174,9 @@ const InductionAssignment = () => {
       cleanData.empName = row.empName || row.employeeName || '';
       cleanData.empCode = row.empCode || '';
       cleanData.oldEmpCode = row.oldEmpCode || '';
-      cleanData.department = row.department || (typeof row.department === 'object' ? row.department?.deptName : row.department) || '';
-      cleanData.designation = row.designation || (typeof row.designation === 'object' ? row.designation?.designationName : row.designation) || '';
+      cleanData.department = typeof row.department === 'object' ? row.department?.departmentName : (row.department || '');
+      cleanData.designation = typeof row.designation === 'object' ? row.designation?.designationName : (row.designation || '');
+      cleanData.inductionStatus = 'ACTIVE'; // Force ACTIVE so it's not overridden by EmployeeMaster's PENDING status
 
       setFormData(cleanData);
       setErrors({});
@@ -196,7 +196,7 @@ const InductionAssignment = () => {
     } finally {
       setLoading(false);
     }
-  }, [setErrors, dispatch]);
+  }, [setErrors]);
 
   const columns = useMemo(() => [
     { id: 'index', label: 'No', minWidth: 50 },
@@ -238,10 +238,9 @@ const InductionAssignment = () => {
   const fetchRows = useCallback(async () => {
     setLoading(true);
     try {
-      const [assignRes, empRes, roundsRes] = await Promise.all([
+      const [assignRes, empRes] = await Promise.all([
         axios.get('/api/hr/induction-assignment'),
-        axios.get('/api/master/employee/filter/active'),
-        axios.get('/api/hr/induction-master')
+        axios.get('/api/master/employee/filter/active')
       ]);
 
       const assignments = assignRes.data;
@@ -250,7 +249,15 @@ const InductionAssignment = () => {
       const finalRows = [];
       assignments.forEach(a => {
         const emp = allActiveEmployees.find(e => e.empCode === a.empCode);
-        finalRows.push({ ...a, ...emp, isVirtual: false });
+        const empDept = emp && typeof emp.department === 'object' ? emp.department?.departmentName : (emp?.department || a.department);
+        const empDesig = emp && typeof emp.designation === 'object' ? emp.designation?.designationName : (emp?.designation || a.designation);
+        finalRows.push({ 
+          ...a, 
+          ...emp, 
+          department: empDept,
+          designation: empDesig,
+          isVirtual: false 
+        });
       });
 
       allActiveEmployees.forEach(emp => {
@@ -258,7 +265,7 @@ const InductionAssignment = () => {
           finalRows.push({ 
             ...emp, 
             empName: emp.employeeName,
-            department: typeof emp.department === 'object' ? emp.department?.deptName : emp.department,
+            department: typeof emp.department === 'object' ? emp.department?.departmentName : emp.department,
             designation: typeof emp.designation === 'object' ? emp.designation?.designationName : emp.designation,
             isVirtual: true, 
             currentStatus: 'PENDING', 
@@ -270,7 +277,6 @@ const InductionAssignment = () => {
 
       setRows(finalRows);
       setEmployees(allActiveEmployees);
-      setInductionRounds(roundsRes.data.map(r => r.inductionRound));
     } catch (error) {
       console.error('Fetch error:', error);
     } finally {
@@ -288,17 +294,59 @@ const InductionAssignment = () => {
 
   const handleSave = async () => {
     if (!validate(formData, VALIDATION_RULES)) return;
+    
+    // Find trainer emp code
+    const selectedTrainer = employees.find(e => e.employeeName === formData.trainerName);
+    
+    // Clean payload to match backend model exactly
+    const payload = {
+      empCode: formData.empCode,
+      empName: formData.empName,
+      oldEmpCode: formData.oldEmpCode,
+      department: formData.department,
+      designation: formData.designation,
+      inductionRound: formData.inductionRound,
+      screeningLevel: formData.screeningLevel,
+      inductionDate: formData.inductionDate,
+      inductionTime: formData.inductionTime,
+      trainerName: formData.trainerName,
+      trainerEmpCode: selectedTrainer?.empCode || '',
+      currentStatus: formData.currentStatus,
+      inductionStatus: formData.inductionStatus,
+      remarks: formData.remarks
+    };
+
+    if (formData.id) {
+      payload.id = formData.id;
+    }
+
+    // Additional validation for default values
+    if (formData.screeningLevel === '-' || formData.inductionRound === '-') {
+      dispatch(openSnackbar({ open: true, message: 'Please select a valid Level and Round', variant: 'alert', alert: { variant: 'filled' }, severity: 'error' }));
+      return;
+    }
+
     try {
-      if (formData.id) {
-        await axios.put(`/api/hr/induction-assignment/${formData.id}`, formData);
+      if (payload.id) {
+        await axios.put(`/api/hr/induction-assignment/${payload.id}`, payload);
       } else {
-        await axios.post('/api/hr/induction-assignment', formData);
+        await axios.post('/api/hr/induction-assignment', payload);
       }
       dispatch(openSnackbar({ open: true, message: 'Assignment saved!', variant: 'alert', alert: { variant: 'filled' }, severity: 'success' }));
       setDialogOpen(false);
       fetchRows();
     } catch (error) {
-      dispatch(openSnackbar({ open: true, message: 'Failed to save', variant: 'alert', alert: { variant: 'filled' }, severity: 'error' }));
+      console.error('Save error details:', error.response?.data);
+      const serverMsg = error.response?.data;
+      const message = typeof serverMsg === 'string' ? serverMsg : (serverMsg?.message || 'Failed to save');
+      
+      dispatch(openSnackbar({ 
+        open: true, 
+        message: message, 
+        variant: 'alert', 
+        alert: { variant: 'filled' }, 
+        severity: 'error' 
+      }));
     }
   };
 
@@ -328,7 +376,7 @@ const InductionAssignment = () => {
             <MenuItem value="PENDING">PENDING</MenuItem>
             <MenuItem value="COMPLETED">COMPLETED</MenuItem>
           </BOSTextField>
-
+ 
           <BOSTextField
             select
             size="small"
@@ -427,8 +475,8 @@ const InductionAssignment = () => {
                 sx={errorStyle(!!errors.inductionRound)}
               >
                 <MenuItem value="">-SELECT-</MenuItem>
-                {inductionRounds.map(r => (
-                  <MenuItem key={r} value={r}>{r}</MenuItem>
+                {departments.map(d => (
+                  <MenuItem key={d.id} value={d.departmentName}>{d.departmentName}</MenuItem>
                 ))}
               </BOSTextField>
             </Box>
@@ -472,13 +520,12 @@ const InductionAssignment = () => {
                 required
                 error={!!errors.trainerName}
                 sx={errorStyle(!!errors.trainerName)}
-                disabled={!formData.department}
               >
                 <MenuItem value="">-Select-</MenuItem>
                 {employees
                   .filter(emp => {
-                    const empDept = typeof emp.department === 'object' ? emp.department?.deptName : emp.department;
-                    return emp.isInductionEligible === 'YES' && empDept === formData.department;
+                    const empDept = typeof emp.department === 'object' ? emp.department?.departmentName : emp.department;
+                    return emp.isInductionEligible === 'YES' && empDept === formData.inductionRound;
                   })
                   .map(emp => (
                     <MenuItem key={emp.id} value={emp.employeeName}>
