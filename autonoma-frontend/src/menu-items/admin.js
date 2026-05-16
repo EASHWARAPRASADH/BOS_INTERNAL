@@ -110,7 +110,7 @@ const admin = {
         },
         {
           id: 'prefix-credentials',
-          title: 'Prefix Credentials',
+          title: 'Prefix/Suffix Credentials',
           type: 'item',
           url: '/admin/prefix-credentials',
           icon: icons.IconSettings,
