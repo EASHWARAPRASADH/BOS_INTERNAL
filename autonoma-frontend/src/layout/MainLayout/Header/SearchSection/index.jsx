@@ -141,14 +141,15 @@ export default function SearchSection() {
   };
 
   const combinedConfig = useMemo(() => {
-    const list = [...(searchConfig || [])];
-    if (tableConfig) {
+    const baseConfig = Array.isArray(searchConfig) ? searchConfig : [];
+    const list = [...baseConfig];
+    if (Array.isArray(tableConfig)) {
       tableConfig.forEach(col => {
-        if (col.id === 'index' || col.id === 'photo' || col.id === 'actions') return;
-        if (!list.find(f => f.id === col.id)) {
+        if (!col || col.id === 'index' || col.id === 'photo' || col.id === 'actions') return;
+        if (!list.find(f => f && f.id === col.id)) {
           list.push({ 
             id: col.id, 
-            label: col.label, 
+            label: col.label || col.id, 
             type: col.options && col.options.length > 0 ? 'autocomplete' : 'text', 
             isRequired: col.required,
             options: col.options || []
@@ -348,7 +349,7 @@ export default function SearchSection() {
 
                       <Box sx={{ p: 2.5, overflowY: 'auto', flexGrow: 1, minHeight: 0 }}>
                         <Stack spacing={2.2}>
-                          {combinedConfig?.filter(f => f.isConstant || visibleFilterIds.includes(f.id)).map((field) => (
+                          {combinedConfig?.filter(f => f && (f.isConstant || (Array.isArray(visibleFilterIds) && visibleFilterIds.includes(f.id)))).map((field) => (
                             <Stack spacing={0.6} key={field.id}>
                               <Typography variant="caption" color="text.primary" fontWeight={700} sx={{ textTransform: 'uppercase', fontSize: '0.68rem', letterSpacing: '0.5px', opacity: 0.85 }}>
                                 {field.label} {field.isRequired && '*'}

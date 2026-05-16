@@ -14,7 +14,7 @@ import { gridSpacing } from 'store/constant';
 
 // assets
 import HomeTwoToneIcon from '@mui/icons-material/HomeTwoTone';
-import error500 from 'assets/images/maintenance/500-error.svg';
+import error500 from 'assets/images/maintenance/img-error-bg.svg';
 
 // ==============================|| ERROR PAGE ||============================== //
 

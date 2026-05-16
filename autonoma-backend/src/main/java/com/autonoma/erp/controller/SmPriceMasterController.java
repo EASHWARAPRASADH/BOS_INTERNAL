@@ -64,7 +64,7 @@ public class SmPriceMasterController {
                     master.setOcrConfidence(masterDetails.getOcrConfidence());
                     master.setStatus(masterDetails.getStatus());
                     master.setRemarks(masterDetails.getRemarks());
-                    master.setUpdatedBy("admin");
+                    master.setUpdatedBy(com.autonoma.erp.util.SecurityUtils.getCurrentUserId());
                     return ResponseEntity.ok(priceMasterRepository.save(master));
                 }).orElse(ResponseEntity.notFound().build());
     }
@@ -76,3 +76,4 @@ public class SmPriceMasterController {
         return ResponseEntity.ok().build();
     }
 }
+

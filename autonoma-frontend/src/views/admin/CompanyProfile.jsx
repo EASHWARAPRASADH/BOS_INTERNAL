@@ -1,22 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useDispatch } from 'react-redux';
 import {
-  Box, Grid, Typography, Button, Divider,
-  CircularProgress, Avatar, Tooltip, Paper, Chip, Stack,
-  IconButton, Dialog, DialogTitle, DialogContent, DialogActions,
-  List, ListItemIcon, ListItemText, ListItemButton, InputAdornment
+  Box, Grid, Typography, TextField, Button, Divider, Snackbar, Alert,
+  CircularProgress, Avatar, Tooltip, MenuItem, Select, FormControl,
+  InputLabel, FormHelperText, Paper, Chip, Stack, Autocomplete,
+  InputAdornment, IconButton,
+  Dialog, DialogTitle, DialogContent, DialogActions,
+  List, ListItemIcon, ListItemText, ListItemButton
 } from '@mui/material';
 import {
-  IconBuilding, IconPhoto, IconLogin, IconCheck, IconAlertCircle, IconFolderOpen,
+  IconBuilding, IconUpload, IconDeviceFloppy, IconRefresh,
+  IconPhoto, IconLogin, IconCheck, IconAlertCircle, IconFolderOpen,
   IconChevronRight, IconArrowLeft, IconFolder, IconDeviceFloppy as IconDrive,
-  IconUser, IconCalendar, IconDeviceFloppy
+  IconUser, IconCalendar
 } from '@tabler/icons-react';
 import useAuth from 'hooks/useAuth';
-import { autoUploadFile, getCompanyImageUrl } from 'utils/upload-helper';
-import axios from 'utils/axios';
-import { openSnackbar } from 'store/slices/snackbar';
-import useKeyboardShortcuts from 'hooks/useKeyboardShortcuts';
-import { BOSFormSection, BOSTextField } from 'ui-component/bos';
+
+const API_BASE = (import.meta.env.VITE_APP_API_URL || 'http://localhost:8081').replace(/\/+$/, '');
 
 // ─── Static Geo Data ────────────────────────────────────────────────────────
 const COUNTRIES = ['India', 'United States', 'United Kingdom', 'Canada', 'Australia', 'Germany', 'France', 'Singapore', 'UAE'];
@@ -70,6 +69,7 @@ const emptyForm = {
   gstIn: '', dbSourceName: '', licRenewalDate: '', licExpiryDate: '',
   logoFileName: '', logInBgFileName: '', directoryPath: 'D:\\BOS_DOCUMENTS',
   licExpRemainderDays: 0,
+  restoreEnableDays: 7,
   createdBy: '',
   createdDate: '',
   updatedBy: '',
@@ -109,7 +109,7 @@ function ImageUploadCard({ label, icon: Icon, field, preview, onUpload, uploadin
           <Tooltip
             title={
               <img
-                src={getCompanyImageUrl(preview)}
+                src={`${API_BASE}/api/company-profile/image/${preview}`}
                 alt="Preview"
                 style={{ maxWidth: 300, maxHeight: 300, objectFit: 'contain', display: 'block', borderRadius: 4 }}
               />
@@ -118,7 +118,7 @@ function ImageUploadCard({ label, icon: Icon, field, preview, onUpload, uploadin
             arrow
           >
             <Avatar
-              src={getCompanyImageUrl(preview)}
+              src={`${API_BASE}/api/company-profile/image/${preview}`}
               variant="rounded"
               sx={{ width: '100%', height: 110, mx: 'auto', mb: 1, objectFit: 'cover' }}
             />
@@ -147,13 +147,13 @@ function ImageUploadCard({ label, icon: Icon, field, preview, onUpload, uploadin
 // ─── Main Component ───────────────────────────────────────────────────────────
 const CompanyProfile = () => {
   const { user } = useAuth();
-  const dispatch = useDispatch();
   const isSuperUser = user?.isBosAdmin === 1;
 
   const [form, setForm] = useState(emptyForm);
   const [recordId, setRecordId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState({ logo: false, bg: false });
+  const [snack, setSnack] = useState({ open: false, msg: '', severity: 'success' });
   const [errors, setErrors] = useState({});
   const [browserOpen, setBrowserOpen] = useState(false);
   const [browserData, setBrowserData] = useState({ currentPath: '', folders: [], roots: [], parentPath: null });
@@ -164,9 +164,12 @@ const CompanyProfile = () => {
 
   // ── Load existing record on mount ──
   useEffect(() => {
-    axios.get('/api/company-profile/all')
-      .then(r => {
-        const data = r.data;
+    const token = localStorage.getItem('serviceToken') || '';
+    fetch(`${API_BASE}/api/company-profile/all`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(r => r.json())
+      .then(data => {
         if (Array.isArray(data) && data.length > 0) {
           const rec = data[0];
           setRecordId(rec.id);
@@ -187,6 +190,7 @@ const CompanyProfile = () => {
             logInBgFileName: rec.logInBgFileName || '',
             directoryPath: rec.directoryPath || 'D:\\BOS_DOCUMENTS',
             licExpRemainderDays: rec.licExpRemainderDays || 0,
+            restoreEnableDays: rec.restoreEnableDays || 0,
             createdBy: rec.createdBy || '',
             createdDate: rec.createdDate || '',
             updatedBy: rec.updatedBy || '',
@@ -197,23 +201,18 @@ const CompanyProfile = () => {
       .catch(() => {/* silently ignore on first load */ });
   }, []);
 
-  // Keyboard shortcut: Ctrl+S to save
-  useKeyboardShortcuts({
-    'ctrl+s': (e) => {
-      e.preventDefault();
-      handleSave();
-    }
-  });
-
   // ── Field change ──
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => {
       const updated = { ...prev, [name]: value };
+      // Auto-set state code when state changes
       if (name === 'state' && STATE_CODES[value] !== undefined) {
         updated.stateCode = String(STATE_CODES[value]);
       }
+      // Reset state/city if country changes
       if (name === 'country') { updated.state = ''; updated.city = ''; updated.stateCode = ''; }
+      // Reset city if state changes
       if (name === 'state') { updated.city = ''; }
       return updated;
     });
@@ -231,35 +230,51 @@ const CompanyProfile = () => {
     return Object.keys(e).length === 0;
   };
 
-  const showSnack = (msg, severity = 'success') => {
-    dispatch(openSnackbar({ open: true, message: msg, variant: 'alert', severity }));
-  };
-
   // ── Image Upload ──
   const handleImageUpload = async (field, file) => {
     const isLogo = field === 'logoFileName';
+    const endpoint = isLogo ? 'upload-logo' : 'upload-bg';
     setUploading(prev => ({ ...prev, [isLogo ? 'logo' : 'bg']: true }));
     try {
-      const uploadedPath = await autoUploadFile(file, 'COMPANY_PROFILE');
-      
-      setForm(prev => ({ ...prev, [field]: uploadedPath }));
-      showSnack('File uploaded successfully!', 'success');
+      const token = localStorage.getItem('serviceToken') || '';
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch(`${API_BASE}/api/company-profile/${endpoint}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: fd
+      });
+      if (!res.ok) throw new Error('Upload failed');
+      const data = await res.json();
+      const updatedFileName = data.fileName;
 
+      setForm(prev => ({ ...prev, [field]: updatedFileName }));
+      showSnack(data.message || 'File uploaded!', 'success');
+
+      // ── Auto-save if already exists ──
       if (recordId) {
         const payload = {
           ...form,
-          [field]: uploadedPath,
+          [field]: updatedFileName,
           stateCode: form.stateCode ? parseInt(form.stateCode) : null,
           licExpRemainderDays: form.licExpRemainderDays ? parseInt(form.licExpRemainderDays) : 0,
+          restoreEnableDays: form.restoreEnableDays ? parseInt(form.restoreEnableDays) : 0,
           licRenewalDate: form.licRenewalDate ? new Date(form.licRenewalDate).toISOString() : null,
           licExpiryDate: form.licExpiryDate ? new Date(form.licExpiryDate).toISOString() : null,
           updatedBy: user?.id || 'SYSTEM'
         };
 
-        await axios.put(`/api/company-profile/update/${recordId}`, payload);
+        await fetch(`${API_BASE}/api/company-profile/update/${recordId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
 
         if (isLogo) {
-          window.dispatchEvent(new CustomEvent('companyLogoUpdated', { detail: { fileName: uploadedPath } }));
+          window.dispatchEvent(new CustomEvent('companyLogoUpdated', { detail: { fileName: updatedFileName } }));
         }
       }
     } catch (err) {
@@ -273,12 +288,22 @@ const CompanyProfile = () => {
   const fetchDirectory = async (path) => {
     setBrowserLoading(true);
     try {
+      const token = localStorage.getItem('serviceToken') || '';
       const url = path
-        ? `/api/directory/list?path=${encodeURIComponent(path)}`
-        : `/api/directory/roots`;
+        ? `${API_BASE}/api/directory/list?path=${encodeURIComponent(path)}`
+        : `${API_BASE}/api/directory/roots`;
 
-      const res = await axios.get(url);
-      const data = res.data;
+      const res = await fetch(url, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        showSnack(data.error || 'Could not access this path', 'error');
+        // If it was a specific path that failed, reset to roots
+        if (path) fetchDirectory(null);
+        return;
+      }
 
       if (path) {
         setBrowserData(prev => ({
@@ -291,9 +316,7 @@ const CompanyProfile = () => {
         setBrowserData({ currentPath: '', folders: [], roots: Array.isArray(data) ? data : [], parentPath: null });
       }
     } catch (err) {
-      const msg = err.response?.data?.error || 'Failed to load directories';
-      showSnack(msg, 'error');
-      if (path) fetchDirectory(null);
+      showSnack('Failed to load directories', 'error');
     } finally {
       setBrowserLoading(false);
     }
@@ -306,33 +329,43 @@ const CompanyProfile = () => {
 
   // ── Save / Update ──
   const handleSave = async () => {
-    if (!validate()) {
-      showSnack('Please fix validation errors', 'error');
-      return;
-    }
+    if (!validate()) return;
     setLoading(true);
     try {
+      const token = localStorage.getItem('serviceToken') || '';
       const payload = {
         ...form,
         stateCode: form.stateCode ? parseInt(form.stateCode) : null,
         licExpRemainderDays: form.licExpRemainderDays ? parseInt(form.licExpRemainderDays) : 0,
+        restoreEnableDays: form.restoreEnableDays ? parseInt(form.restoreEnableDays) : 0,
         licRenewalDate: form.licRenewalDate ? new Date(form.licRenewalDate).toISOString() : null,
         licExpiryDate: form.licExpiryDate ? new Date(form.licExpiryDate).toISOString() : null,
         updatedBy: user?.id || 'SYSTEM'
       };
-      
+
       if (!recordId) {
         payload.createdBy = user?.id || 'SYSTEM';
       }
 
-      let res;
+      let url, method;
       if (recordId) {
-        res = await axios.put(`/api/company-profile/update/${recordId}`, payload);
+        url = `${API_BASE}/api/company-profile/update/${recordId}`;
+        method = 'PUT';
       } else {
-        res = await axios.post(`/api/company-profile/create`, payload);
+        url = `${API_BASE}/api/company-profile/create`;
+        method = 'POST';
       }
-      
-      const saved = res.data;
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const saved = await res.json();
       setRecordId(saved.id);
       showSnack(recordId ? 'Company profile updated successfully!' : 'Company profile saved successfully!', 'success');
     } catch (err) {
@@ -341,6 +374,89 @@ const CompanyProfile = () => {
       setLoading(false);
     }
   };
+
+  const handleReset = () => {
+    setForm(emptyForm);
+    setRecordId(null);
+    setErrors({});
+  };
+
+  const showSnack = (msg, severity = 'success') => setSnack({ open: true, msg, severity });
+
+  // ─── Styles ───
+  const sectionTitle = (title, Icon) => (
+    <Box display="flex" alignItems="center" gap={1} mb={2} mt={1}>
+      <Box sx={{
+        p: 0.75, borderRadius: 1.5,
+        background: 'linear-gradient(135deg,#5e72e4,#825ee4)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center'
+      }}>
+        <Icon size={16} color="#fff" stroke={2} />
+      </Box>
+      <Typography variant="subtitle1" fontWeight={700} color="text.primary">
+        {title}
+      </Typography>
+    </Box>
+  );
+
+  const fieldProps = (name, label, extra = {}) => ({
+    name, label, value: form[name],
+    onChange: handleChange,
+    error: !!errors[name],
+    helperText: errors[name] || '',
+    size: 'small', fullWidth: true,
+    sx: {
+      '& .MuiOutlinedInput-root': {
+        borderRadius: 2,
+        bgcolor: extra.InputProps?.readOnly ? 'action.hover' : 'background.paper',
+        '&:hover fieldset': { borderColor: 'primary.main' }
+      }
+    },
+    ...extra
+  });
+
+  const dropdownProps = (name, label, options, extra = {}) => ({
+    name, label, value: form[name], onChange: handleChange,
+    error: !!errors[name], helperText: errors[name],
+    options, size: 'small', fullWidth: true, ...extra
+  });
+
+  const DropdownField = ({ name, label, options, disabled }) => (
+    <Autocomplete
+      fullWidth
+      size="small"
+      sx={{ minWidth: 200 }}
+      disabled={disabled}
+      options={options}
+      value={form[name] || null}
+      onChange={(event, newValue) => {
+        const syntheticEvent = {
+          target: {
+            name: name,
+            value: newValue || ''
+          }
+        };
+        handleChange(syntheticEvent);
+      }}
+      isOptionEqualToValue={(option, value) => option === value || value === ""}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label={label}
+          error={!!errors[name]}
+          helperText={errors[name]}
+          placeholder={`Search ${label}...`}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 2,
+              bgcolor: disabled ? 'action.hover' : 'background.paper',
+              '&:hover fieldset': { borderColor: 'primary.main' }
+            }
+          }}
+        />
+      )}
+    />
+  );
 
   const FolderBrowserDialog = () => (
     <Dialog open={browserOpen} onClose={() => setBrowserOpen(false)} maxWidth="sm" fullWidth>
@@ -464,97 +580,188 @@ const CompanyProfile = () => {
         color: '#fff', position: 'relative', overflow: 'hidden',
         boxShadow: '0 8px 32px rgba(94,114,228,0.35)'
       }}>
-        <Box sx={{ position: 'absolute', top: -40, right: -40, width: 180, height: 180, borderRadius: '50%', background: 'rgba(255,255,255,0.07)' }} />
-        <Box sx={{ position: 'absolute', bottom: -30, right: 80, width: 100, height: 100, borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
+        {/* decorative circles */}
+        <Box sx={{
+          position: 'absolute', top: -40, right: -40, width: 180, height: 180,
+          borderRadius: '50%', background: 'rgba(255,255,255,0.07)'
+        }} />
+        <Box sx={{
+          position: 'absolute', bottom: -30, right: 80, width: 100, height: 100,
+          borderRadius: '50%', background: 'rgba(255,255,255,0.05)'
+        }} />
 
         <Stack direction="row" alignItems="center" spacing={2}>
           <Box sx={{ p: 1.5, borderRadius: 2, background: 'rgba(255,255,255,0.18)', display: 'flex' }}>
             <IconBuilding size={28} stroke={1.5} />
           </Box>
           <Box>
-            <Typography variant="h4" fontWeight={800} sx={{ lineHeight: 1.2 }}>Company Profile</Typography>
-            <Typography variant="body2" sx={{ opacity: 0.85, mt: 0.4 }}>Manage your company credentials and branding assets</Typography>
+            <Typography variant="h4" fontWeight={800} sx={{ lineHeight: 1.2 }}>
+              Company Profile
+            </Typography>
+            <Typography variant="body2" sx={{ opacity: 0.85, mt: 0.4 }}>
+              Manage your company credentials and branding assets
+            </Typography>
           </Box>
           {recordId && (
-            <Chip label={`ID: ${recordId}`} size="small" sx={{ ml: 'auto', bgcolor: 'rgba(255,255,255,0.22)', color: '#fff', fontWeight: 700 }} />
+            <Chip
+              label={`ID: ${recordId}`}
+              size="small"
+              sx={{ ml: 'auto', bgcolor: 'rgba(255,255,255,0.22)', color: '#fff', fontWeight: 700 }}
+            />
           )}
         </Stack>
       </Box>
 
       {/* ── Form Card ── */}
       <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 3, overflow: 'hidden' }}>
-        
-        <BOSFormSection title="Company Information" icon={<IconBuilding size={20} />}>
-          <Grid container spacing={2}>
+
+        {/* ── Section 1 – Company Info ── */}
+        <Box sx={{ p: { xs: 2, md: 3 } }}>
+          {sectionTitle('Company Information', IconBuilding)}
+          {/* Row 1: Names */}
+          <Grid container spacing={2.5} mb={2.5}>
             <Grid item xs={12} md={6}>
-              <BOSTextField name="companyName" label="Company Name *" value={form.companyName} onChange={handleChange} error={errors.companyName} />
+              <TextField {...fieldProps('companyName', 'Company Name *')} />
             </Grid>
             <Grid item xs={12} md={3}>
-              <BOSTextField name="shortName" label="Short Name" value={form.shortName} onChange={handleChange} error={errors.shortName} />
+              <TextField {...fieldProps('shortName', 'Short Name')} />
             </Grid>
             <Grid item xs={12} md={3}>
-              <BOSTextField name="gstIn" label="GST IN" value={form.gstIn} onChange={handleChange} error={errors.gstIn} inputProps={{ maxLength: 15 }} />
+              <TextField {...fieldProps('gstIn', 'GST IN')} inputProps={{ maxLength: 15 }} />
             </Grid>
+
             <Grid item xs={12}>
-              <BOSTextField name="address" label="Address" value={form.address} onChange={handleChange} error={errors.address} multiline rows={2} inputProps={{ maxLength: 500 }} />
+              <TextField
+                {...fieldProps('address', 'Address')}
+                multiline
+                rows={2}
+                fullWidth
+                sx={{ ...fieldProps('address', 'Address').sx, width: '440px' }}
+                inputProps={{ maxLength: 500 }}
+              />
+            </Grid>
+          </Grid>
+
+          {/* Row 3: Geo Selection */}
+          <Grid container spacing={2.5} mb={2.5}>
+            <Grid item xs={12} md={6}>
+              <DropdownField name="country" label="Country *" options={COUNTRIES} fullWidth />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <DropdownField
+                name="state" label="State *"
+                options={statesForCountry}
+                disabled={!form.country} fullWidth
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <DropdownField
+                name="city" label="City *"
+                options={citiesForState}
+                disabled={!form.state} fullWidth
+              />
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <BOSTextField select name="country" label="Country *" value={form.country} onChange={handleChange} error={errors.country} options={COUNTRIES.map(c => ({ value: c, label: c }))} />
+              <TextField {...fieldProps('stateCode', 'State Code')}
+                InputProps={{ readOnly: true }}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2, bgcolor: 'action.hover' } }}
+              />
             </Grid>
             <Grid item xs={12} md={6}>
-              <BOSTextField select name="state" label="State *" value={form.state} onChange={handleChange} error={errors.state} disabled={!form.country} options={statesForCountry.map(c => ({ value: c, label: c }))} />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <BOSTextField select name="city" label="City *" value={form.city} onChange={handleChange} error={errors.city} disabled={!form.state} options={citiesForState.map(c => ({ value: c, label: c }))} />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Stack direction="row" spacing={2}>
-                <BOSTextField name="stateCode" label="State Code" value={form.stateCode} disabled sx={{ width: '40%' }} />
-                <BOSTextField name="pincode" label="Pincode" value={form.pincode} onChange={handleChange} error={errors.pincode} inputProps={{ maxLength: 10 }} sx={{ width: '60%' }} />
-              </Stack>
+              <TextField {...fieldProps('pincode', 'Pincode')} inputProps={{ maxLength: 10 }} />
             </Grid>
           </Grid>
-        </BOSFormSection>
+        </Box>
 
         <Divider />
 
-        <BOSFormSection title="Branding Assets" icon={<IconPhoto size={20} />}>
+        {/* ── Section 3 – Branding Assets ── */}
+        <Box sx={{ p: { xs: 2, md: 3 } }}>
+          {sectionTitle('Branding Assets', IconPhoto)}
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
-              <Typography variant="body2" fontWeight={600} color="text.secondary" mb={1}>Company Logo</Typography>
-              <ImageUploadCard label="Company Logo" icon={IconPhoto} field="logoFileName" preview={form.logoFileName} onUpload={handleImageUpload} uploading={uploading.logo} />
+              <Typography variant="body2" fontWeight={600} color="text.secondary" mb={1}>
+                Company Logo
+              </Typography>
+              <ImageUploadCard
+                label="Company Logo"
+                icon={IconPhoto}
+                field="logoFileName"
+                preview={form.logoFileName}
+                onUpload={handleImageUpload}
+                uploading={uploading.logo}
+              />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <Typography variant="body2" fontWeight={600} color="text.secondary" mb={1}>Login Background Image</Typography>
-              <ImageUploadCard label="Login Background" icon={IconLogin} field="logInBgFileName" preview={form.logInBgFileName} onUpload={handleImageUpload} uploading={uploading.bg} />
+              <Typography variant="body2" fontWeight={600} color="text.secondary" mb={1}>
+                Login Background Image
+              </Typography>
+              <ImageUploadCard
+                label="Login Background"
+                icon={IconLogin}
+                field="logInBgFileName"
+                preview={form.logInBgFileName}
+                onUpload={handleImageUpload}
+                uploading={uploading.bg}
+              />
             </Grid>
           </Grid>
-        </BOSFormSection>
+        </Box>
 
         <Divider />
+        {/* ── Section 2 – License Info ── */}
+        <Box sx={{ p: { xs: 3, md: 3 } }}>
+          {sectionTitle('License Details', IconAlertCircle)}
 
-        <BOSFormSection title="License Details" icon={<IconAlertCircle size={20} />}>
-          <Grid container spacing={2}>
+          <Grid container spacing={2.5}>
             <Grid item xs={12} md={4}>
-              <BOSTextField name="dbSourceName" label="DB Source" value={form.dbSourceName} onChange={handleChange} error={errors.dbSourceName} disabled={!isSuperUser} inputProps={{ maxLength: 10 }} />
+              <TextField {...fieldProps('dbSourceName', 'DB Source')} inputProps={{ maxLength: 10 }} disabled={!isSuperUser} />
             </Grid>
             <Grid item xs={12} md={4}>
-              <BOSTextField name="licRenewalDate" label="License Renewal Date" type="date" value={form.licRenewalDate} onChange={handleChange} error={errors.licRenewalDate} disabled={!isSuperUser} InputLabelProps={{ shrink: true }} />
+              <TextField
+                {...fieldProps('licRenewalDate', 'License Renewal Date')}
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                disabled={!isSuperUser}
+              />
             </Grid>
             <Grid item xs={12} md={4}>
-              <BOSTextField name="licExpiryDate" label="License Expiry Date" type="date" value={form.licExpiryDate} onChange={handleChange} error={errors.licExpiryDate} disabled={!isSuperUser} InputLabelProps={{ shrink: true }} />
+              <TextField
+                {...fieldProps('licExpiryDate', 'License Expiry Date')}
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                disabled={!isSuperUser}
+              />
             </Grid>
             <Grid item xs={12} md={4}>
-              <BOSTextField name="licExpRemainderDays" label="Lic Exp Remainder Days" type="number" value={form.licExpRemainderDays} onChange={handleChange} error={errors.licExpRemainderDays} disabled={!isSuperUser} />
+              <TextField
+                {...fieldProps('licExpRemainderDays', 'Lic Exp Remainder Days')}
+                type="number"
+                disabled={!isSuperUser}
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField
+                {...fieldProps('restoreEnableDays', 'Restore Enable Days')}
+                type="number"
+                disabled={!isSuperUser}
+                helperText="Grace period (days) to restore deleted records"
+              />
             </Grid>
             <Grid item xs={12} sm={8}>
-              <BOSTextField 
-                name="directoryPath" label="Directory Path" value={form.directoryPath} onChange={handleChange} error={errors.directoryPath} disabled={!isSuperUser}
+              <TextField
+                {...fieldProps('directoryPath', 'Directory Path')}
+                disabled={!isSuperUser}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton color="primary" onClick={handleOpenBrowser} disabled={!isSuperUser} title="Browse Server Folders">
+                      <IconButton
+                        color="primary"
+                        onClick={handleOpenBrowser}
+                        disabled={!isSuperUser}
+                        title="Browse Server Folders"
+                      >
                         <IconFolderOpen size={20} />
                       </IconButton>
                     </InputAdornment>
@@ -563,28 +770,90 @@ const CompanyProfile = () => {
               />
             </Grid>
           </Grid>
-        </BOSFormSection>
+        </Box>
 
         <FolderBrowserDialog />
 
         <Divider />
 
-        <BOSFormSection title="System Information" icon={<IconAlertCircle size={20} />}>
-          <Grid container spacing={2}>
+        {/* ── Section 4 – System Info ── */}
+        <Box sx={{ p: { xs: 2, md: 3 }, bgcolor: 'rgba(0,0,0,0.01)' }}>
+          {sectionTitle('System Information', IconAlertCircle)}
+          <Grid container spacing={2.5}>
             <Grid item xs={12} sm={6} md={3}>
-              <BOSTextField label="Created By" value={form.createdBy} disabled InputProps={{ startAdornment: <InputAdornment position="start"><IconUser size={18} opacity={0.5} /></InputAdornment> }} />
+              <TextField
+                label="Created By"
+                value={form.createdBy}
+                fullWidth
+                size="small"
+                InputProps={{
+                  readOnly: true,
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <IconUser size={18} opacity={0.5} />
+                    </InputAdornment>
+                  )
+                }}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2, bgcolor: 'action.hover' } }}
+              />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-              <BOSTextField label="Created Date" value={form.createdDate ? new Date(form.createdDate).toLocaleString() : ''} disabled InputProps={{ startAdornment: <InputAdornment position="start"><IconCalendar size={18} opacity={0.5} /></InputAdornment> }} />
+              <TextField
+                label="Created Date"
+                value={form.createdDate ? new Date(form.createdDate).toLocaleString() : ''}
+                fullWidth
+                size="small"
+                InputProps={{
+                  readOnly: true,
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <IconCalendar size={18} opacity={0.5} />
+                    </InputAdornment>
+                  )
+                }}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2, bgcolor: 'action.hover' } }}
+              />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-              <BOSTextField label="Updated By" value={form.updatedBy} disabled InputProps={{ startAdornment: <InputAdornment position="start"><IconUser size={18} opacity={0.5} /></InputAdornment> }} />
+              <TextField
+                label="Updated By"
+                value={form.updatedBy}
+                fullWidth
+                size="small"
+                InputProps={{
+                  readOnly: true,
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <IconUser size={18} opacity={0.5} />
+                    </InputAdornment>
+                  )
+                }}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2, bgcolor: 'action.hover' } }}
+              />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-              <BOSTextField label="Updated Date" value={form.updatedDate ? new Date(form.updatedDate).toLocaleString() : ''} disabled InputProps={{ startAdornment: <InputAdornment position="start"><IconCalendar size={18} opacity={0.5} /></InputAdornment> }} />
+              <TextField
+                label="Updated Date"
+                value={form.updatedDate ? new Date(form.updatedDate).toLocaleString() : ''}
+                fullWidth
+                size="small"
+                InputProps={{
+                  readOnly: true,
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <IconCalendar size={18} opacity={0.5} />
+                    </InputAdornment>
+                  )
+                }}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2, bgcolor: 'action.hover' } }}
+              />
             </Grid>
           </Grid>
-        </BOSFormSection>
+        </Box>
+
+        <Divider />
+
+
 
         <Divider />
 
@@ -594,6 +863,16 @@ const CompanyProfile = () => {
           bgcolor: 'action.hover',
           display: 'flex', gap: 2, justifyContent: 'flex-end', flexWrap: 'wrap'
         }}>
+          {/* <Tooltip title="Reset form">
+            <Button
+              variant="outlined"
+              startIcon={<IconRefresh size={18} />}
+              onClick={handleReset}
+              sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+            >
+              Reset
+            </Button>
+          </Tooltip> */}
           <Button
             variant="contained"
             startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <IconDeviceFloppy size={18} />}
@@ -610,6 +889,23 @@ const CompanyProfile = () => {
           </Button>
         </Box>
       </Paper>
+
+      {/* ── Snackbar ── */}
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={4000}
+        onClose={() => setSnack(s => ({ ...s, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert
+          severity={snack.severity}
+          variant="filled"
+          onClose={() => setSnack(s => ({ ...s, open: false }))}
+          sx={{ borderRadius: 2 }}
+        >
+          {snack.msg}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

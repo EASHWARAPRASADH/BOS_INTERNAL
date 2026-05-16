@@ -44,7 +44,7 @@ public class DesignationLevelController {
             return ResponseEntity.badRequest().body("Designation level already exists");
         }
         if (level.getCreatedBy() == null)
-            level.setCreatedBy("Admin");
+            level.setCreatedBy(com.autonoma.erp.util.SecurityUtils.getCurrentUserId());
         return ResponseEntity.ok(designationLevelRepository.save(level));
     }
 
@@ -60,7 +60,7 @@ public class DesignationLevelController {
                     level.setDa(levelDetails.getDa());
                     level.setHra(levelDetails.getHra());
                     level.setScreeningLevel(levelDetails.getScreeningLevel());
-                    level.setUpdatedBy("Admin");
+                    level.setUpdatedBy(com.autonoma.erp.util.SecurityUtils.getCurrentUserId());
                     return ResponseEntity.ok(designationLevelRepository.save(level));
                 }).orElse(ResponseEntity.notFound().build());
     }
@@ -74,3 +74,4 @@ public class DesignationLevelController {
                 }).orElse(ResponseEntity.notFound().build());
     }
 }
+
